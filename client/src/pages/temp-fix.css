@@ -8,9 +8,32 @@ body, html, #root, div {
   display: none !important;
 }
 
-/* Remove any potential shadow lines that might look like a grid */
-* {
-  box-shadow: none !important;
+/* Mobile specific styles */
+@media (max-width: 640px) {
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    transform: scale(0.75);
+    max-width: 75%;
+  }
+  
+  /* Improved vertical positioning for mobile icons */
+  .shop-overlay {
+    z-index: 5; /* Ensure bottom icons are above any other elements */
+  }
+  
+  .activities-overlay {
+    z-index: 5; /* Ensure bottom icons are above any other elements */
+  }
+  
+  .theater-overlay {
+    z-index: 6; /* Ensure top icons are above bottom icons */
+  }
+  
+  .information-overlay {
+    z-index: 6; /* Ensure top icons are above bottom icons */
+  }
 }
 
 /* Ensure video container fills the screen without rounded corners */
@@ -25,4 +48,694 @@ video {
   object-fit: cover !important;
   width: 100% !important;
   height: 100% !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Hide play button and controls on video for macOS and iOS */
+video::-webkit-media-controls {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-play-button {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+/* Safari-specific video fixes */
+@supports (-webkit-touch-callout: none) {
+  video {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    object-fit: cover !important;
+    -webkit-object-fit: cover !important;
+  }
+}
+
+/* Force-hide iOS video UI controls */
+.video-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.video-container video {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
+/* macOS-compatible shadows for interactive elements */
+.shop-overlay,
+.theater-overlay,
+.activities-overlay,
+.information-overlay {
+  transition: all 0.3s ease;
+}
+
+.shop-overlay:hover,
+.theater-overlay:hover,
+.activities-overlay:hover,
+.information-overlay:hover {
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+}
+
+/* Enhanced image shadow effects for macOS and touch devices */
+.shop-overlay img,
+.theater-overlay img,
+.activities-overlay img,
+.information-overlay img {
+  filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35));
+  -webkit-filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35));
+  transition: all 0.3s ease;
+  transform-origin: center bottom;
+}
+
+.shop-overlay:hover img,
+.theater-overlay:hover img,
+.activities-overlay:hover img,
+.information-overlay:hover img,
+.shop-overlay:focus img,
+.theater-overlay:focus img,
+.activities-overlay:focus img,
+.information-overlay:focus img,
+.shop-overlay:active img,
+.theater-overlay:active img,
+.activities-overlay:active img,
+.information-overlay:active img {
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5)) 
+          drop-shadow(0 5px 10px rgba(255, 255, 255, 0.1)) 
+          brightness(1.1) !important;
+  -webkit-filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5)) 
+                  drop-shadow(0 0 15px rgba(255, 255, 255, 0.15))
+                  brightness(1.1) !important;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+/* Extra glow effect for macOS, iOS, and other WebKit browsers */
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) or (-webkit-touch-callout: none) {
+  .shop-overlay:hover img,
+  .theater-overlay:hover img,
+  .activities-overlay:hover img,
+  .information-overlay:hover img,
+  .shop-overlay:focus img,
+  .theater-overlay:focus img,
+  .activities-overlay:focus img,
+  .information-overlay:focus img,
+  .shop-overlay:active img,
+  .theater-overlay:active img,
+  .activities-overlay:active img,
+  .information-overlay:active img {
+    -webkit-filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5)) 
+                   drop-shadow(0 0 18px rgba(255, 255, 255, 0.3))
+                   brightness(1.15) !important;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5)) 
+           drop-shadow(0 0 18px rgba(255, 255, 255, 0.3))
+           brightness(1.15) !important;
+  }
+}
+
+/* Make background elements fully transparent */
+.group .absolute.bottom-0.left-1\/2,
+.group:hover .absolute.bottom-0.left-1\/2 {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  opacity: 0 !important; /* Completely hide it while keeping the element */
+}
+
+/* Mobile responsive styles - Only apply below desktop breakpoints */
+@media (max-width: 1023px) {
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    max-width: 100%;
+    height: auto;
+    transform-origin: center bottom;
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+  
+  /* Add enhanced touch feedback animation */
+  @keyframes touch-feedback {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.1); filter: brightness(1.15); }
+    100% { transform: scale(1.05); filter: brightness(1.1); }
+  }
+  
+  /* iOS-specific animation with reduced motion for accessibility */
+  @media (prefers-reduced-motion: no-preference) {
+    .shop-overlay:active img,
+    .theater-overlay:active img,
+    .activities-overlay:active img,
+    .information-overlay:active img {
+      animation: touch-feedback 0.3s forwards;
+      -webkit-animation: touch-feedback 0.3s forwards;
+    }
+  }
+  
+  /* Basic feedback for reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .shop-overlay:active img,
+    .theater-overlay:active img,
+    .activities-overlay:active img,
+    .information-overlay:active img {
+      filter: brightness(1.2) !important;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    max-width: 80%;
+    margin: 0 auto;
+  }
+  
+  /* Improve touch target size for better accessibility */
+  .shop-overlay,
+  .theater-overlay,
+  .activities-overlay,
+  .information-overlay {
+    min-width: 70px; /* Increased from 60px for better touch targets */
+    min-height: 70px; /* Increased from 60px for better touch targets */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px; /* Add padding to increase the effective touch area */
+  }
+  
+  /* Support for larger text accessibility setting */
+  @media (prefers-contrast: more) {
+    .shop-overlay img,
+    .theater-overlay img,
+    .activities-overlay img,
+    .information-overlay img {
+      filter: contrast(1.3) brightness(1.1) !important;
+    }
+  }
+  
+  /* Apply a subtle initial glow effect to hint at interactivity */
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3)) 
+           drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+    -webkit-filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3))
+                   drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+  }
+}
+
+@media (max-width: 480px) {
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    transform: scale(0.75);
+    max-width: 75%;
+  }
+  
+  /* Improved vertical positioning for mobile icons */
+  .shop-overlay {
+    z-index: 5; /* Ensure bottom icons are above any other elements */
+  }
+  
+  .activities-overlay {
+    z-index: 5; /* Ensure bottom icons are above any other elements */
+  }
+  
+  .theater-overlay {
+    z-index: 6; /* Ensure top icons are above bottom icons */
+  }
+  
+  .information-overlay {
+    z-index: 6; /* Ensure top icons are above bottom icons */
+  }
+  
+  .shop-overlay:active img,
+  .theater-overlay:active img,
+  .activities-overlay:active img,
+  .information-overlay:active img {
+    transform: scale(0.85);
+    filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.4)) 
+           drop-shadow(0 0 10px rgba(255, 255, 255, 0.2))
+           brightness(1.1);
+    -webkit-filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.4))
+                   drop-shadow(0 0 10px rgba(255, 255, 255, 0.2))
+                   brightness(1.1);
+  }
+  
+  /* Adjust animation/float for small screens */
+  .shop-overlay,
+  .theater-overlay,
+  .activities-overlay,
+  .information-overlay {
+    animation-duration: 4s !important; /* Slower animation on mobile */
+    animation-delay: 0s !important; /* Start animations immediately on mobile */
+  }
+  
+  /* Ensure proper positioning on very small screens */
+  .flex-row {
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.25rem;
+  }
+}
+
+/* Special adjustments for very small screens */
+@media (max-width: 360px) {
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    transform: scale(0.6);
+    max-width: 60%;
+  }
+  
+  /* Additional positioning adjustments for very small screens */
+  .theater-overlay {
+    bottom: 21rem !important; /* Increased from 16rem to 21rem (moved up by 5rem) */
+  }
+  
+  .information-overlay {
+    bottom: 21rem !important; /* Increased from 16rem to 21rem (moved up by 5rem) */
+  }
+  
+  /* Create more space between the icons */
+  .shop-overlay {
+    left: 0.25rem !important; /* Push further left */
+  }
+  
+  .theater-overlay {
+    left: 0.5rem !important; /* Adjust to align with shop */
+  }
+  
+  .activities-overlay {
+    right: 0.25rem !important; /* Push further right */
+  }
+  
+  .information-overlay {
+    right: 0.5rem !important; /* Adjust to align with activities */
+  }
+}
+
+/* Active touch state styling for better mobile interaction */
+.shop-overlay.active-touch img,
+.theater-overlay.active-touch img,
+.activities-overlay.active-touch img,
+.information-overlay.active-touch img {
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5)) 
+          drop-shadow(0 5px 10px rgba(255, 255, 255, 0.15))
+          brightness(1.15) !important;
+  -webkit-filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5)) 
+                 drop-shadow(0 5px 10px rgba(255, 255, 255, 0.15))
+                 brightness(1.15) !important;
+  transform: scale(1.05) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Improved iOS/Safari/WebKit support for touch interactions */
+@supports (-webkit-touch-callout: none) {
+  .shop-overlay.active-touch img,
+  .theater-overlay.active-touch img,
+  .activities-overlay.active-touch img,
+  .information-overlay.active-touch img {
+    -webkit-filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5)) 
+                   drop-shadow(0 0 20px rgba(255, 255, 255, 0.25))
+                   brightness(1.2) !important;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5)) 
+           drop-shadow(0 0 20px rgba(255, 255, 255, 0.25))
+           brightness(1.2) !important;
+  }
+}
+
+/* Tablet-specific adjustments for better icon spacing */
+@media (min-width: 641px) and (max-width: 768px) {
+  /* Adjust positioning for tablets to prevent overlap */
+  .theater-overlay {
+    bottom: 8.5rem !important; /* Increased vertical spacing */
+  }
+  
+  .information-overlay {
+    bottom: 8.5rem !important; /* Increased vertical spacing */
+  }
+}
+
+/* Portrait mode specific adjustments */
+@media (orientation: portrait) and (max-width: 640px) {
+  /* More vertical spacing for portrait orientation */
+  .theater-overlay {
+    bottom: 20rem !important; /* Increased from 15rem to 20rem (moved up by 5rem) */
+  }
+  
+  .information-overlay {
+    bottom: 20rem !important; /* Increased from 15rem to 20rem (moved up by 5rem) */
+  }
+  
+  /* Scale down images slightly to fit better in portrait */
+  .theater-overlay img,
+  .information-overlay img {
+    transform: scale(0.7) !important;
+    max-width: 70% !important;
+  }
+  
+  .shop-overlay img,
+  .activities-overlay img {
+    transform: scale(0.75) !important;
+    max-width: 75% !important;
+  }
+}
+
+/* Landscape mode specific adjustments */
+@media (orientation: landscape) and (max-width: 640px) {
+  /* Less vertical spacing but more horizontal spacing for landscape */
+  .theater-overlay {
+    bottom: 14rem !important; /* Increased from 9rem to 14rem (moved up by 5rem) */
+    left: 3rem !important;
+  }
+  
+  .information-overlay {
+    bottom: 14rem !important; /* Increased from 9rem to 14rem (moved up by 5rem) */
+    right: 3rem !important;
+  }
+  
+  .shop-overlay {
+    left: 1.5rem !important;
+  }
+  
+  .activities-overlay {
+    right: 1.5rem !important;
+  }
+}
+
+/* Adaptive floating animation speeds for different devices */
+@media (prefers-reduced-motion: no-preference) {
+  .shop-overlay,
+  .theater-overlay,
+  .activities-overlay,
+  .information-overlay {
+    animation: float 4s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  .shop-overlay.active-touch,
+  .theater-overlay.active-touch,
+  .activities-overlay.active-touch,
+  .information-overlay.active-touch {
+    animation-play-state: paused;
+  }
+}
+
+/* Respect reduced motion settings */
+@media (prefers-reduced-motion: reduce) {
+  .shop-overlay,
+  .theater-overlay,
+  .activities-overlay,
+  .information-overlay {
+    animation: none !important;
+    transition: transform 0.2s ease, filter 0.2s ease !important;
+  }
+  
+  video {
+    animation: none !important;
+  }
+}
+
+/* Landscape mode optimizations for mobile devices */
+@media (max-width: 1023px) and (orientation: landscape) {
+  .shop-overlay,
+  .theater-overlay,
+  .activities-overlay,
+  .information-overlay {
+    margin-bottom: 0.5rem;
+  }
+  
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    max-height: 65vh;
+    width: auto;
+    transform: scale(0.85);
+  }
+  
+  /* Adjust positioning in landscape mode */
+  :root {
+    --landscape-y-adjustment: -20px;
+  }
+}
+
+/* Small landscape devices */
+@media (max-height: 500px) and (orientation: landscape) {
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    max-height: 75px;
+    width: auto;
+    transform: scale(0.75);
+  }
+  
+  /* Ensure icons remain visible */
+  .shop-overlay,
+  .theater-overlay {
+    bottom: 0px !important;
+  }
+  
+  .activities-overlay,
+  .information-overlay {
+    bottom: 0px !important;
+  }
+}
+
+/* iOS-specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  /* Prevent elastic scrolling behavior on iOS */
+  html, body {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Fix iOS video issues */
+  video {
+    position: absolute;
+    height: 100% !important;
+    width: 100% !important;
+  }
+}
+
+/* Mobile specific enhancements for icons */
+@media (max-width: 640px) {
+  /* Increase icon visibility and touchability on very small screens */
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    transform: scale(1.15) !important;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4)) 
+            drop-shadow(0 4px 8px rgba(255, 255, 255, 0.1)) !important;
+    -webkit-filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4)) 
+                   drop-shadow(0 4px 8px rgba(255, 255, 255, 0.1)) !important;
+    max-width: 100% !important;
+  }
+  
+  /* Even stronger visual feedback on touch for small screens */
+  .shop-overlay.active-touch img,
+  .theater-overlay.active-touch img,
+  .activities-overlay.active-touch img,
+  .information-overlay.active-touch img {
+    transform: scale(1.25) !important;
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.5)) 
+            drop-shadow(0 0 20px rgba(255, 255, 255, 0.2))
+            brightness(1.2) !important;
+    -webkit-filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.5)) 
+                   drop-shadow(0 0 20px rgba(255, 255, 255, 0.2))
+                   brightness(1.2) !important;
+  }
+  
+  /* Optimize touch target size */
+  .shop-overlay,
+  .theater-overlay,
+  .activities-overlay,
+  .information-overlay {
+    min-width: 80px;
+    min-height: 80px;
+  }
+}
+
+/* Fix for very small mobile devices in portrait mode */
+@media (max-width: 375px) {
+  /* Adjust positioning for extremely small screens */
+  .shop-overlay,
+  .activities-overlay {
+    bottom: 0.5rem !important;
+  }
+  
+  .theater-overlay,
+  .information-overlay {
+    bottom: 12rem !important; /* Increased from 7rem to 12rem (moved up by 5rem) */
+  }
+}
+
+/* Specialized mobile icon layout */
+.mobile-icon {
+  z-index: 60 !important; /* Ensure icons are always clickable */
+}
+
+/* Mobile-specific icon bar layout for small screens */
+@media (max-width: 640px) {
+  /* Create a more app-like mobile navigation */
+  .shop-overlay.mobile-icon,
+  .activities-overlay.mobile-icon {
+    bottom: 1rem !important;
+  }
+  
+  .theater-overlay.mobile-icon,
+  .information-overlay.mobile-icon {
+    bottom: 13rem !important; /* Increased from 8rem to 13rem (moved up by 5rem) */
+  }
+  
+  /* Left and right positioning for a 2x2 grid layout on mobile */
+  .shop-overlay.mobile-icon,
+  .theater-overlay.mobile-icon {
+    left: 5% !important;
+    right: auto !important;
+  }
+  
+  .activities-overlay.mobile-icon,
+  .information-overlay.mobile-icon {
+    right: 5% !important;
+    left: auto !important;
+  }
+  
+  /* Enhanced touch feedback for mobile */
+  .shop-overlay.mobile-icon.active-touch,
+  .theater-overlay.mobile-icon.active-touch,
+  .activities-overlay.mobile-icon.active-touch,
+  .information-overlay.mobile-icon.active-touch {
+    z-index: 70 !important;
+  }
+  
+  /* Even stronger visual effect on actual tap */
+  .shop-overlay.mobile-icon:active img,
+  .theater-overlay.mobile-icon:active img,
+  .activities-overlay.mobile-icon:active img,
+  .information-overlay.mobile-icon:active img {
+    transform: scale(1.3) !important;
+    transition: transform 0.15s ease-out !important;
+  }
+}
+
+/* Landscape orientation adjustments for mobile */
+@media (max-width: 850px) and (orientation: landscape) and (max-height: 500px) {
+  .shop-overlay.mobile-icon,
+  .activities-overlay.mobile-icon {
+    bottom: 0.5rem !important;
+  }
+  
+  .theater-overlay.mobile-icon,
+  .information-overlay.mobile-icon {
+    bottom: 7rem !important; /* Increased from 2rem to 7rem (moved up by 5rem) */
+  }
+  
+  /* Side-by-side layout for landscape */
+  .shop-overlay.mobile-icon {
+    left: 5% !important;
+  }
+  
+  .theater-overlay.mobile-icon {
+    left: 30% !important;
+  }
+  
+  .activities-overlay.mobile-icon {
+    right: 30% !important;
+  }
+  
+  .information-overlay.mobile-icon {
+    right: 5% !important;
+  }
+}
+
+/* Enhanced image rendering for retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    image-rendering: -webkit-optimize-contrast;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
+/* Eliminate flicker on touch devices when tapping */
+.shop-overlay,
+.theater-overlay,
+.activities-overlay,
+.information-overlay {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Support for device notches and safe areas */
+.video-container {
+  padding-left: max(env(safe-area-inset-left), 0px);
+  padding-right: max(env(safe-area-inset-right), 0px);
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  padding-top: max(env(safe-area-inset-top), 0px);
+}
+
+/* Handle orientation changes more smoothly */
+@media screen and (orientation: portrait) {
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  /* Larger touch targets in portrait mode */
+  .shop-overlay,
+  .theater-overlay,
+  .activities-overlay,
+  .information-overlay {
+    min-height: 80px;
+  }
+}
+
+@media screen and (orientation: landscape) {
+  /* Optimize for landscape viewing on mobile */
+  .video-container video {
+    object-position: center 25%; /* Better focus in landscape mode */
+  }
+}
+
+/* Better icon sizing for notched devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .shop-overlay,
+  .theater-overlay,
+  .activities-overlay,
+  .information-overlay {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
