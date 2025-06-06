@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import schoolVideo from "../../../attached_assets/school2.mp4";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Input } from "../components/ui/input";
+import { ThemedPageWrapper, PrimaryButton, OutlineButton, ThemedCard } from "../components/ThemedComponents";
 
 // Mock merchandise data
 const merchandiseItems = [
@@ -147,38 +148,25 @@ export default function Shop() {
         >
           <source src={schoolVideo} type="video/mp4" />
         </video>
-      </div>
-
-      {/* Main content */}
+      </div>      {/* Main content */}
       <div className="relative z-10 min-h-screen">
-        {/* Header with navigation */}
-        <header className="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-30">
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <Button 
-                onClick={handleBackClick}
-                variant="ghost"
-                className="flex items-center space-x-2 text-sky-700 hover:text-orange-500 transition-colors font-semibold"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                <span>Back to Campus</span>
-              </Button>
-              
-              <h1 className="font-['Great_Vibes',_cursive] text-3xl md:text-4xl text-sky-800">
-                Eagles Shop
-              </h1>
-              
-              <div className="w-24"></div> {/* Spacer for centering */}
-            </div>
+        <div className="container mx-auto px-6 py-8">
+          {/* Header with back button */}
+          <div className="flex items-center mb-8">
+            <Button
+              onClick={handleBackClick}
+              variant="ghost"
+              className="text-white/90 hover:text-white p-2 mr-4"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Button>
+            <h1 className="text-3xl font-bold text-white">Eagles Shop</h1>
           </div>
-        </header>
 
-        {/* Shop Content */}
-        <main className="container mx-auto px-6 py-8">
           {/* Filter and Search Section */}
-          <div className="bg-white/90 backdrop-blur-md rounded-xl p-6 mb-8 shadow-lg">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Search Products</label>
@@ -283,7 +271,8 @@ export default function Shop() {
               </div>
             </div>
           )}
-        </main>
+          
+        </div>
       </div>
     </>
   );

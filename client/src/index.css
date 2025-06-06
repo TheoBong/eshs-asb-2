@@ -1,7 +1,10 @@
+
+@import './theme.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Light mode (not used in most pages) */
 :root {
   --background: 0 0% 100%;
   --foreground: 20 14.3% 4.1%;
@@ -13,9 +16,9 @@
   --card-foreground: 20 14.3% 4.1%;
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  --primary: 207 90% 54%;
+  --primary: 207 90% 54%; /* ESHS Blue */
   --primary-foreground: 211 100% 99%;
-  --secondary: 60 4.8% 95.9%;
+  --secondary: 43 89% 62%; /* ESHS Gold */
   --secondary-foreground: 24 9.8% 10%;
   --accent: 60 4.8% 95.9%;
   --accent-foreground: 24 9.8% 10%;

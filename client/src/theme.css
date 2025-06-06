@@ -1,0 +1,175 @@
+/* ESHS ASB Universal Theme
+   This theme will be applied across all pages (except home) 
+   to create a consistent design language */
+
+:root {
+  /* Base colors */
+  --eshs-blue: 207 90% 54%; /* #1e88e5 - School blue */
+  --eshs-gold: 43 89% 62%; /* #f9c74f - School gold */
+  --eshs-dark: 240 10% 3.9%; /* #09090b - Near black */
+  
+  /* Interface colors */
+  --background: var(--eshs-dark);
+  --foreground: 0 0% 98%; /* Near white text */
+  
+  /* Card styling */
+  --card: 240 10% 8%; /* Slightly lighter than background */
+  --card-foreground: 0 0% 98%;
+  --card-border: 240 10% 15%;
+  
+  /* Button styling */
+  --primary: var(--eshs-blue);
+  --primary-foreground: 211 100% 99%;
+  --secondary: var(--eshs-gold);
+  --secondary-foreground: 240 10% 3.9%;
+  
+  /* Accent colors */
+  --accent: 240 5% 12%; /* Subtle highlight */
+  --accent-foreground: 0 0% 98%;
+  --muted: 240 5% 15%;
+  --muted-foreground: 240 5% 64.9%;
+  
+  /* Form controls */
+  --input: 240 5% 15%;
+  --border: 240 5% 20%;
+  --ring: var(--eshs-blue);
+  
+  /* Utility */
+  --radius: 0.5rem;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+}
+
+/* Dark mode is the default for our theme */
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 8%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 5% 20%;
+  --input: 240 5% 15%;
+  --primary: var(--eshs-blue);
+  --primary-foreground: 211 100% 99%;
+  --secondary: var(--eshs-gold);
+  --secondary-foreground: 240 10% 3.9%;
+  --accent: 240 5% 12%;
+  --accent-foreground: 0 0% 98%;
+  --muted: 240 5% 15%;
+  --muted-foreground: 240 5% 64.9%;
+}
+
+/* Button styles override */
+.btn-primary {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.btn-primary:hover {
+  background-color: hsl(var(--primary) / 0.9);
+}
+
+.btn-secondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+.btn-secondary:hover {
+  background-color: hsl(var(--secondary) / 0.9);
+}
+
+.btn-outline {
+  border: 1px solid hsl(var(--border));
+  background-color: transparent;
+  color: hsl(var(--foreground));
+}
+.btn-outline:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+/* Card styles override */
+.card-themed {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-color: hsl(var(--border));
+}
+
+/* Theater theme specific colors */
+.theater-accent {
+  background-color: #b45309; /* amber-700 */
+  color: white;
+}
+
+.theater-action {
+  background-color: #d97706; /* amber-600 */
+  color: white;
+}
+.theater-action:hover {
+  background-color: #b45309; /* amber-700 */
+}
+
+/* Tabs styling for consistent theming */
+.tabs-themed .tabs-list {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.tabs-themed .tabs-trigger {
+  color: hsl(var(--muted-foreground));
+}
+
+.tabs-themed .tabs-trigger[data-state="active"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Input styling for consistency */
+.input-themed {
+  background-color: hsl(var(--input));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.input-themed:focus {
+  border-color: hsl(var(--ring));
+}
+
+.input-themed::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Themed Top Bar for navigation */
+.themed-top-bar {
+  background-color: hsl(var(--card) / 0.85); /* Semi-opaque card background */
+  backdrop-filter: blur(8px); /* Background blur */
+  -webkit-backdrop-filter: blur(8px); /* Safari */
+  padding: 0.75rem 1rem; /* Equivalent to py-3 px-4 */
+  border-bottom: 1px solid hsl(var(--border));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50; /* Ensure it's above other content */
+  border-radius: 0 0 var(--radius) var(--radius); /* Rounded bottom corners */
+}
+
+.themed-top-bar-title {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+  color: hsl(var(--foreground));
+}
+
+.themed-back-button {
+  background-color: transparent;
+  color: hsl(var(--foreground));
+  padding: 0.5rem; /* p-2 */
+  border-radius: var(--radius);
+  margin-right: 0.5rem; /* mr-2 */
+}
+
+.themed-back-button:hover {
+  background-color: hsl(var(--accent));
+}
+
+.themed-top-bar-placeholder {
+  width: 2.5rem; /* Roughly the width of the back button + margin */
+}

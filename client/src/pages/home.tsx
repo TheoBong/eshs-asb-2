@@ -6,9 +6,7 @@ import shopImg from "../../../attached_assets/shop.png";
 import activitiesImg from "../../../attached_assets/activities.png";
 import informationImg from "../../../attached_assets/information.png";
 import theaterImg from "../../../attached_assets/theater.png";
-import { Breakpoint, useBreakpoint, useResponsiveValue, useIconLayout } from "../hooks/use-mobile";
-import { useTouchDetection, useTapState } from "../hooks/use-touch";
-import "./temp-fix.css"; // Import temporary CSS fixes
+import "./temp-fix.css"; // Import temporary CSS fix
 
 // Cloud component for animation
 type CloudSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
@@ -79,15 +77,13 @@ const Cloud = ({
   position, 
   size = "md" as CloudSize,
   opacity = 0.8,
-  direction = "center" as "left" | "right" | "center",
-  isNavigating = false
+  direction = "center" as "left" | "right" | "center"
 }: { 
   delay?: number; 
   position: CloudPosition; 
   size?: CloudSize;
   opacity?: number;
   direction?: "left" | "right" | "center";
-  isNavigating?: boolean;
 }) => {
   const sizeClasses = {
     sm: "w-64 h-24",
@@ -99,11 +95,6 @@ const Cloud = ({
   
   // Generate movement vectors for curtain-like animation
   const getDirectionalMovement = () => {
-    if (isNavigating) {
-      // For navigation, clouds should come in and stay visible
-      return { x: [0], y: [0] }; // No movement, just stay in place
-    }
-    
     if (direction === "left") {
       return { x: [-50, -250, -600] }; // Even more dramatic movement for quicker exit
     } else if (direction === "right") {
@@ -131,13 +122,10 @@ const Cloud = ({
         border: "1.5px solid rgba(255, 255, 255, 0.6)", // Slightly thicker and more visible border
         pointerEvents: "none" // Ensure clouds don't block click events
       }}
-      initial={{ 
-        opacity: isNavigating ? 0 : opacity,
-        scale: isNavigating ? 0.8 : 1
-      }}
+      initial={{ opacity: opacity }}
       animate={{ 
-        opacity: isNavigating ? opacity * 0.95 : [opacity * 0.9, opacity * 0.9, opacity * 0.9, opacity * 0.85, opacity * 0.7, opacity * 0.5, opacity * 0.25, 0], 
-        scale: isNavigating ? 1.1 : [1, 1.005, 1.01, 1.015, 1.02, 1.04, 1.08, 1.12],
+        opacity: [opacity * 0.9, opacity * 0.9, opacity * 0.9, opacity * 0.85, opacity * 0.7, opacity * 0.5, opacity * 0.25, 0], 
+        scale: [1, 1.005, 1.01, 1.015, 1.02, 1.04, 1.08, 1.12],
         ...movement
       }}
       onAnimationComplete={() => {
@@ -145,10 +133,10 @@ const Cloud = ({
         return undefined;
       }}
       transition={{
-        delay: delay + (isNavigating ? 0 : 0.05), // Immediate for navigation
-        duration: isNavigating ? 0.15 : 2.5, // Even faster animation for navigation for smoother transition
-        times: isNavigating ? [0, 1] : [0, 0.5, 0.75, 0.8, 0.85, 0.9, 0.95, 1], // Stay at full opacity for 75% of the animation time, then quick fade out
-        ease: isNavigating ? "easeInOut" : "easeOut",
+        delay: delay + 0.05, // Almost no delay to make animation start immediately
+        duration: 2.5, // Even longer duration to make clouds stay visible longer
+        times: [0, 0.5, 0.75, 0.8, 0.85, 0.9, 0.95, 1], // Stay at full opacity for 75% of the animation time, then quick fade out
+        ease: "easeOut",
       }}
     />
   );
@@ -157,13 +145,9 @@ const Cloud = ({
 export default function Home() {
   const [, setLocation] = useLocation();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [cloudsReady, setCloudsReady] = useState(false);
-  
-  // Reset navigation state when component mounts (for back navigation)
-  useEffect(() => {
-    setIsNavigating(false);
-  }, []);
   
   // Set up initial background hiding and animation sequence
   useEffect(() => {
@@ -192,24 +176,42 @@ export default function Home() {
   }, []);
 
   const handleShopClick = () => {
-    // Instant navigation with no animation
-    setLocation("/shop");
-  };
-
-  // Placeholder handlers for the other icons
+    setIsNavigating(true);
+    setShowLoading(true);
+    
+    // Wait for swoop animation to complete
+    setTimeout(() => {
+      setLocation("/shop");
+    }, 800);
+  };  // Handlers for the other icons
   const handleTheaterClick = () => {
-    // Implement when theater page is ready
-    alert("Theater page coming soon!");
+    setIsNavigating(true);
+    setShowLoading(true);
+    
+    // Navigate to birds eye view page (now under theater)
+    setTimeout(() => {
+      setLocation("/birds-eye-view");
+    }, 800);
   };
 
   const handleActivitiesClick = () => {
-    // Implement when activities page is ready
-    alert("Activities page coming soon!");
+    setIsNavigating(true);
+    setShowLoading(true);
+    
+    // Navigate to activities page
+    setTimeout(() => {
+      setLocation("/activities");
+    }, 800);
   };
 
   const handleInformationClick = () => {
-    // Implement when information page is ready
-    alert("Information page coming soon!");
+    setIsNavigating(true);
+    setShowLoading(true);
+    
+    // Navigate to information page
+    setTimeout(() => {
+      setLocation("/information");
+    }, 800);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent, handler: () => void) => {
@@ -218,9 +220,6 @@ export default function Home() {
       handler();
     }
   };
-  
-  // Use our responsive hooks to determine layout
-  const isDesktop = !useBreakpoint(Breakpoint.LG);
 
   return (
     <>
@@ -470,44 +469,6 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Navigation Cloud Cover Effect */}
-      <AnimatePresence>
-        {isNavigating && (
-          <motion.div 
-            className="fixed inset-0 bg-white z-50 flex items-center justify-center overflow-hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.08 }}
-          >
-            {/* Full coverage clouds that come in from all sides */}
-            <Cloud delay={0} position={{ top: '-20%', left: '-20%' }} size="xxl" opacity={0.95} isNavigating={true} />
-            <Cloud delay={0.02} position={{ top: '-20%', right: '-20%' }} size="xxl" opacity={0.95} isNavigating={true} />
-            <Cloud delay={0.01} position={{ top: '20%', left: '-15%' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0.03} position={{ top: '20%', right: '-15%' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0.015} position={{ bottom: '-20%', left: '-20%' }} size="xxl" opacity={0.95} isNavigating={true} />
-            <Cloud delay={0.035} position={{ bottom: '-20%', right: '-20%' }} size="xxl" opacity={0.95} isNavigating={true} />
-            <Cloud delay={0.01} position={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} size="xxl" opacity={0.95} isNavigating={true} />
-            
-            {/* Additional coverage clouds */}
-            <Cloud delay={0} position={{ top: '0%', left: '25%' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0.02} position={{ top: '0%', right: '25%' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0.01} position={{ bottom: '0%', left: '25%' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0.03} position={{ bottom: '0%', right: '25%' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0.015} position={{ top: '25%', left: '0%' }} size="lg" opacity={0.85} isNavigating={true} />
-            <Cloud delay={0.035} position={{ top: '25%', right: '0%' }} size="lg" opacity={0.85} isNavigating={true} />
-            <Cloud delay={0.02} position={{ bottom: '25%', left: '0%' }} size="lg" opacity={0.85} isNavigating={true} />
-            <Cloud delay={0.04} position={{ bottom: '25%', right: '0%' }} size="lg" opacity={0.85} isNavigating={true} />
-            
-            {/* Center coverage for complete white screen */}
-            <Cloud delay={0} position={{ top: '10%', left: '30%' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0.01} position={{ top: '30%', left: '50%', transform: 'translateX(-50%)' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0.02} position={{ top: '50%', left: '70%' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0} position={{ bottom: '30%', left: '20%' }} size="xl" opacity={0.9} isNavigating={true} />
-            <Cloud delay={0.01} position={{ bottom: '10%', left: '60%' }} size="xl" opacity={0.9} isNavigating={true} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div 
         className="min-h-screen w-screen relative flex items-center justify-center transition-all duration-1000 ease-out overflow-hidden"
         style={{
@@ -518,15 +479,12 @@ export default function Home() {
         }}
       >
         {/* Video background container that fills the whole screen with vignette effect */}
-        <div className="absolute inset-0 bg-black overflow-hidden video-container">
+        <div className="absolute inset-0 bg-black overflow-hidden">
           <video
             autoPlay
             loop
             muted
             playsInline
-            controls={false}
-            disablePictureInPicture
-            disableRemotePlayback
             className="absolute w-full h-full object-cover"
             style={{
               objectFit: 'cover',
@@ -538,23 +496,10 @@ export default function Home() {
               left: '50%',
               top: '50%',
               transform: 'translate(-50%, -50%)',
-              // Add webkit-specific settings for iOS/macOS Safari
-              WebkitUserSelect: 'none',
-              WebkitAppearance: 'none',
-              WebkitTapHighlightColor: 'transparent',
-              pointerEvents: 'none',
             }}
-            preload="auto"
-            x-webkit-airplay="deny"
           >
             <source src={schoolVideo} type="video/mp4" />
           </video>
-          
-          {/* iOS/Safari-specific invisible overlay to prevent video controls */}
-          <div 
-            className="absolute inset-0 z-10 bg-transparent pointer-events-none"
-            aria-hidden="true"
-          ></div>
           
           {/* Main vignette effect overlay - darker in the corners, smoother transition */}
           <div className="absolute inset-0" style={{
@@ -622,214 +567,134 @@ export default function Home() {
             pointerEvents: 'none',
           }}></div>
 
-          {/* Interactive elements layout - Enhanced for better spacing across devices */}
-          <div className="absolute bottom-0 w-full h-4/5 flex items-end justify-center z-50"
-            style={{
-              paddingBottom: useResponsiveValue({
-                base: '2.5rem', 
-                sm: '1.5rem',
-                md: '2rem',
-                lg: '2.5rem',
-                xl: '3rem'
-              }),
-              // Extra space to ensure icon visibility
-              minHeight: useIconLayout().isPortraitMode ? "400px" : "300px"
-            }}>
-            <div className="relative w-full max-w-[100rem] flex flex-row justify-between"
-              style={{
-                paddingLeft: useResponsiveValue({
-                  base: '2rem',
-                  sm: '1rem',
-                  md: '1.5rem',
-                  lg: '2rem',
-                  xl: '2.5rem'
-                }),
-                paddingRight: useResponsiveValue({
-                  base: '2rem',
-                  sm: '1rem',
-                  md: '1.5rem',
-                  lg: '2rem',
-                  xl: '2.5rem'
-                })
-              }}>
+          {/* Interactive elements layout */}
+          <div className="absolute bottom-0 w-full h-4/5 flex items-end justify-center pb-4 md:pb-6 lg:pb-8 z-50">
+            <div className="relative w-full max-w-[100rem] flex flex-row justify-between px-4 md:px-8 lg:px-0">
               
               {/* LEFT SIDE ELEMENTS - using absolute positioning for more control */}
               <div className="relative h-full w-1/2">
                 {/* Shop Element - Bottom element positioned lower and further out */}
-                <ShopOverlay onClick={handleShopClick} />
-                
+                <div 
+                  className="shop-overlay animate-float cursor-pointer transition-all duration-300 ease-out
+                             hover:transform hover:-translate-y-3 hover:scale-105 hover:drop-shadow-2xl group"
+                  style={{ 
+                    filter: 'drop-shadow(0 5px 10px rgba(0, 0, 0, 0.15))',
+                    animationDelay: '0.1s',
+                    position: 'absolute',
+                    bottom: '0',
+                    left: '12rem',
+                  }}
+                  onClick={handleShopClick}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => handleKeyPress(e, handleShopClick)}
+                  aria-label="Visit the school merchandise shop"
+                >
+                  <img 
+                    src={shopImg}
+                    alt="School Merchandise Shop" 
+                    className="w-48 md:w-56 lg:w-64 h-auto relative"
+                    style={{ filter: 'drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35))' }}
+                  />
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-amber-100/50 rounded-full blur-md
+                                  transition-all duration-300 group-hover:bg-amber-200/60 group-hover:w-48 group-hover:h-12"></div>
+                </div>
                 
                 {/* Theater Element - Positioned slightly above shop, closer to center */}
-                <TheaterOverlay onClick={handleTheaterClick} />
+                <div 
+                  className="theater-overlay animate-float cursor-pointer transition-all duration-300 ease-out 
+                             hover:transform hover:-translate-y-3 hover:scale-105 hover:drop-shadow-2xl group"
+                  style={{ 
+                    filter: 'drop-shadow(0 5px 10px rgba(0, 0, 0, 0.15))',
+                    animationDelay: '0.2s',
+                    position: 'absolute',
+                    bottom: '7rem',
+                    left: '25rem',
+                  }}
+                  onClick={handleTheaterClick}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => handleKeyPress(e, handleTheaterClick)}
+                  aria-label="Visit the school theater page"
+                >
+                  <img 
+                    src={theaterImg}
+                    alt="School Theater" 
+                    className="w-48 md:w-52 lg:w-60 h-auto relative"
+                    style={{ filter: 'drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35))' }}
+                  />
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-amber-100/50 rounded-full blur-md
+                                  transition-all duration-300 group-hover:bg-amber-200/60 group-hover:w-48 group-hover:h-12"></div>
+                </div>
               </div>
               
               {/* RIGHT SIDE ELEMENTS - using absolute positioning for more control */}
               <div className="relative h-full w-1/2">
                 {/* Activities Element - Bottom element positioned lower and further out */}
-                <ActivitiesOverlay onClick={handleActivitiesClick} />
+                <div 
+                  className="activities-overlay animate-float cursor-pointer transition-all duration-300 ease-out
+                             hover:transform hover:-translate-y-3 hover:scale-105 hover:drop-shadow-2xl group"
+                  style={{ 
+                    filter: 'drop-shadow(0 5px 10px rgba(0, 0, 0, 0.15))',
+                    animationDelay: '0.3s',
+                    position: 'absolute',
+                    bottom: '0',
+                    right: '12rem',
+                  }}
+                  onClick={handleActivitiesClick}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => handleKeyPress(e, handleActivitiesClick)}
+                  aria-label="Visit the school activities page"
+                >
+                  <img 
+                    src={activitiesImg}
+                    alt="School Activities" 
+                    className="w-48 md:w-56 lg:w-64 h-auto relative"
+                    style={{ filter: 'drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35))' }}
+                  />
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-amber-100/50 rounded-full blur-md
+                                  transition-all duration-300 group-hover:bg-amber-200/60 group-hover:w-48 group-hover:h-12"></div>
+                </div>
                 
                 {/* Information Element - Positioned slightly above activities, closer to center */}
-                <InformationOverlay onClick={handleInformationClick} />
+                <div 
+                  className="information-overlay animate-float cursor-pointer transition-all duration-300 ease-out
+                             hover:transform hover:-translate-y-3 hover:scale-105 hover:drop-shadow-2xl group"
+                  style={{ 
+                    filter: 'drop-shadow(0 5px 10px rgba(0, 0, 0, 0.15))',
+                    animationDelay: '0.4s',
+                    position: 'absolute',
+                    bottom: '7rem',
+                    right: '25rem',
+                  }}
+                  onClick={handleInformationClick}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => handleKeyPress(e, handleInformationClick)}
+                  aria-label="Visit the school information page"
+                >
+                  <img 
+                    src={informationImg}
+                    alt="School Information" 
+                    className="w-48 md:w-52 lg:w-60 h-auto relative"
+                    style={{ filter: 'drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35))' }}
+                  />
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-amber-100/50 rounded-full blur-md
+                                  transition-all duration-300 group-hover:bg-amber-200/60 group-hover:w-48 group-hover:h-12"></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
-      {/* Font Awesome CDN */}
-      <link 
-        rel="stylesheet" 
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-      />
+        {/* Loading Overlay */}
+      {showLoading && (
+        <div className="fixed inset-0 bg-white/90 backdrop-blur-sm z-60 flex items-center justify-center">
+          <div className="text-center">            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading page...</p>
+          </div>
+        </div>)}
     </>
   );
 }
-
-// Interactive Overlay Components with touch support
-const ShopOverlay = ({ onClick }: { onClick: () => void }) => {
-  const { touchProps, touchState } = useTouchDetection();
-  const isTouchActive = touchState.isTouched;
-  const iconLayout = useIconLayout();
-  
-  return (
-    <div 
-      className={`shop-overlay animate-float cursor-pointer transition-all duration-300 ease-out
-                group ${isTouchActive ? 'active-touch' : ''} ${iconLayout.isMobileLayout ? 'mobile-icon' : ''} ${iconLayout.isPortraitMode ? 'portrait-mode' : 'landscape-mode'}`}
-      style={{ 
-        position: 'absolute',
-        bottom: iconLayout.shopBottom,
-        left: iconLayout.shopLeft,
-        animationDelay: '0.1s',
-        transform: isTouchActive ? 'translateY(-8px) scale(1.05)' : 'translateY(0) scale(1)',
-        zIndex: iconLayout.isMobileLayout ? 5 : 'auto', // Ensure proper stacking in mobile layout
-      }}
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onClick()}
-      aria-label="Visit the school merchandise shop"
-      {...touchProps}
-    >
-      <img 
-        src={shopImg}
-        alt="School Merchandise Shop" 
-        className="w-44 sm:w-48 md:w-52 lg:w-56 xl:w-64 2xl:w-64 h-auto relative"
-      />
-      <div 
-        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-transparent rounded-full blur-md
-                  transition-all duration-300 group-hover:w-48 group-hover:h-12"
-      ></div>
-    </div>
-  );
-};
-
-const TheaterOverlay = ({ onClick }: { onClick: () => void }) => {
-  const { touchProps, touchState } = useTouchDetection();
-  const isTouchActive = touchState.isTouched;
-  const iconLayout = useIconLayout();
-  
-  return (
-    <div 
-      className={`theater-overlay animate-float cursor-pointer transition-all duration-300 ease-out 
-                group ${isTouchActive ? 'active-touch' : ''} ${iconLayout.isMobileLayout ? 'mobile-icon' : ''} ${iconLayout.isPortraitMode ? 'portrait-mode' : 'landscape-mode'}`}
-      style={{ 
-        position: 'absolute',
-        bottom: iconLayout.theaterBottom,
-        left: iconLayout.theaterLeft,
-        animationDelay: '0.2s',
-        transform: isTouchActive ? 'translateY(-8px) scale(1.05)' : 'translateY(0) scale(1)',
-        zIndex: iconLayout.isMobileLayout ? 6 : 'auto', // Ensure proper stacking in mobile layout
-      }}
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onClick()}
-      aria-label="Visit the school theater page"
-      {...touchProps}
-    >
-      <img 
-        src={theaterImg}
-        alt="School Theater" 
-        className="w-44 sm:w-46 md:w-48 lg:w-52 xl:w-60 2xl:w-60 h-auto relative"
-      />
-      <div 
-        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-transparent rounded-full blur-md
-                  transition-all duration-300 group-hover:w-48 group-hover:h-12"
-      ></div>
-    </div>
-  );
-};
-
-const ActivitiesOverlay = ({ onClick }: { onClick: () => void }) => {
-  const { touchProps, touchState } = useTouchDetection();
-  const isTouchActive = touchState.isTouched;
-  const iconLayout = useIconLayout();
-  
-  return (
-    <div 
-      className={`activities-overlay animate-float cursor-pointer transition-all duration-300 ease-out
-                group ${isTouchActive ? 'active-touch' : ''} ${iconLayout.isMobileLayout ? 'mobile-icon' : ''} ${iconLayout.isPortraitMode ? 'portrait-mode' : 'landscape-mode'}`}
-      style={{ 
-        position: 'absolute',
-        bottom: iconLayout.activitiesBottom,
-        right: iconLayout.activitiesRight,
-        animationDelay: '0.3s',
-        transform: isTouchActive ? 'translateY(-8px) scale(1.05)' : 'translateY(0) scale(1)',
-        zIndex: iconLayout.isMobileLayout ? 5 : 'auto', // Ensure proper stacking in mobile layout
-      }}
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onClick()}
-      aria-label="Visit the school activities page"
-      {...touchProps}
-    >
-      <img 
-        src={activitiesImg}
-        alt="School Activities" 
-        className="w-44 sm:w-48 md:w-52 lg:w-56 xl:w-64 2xl:w-64 h-auto relative"
-      />
-      <div 
-        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-transparent rounded-full blur-md
-                  transition-all duration-300 group-hover:w-48 group-hover:h-12"
-      ></div>
-    </div>
-  );
-};
-
-const InformationOverlay = ({ onClick }: { onClick: () => void }) => {
-  const { touchProps, touchState } = useTouchDetection();
-  const isTouchActive = touchState.isTouched;
-  const iconLayout = useIconLayout();
-  
-  return (
-    <div 
-      className={`information-overlay animate-float cursor-pointer transition-all duration-300 ease-out
-                group ${isTouchActive ? 'active-touch' : ''} ${iconLayout.isMobileLayout ? 'mobile-icon' : ''} ${iconLayout.isPortraitMode ? 'portrait-mode' : 'landscape-mode'}`}
-      style={{ 
-        position: 'absolute',
-        bottom: iconLayout.informationBottom,
-        right: iconLayout.informationRight,
-        animationDelay: '0.4s',
-        transform: isTouchActive ? 'translateY(-8px) scale(1.05)' : 'translateY(0) scale(1)',
-        zIndex: iconLayout.isMobileLayout ? 6 : 'auto', // Ensure proper stacking in mobile layout
-      }}
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onClick()}
-      aria-label="Visit the school information page"
-      {...touchProps}
-    >
-      <img 
-        src={informationImg}
-        alt="School Information" 
-        className="w-44 sm:w-46 md:w-48 lg:w-52 xl:w-60 2xl:w-60 h-auto relative"
-      />
-      <div 
-        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-transparent rounded-full blur-md
-                  transition-all duration-300 group-hover:w-48 group-hover:h-12"
-      ></div>
-    </div>
-  );
-};
