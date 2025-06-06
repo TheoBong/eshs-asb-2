@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton, ThemedTabs } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
 
 // Types for senior events data
@@ -245,9 +246,8 @@ export default function Seniors() {
     if (activeTab === "all") return true;
     return event.category === activeTab;
   });
-
   return (
-    <>
+    <ThemedPageWrapper pageType="information">
       {/* Background Video */}
       <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
         <video 
@@ -264,18 +264,15 @@ export default function Seniors() {
       {/* Overlay to darken the background video */}
       <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>      {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">
-        <div className="container mx-auto px-4">
-          {/* Header with back button */}
+        <div className="container mx-auto px-4">          {/* Header with back button */}
           <div className="flex items-center mb-8">
-            <Button
+            <SecondaryButton
               onClick={handleBackClick}
-              variant="ghost"
               className="text-white/90 hover:text-white p-2 mr-4"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            >              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </Button>
+            </SecondaryButton>
             <h1 className="text-3xl font-bold text-white">Senior Information</h1>
           </div>
 
@@ -359,10 +356,10 @@ export default function Seniors() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
                       <h3 className="font-semibold text-gray-900">{milestone.title}</h3>
-                      <p className="text-sm text-gray-600">{milestone.description}</p>
+                      <p className="text-sm text-gray-300">{milestone.description}</p>
                     </div>
                     <div className="mt-2 sm:mt-0 sm:ml-4">
-                      <Badge variant={milestone.completed ? "success" : "outline"} className={milestone.completed ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100" : ""}>
+                      <Badge variant={milestone.completed ? "default" : "outline"} className={milestone.completed ? "bg-emerald-500 text-white hover:bg-emerald-600" : ""}>
                         {milestone.date}
                       </Badge>
                     </div>
@@ -382,7 +379,7 @@ export default function Seniors() {
           <h2 className="text-2xl font-bold text-white mb-6">Senior Events</h2>
           
           {/* Event categories tabs */}
-          <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
+          <ThemedTabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
             <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg grid grid-cols-5 w-full max-w-3xl mx-auto">
               <TabsTrigger value="all">All Events</TabsTrigger>
               <TabsTrigger value="graduation">Graduation</TabsTrigger>
@@ -390,10 +387,10 @@ export default function Seniors() {
               <TabsTrigger value="academic">Academic</TabsTrigger>
               <TabsTrigger value="preparation">Preparation</TabsTrigger>
             </TabsList>
-          </Tabs>
+          </ThemedTabs>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">            {filteredEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-shadow card-themed backdrop-blur-md">
+              <ThemedCard key={event.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 {event.image && (
                   <div className="h-48 overflow-hidden">
                     <img 
@@ -460,28 +457,25 @@ export default function Seniors() {
                     <Button variant="outline" className="w-full">
                       View Details
                     </Button>
-                  )}
-                </CardFooter>
-              </Card>
+                  )}                </CardFooter>
+              </ThemedCard>
             ))}
           </div>
 
           {/* Additional Resources */}          <h2 className="text-2xl font-bold text-white mb-6">Senior Resources</h2>
-          <div className="card-themed backdrop-blur-md rounded-xl shadow-lg p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <Card className="bg-emerald-50 border-emerald-200">
-                <CardContent className="p-4">
+          <div className="card-themed backdrop-blur-md rounded-xl shadow-lg p-6">            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <ThemedCard className="">
+                <CardContent className="p-4 text-white">
                   <div className="flex items-center mb-2">
-                    <svg className="h-5 w-5 mr-2 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5 mr-2 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <h3 className="font-semibold">Senior Handbook</h3>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">Complete guide to senior year requirements and events</p>
-                  <Button variant="link" className="p-0 h-auto text-emerald-700">Download PDF</Button>
+                  <p className="text-sm text-gray-300 mb-2">Complete guide to senior year requirements and events</p>                  <Button variant="link" className="p-0 h-auto text-emerald-400">Download PDF</Button>
                 </CardContent>
-              </Card>
-              <Card className="bg-emerald-50 border-emerald-200">
+              </ThemedCard>
+              <ThemedCard className="">
                 <CardContent className="p-4">
                   <div className="flex items-center mb-2">
                     <svg className="h-5 w-5 mr-2 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -489,11 +483,11 @@ export default function Seniors() {
                     </svg>
                     <h3 className="font-semibold">Counseling Support</h3>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">College application and career resources</p>
+                  <p className="text-sm text-gray-300 mb-2">College application and career resources</p>
                   <Button variant="link" className="p-0 h-auto text-emerald-700">Contact Counselors</Button>
                 </CardContent>
-              </Card>
-              <Card className="bg-emerald-50 border-emerald-200">
+              </ThemedCard>
+              <ThemedCard className="">
                 <CardContent className="p-4">
                   <div className="flex items-center mb-2">
                     <svg className="h-5 w-5 mr-2 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -501,11 +495,11 @@ export default function Seniors() {
                     </svg>
                     <h3 className="font-semibold">Graduation Information</h3>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">Everything you need to know about graduation day</p>
+                  <p className="text-sm text-gray-300 mb-2">Everything you need to know about graduation day</p>
                   <Button variant="link" className="p-0 h-auto text-emerald-700">Learn More</Button>
                 </CardContent>
-              </Card>
-              <Card className="bg-emerald-50 border-emerald-200">
+              </ThemedCard>
+              <ThemedCard className="">
                 <CardContent className="p-4">
                   <div className="flex items-center mb-2">
                     <svg className="h-5 w-5 mr-2 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -513,11 +507,11 @@ export default function Seniors() {
                     </svg>
                     <h3 className="font-semibold">Senior Photos</h3>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">Information about senior portraits and yearbook photos</p>
+                  <p className="text-sm text-gray-300 mb-2">Information about senior portraits and yearbook photos</p>
                   <Button variant="link" className="p-0 h-auto text-emerald-700">Schedule Now</Button>
                 </CardContent>
-              </Card>
-              <Card className="bg-emerald-50 border-emerald-200">
+              </ThemedCard>
+              <ThemedCard className="">
                 <CardContent className="p-4">
                   <div className="flex items-center mb-2">
                     <svg className="h-5 w-5 mr-2 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -525,11 +519,11 @@ export default function Seniors() {
                     </svg>
                     <h3 className="font-semibold">Senior Fees</h3>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">Information about required senior fees and payment options</p>
+                  <p className="text-sm text-gray-300 mb-2">Information about required senior fees and payment options</p>
                   <Button variant="link" className="p-0 h-auto text-emerald-700">Pay Fees Online</Button>
                 </CardContent>
-              </Card>
-              <Card className="bg-emerald-50 border-emerald-200">
+              </ThemedCard>
+              <ThemedCard className="">
                 <CardContent className="p-4">
                   <div className="flex items-center mb-2">
                     <svg className="h-5 w-5 mr-2 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -537,10 +531,10 @@ export default function Seniors() {
                     </svg>
                     <h3 className="font-semibold">Senior Trip</h3>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">Information about the senior class trip and payment deadlines</p>
+                  <p className="text-sm text-gray-300 mb-2">Information about the senior class trip and payment deadlines</p>
                   <Button variant="link" className="p-0 h-auto text-emerald-700">Register for Trip</Button>
                 </CardContent>
-              </Card>
+              </ThemedCard>
             </div>
           </div>
         </div>
@@ -592,8 +586,7 @@ export default function Seniors() {
               <Textarea id="special-requests" placeholder="Any special requests or accommodations you may need" />
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </>
+        </DialogContent>      </Dialog>
+    </ThemedPageWrapper>
   );
 }

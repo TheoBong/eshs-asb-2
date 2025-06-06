@@ -146,47 +146,92 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const [isNavigating, setIsNavigating] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
-  const [cloudsReady, setCloudsReady] = useState(false);
-  
-  // Set up initial background hiding and animation sequence
-  useEffect(() => {
-    // Keep content hidden at the start
-    // The clouds will naturally dissipate during the animation sequence
-    const timer = setTimeout(() => {
-      setCloudsReady(true);
-    }, 100); // Reduced to 0.1 seconds as requested
+  // More reliable internal navigation detection
+  const isInternalNavigation = () => {
+    // Check if we have an internal navigation flag in sessionStorage
+    const internalNav = sessionStorage.getItem('internal-navigation');
     
-    return () => clearTimeout(timer);
-  }, []);
+    // Also check document.referrer as backup
+    let hasInternalReferrer = false;
+    if (document.referrer) {
+      try {
+        const referrerUrl = new URL(document.referrer);
+        const currentUrl = new URL(window.location.href);
+        hasInternalReferrer = referrerUrl.origin === currentUrl.origin;
+      } catch (e) {
+        hasInternalReferrer = false;
+      }
+    }
+    
+    // Clear the flag after checking
+    sessionStorage.removeItem('internal-navigation');
+    
+    // Debug logging
+    console.log('Internal navigation check:', {
+      sessionStorageFlag: internalNav,
+      hasInternalReferrer,
+      referrer: document.referrer,
+      result: internalNav === 'true' || hasInternalReferrer
+    });
+    
+    // Return true if either method indicates internal navigation
+    return internalNav === 'true' || hasInternalReferrer;
+  };
+    // Separate state for clouds and text animations
+  const [showClouds, setShowClouds] = useState(!isInternalNavigation()); // Clouds only for external navigation
+  const [showTextAnimation, setShowTextAnimation] = useState(true); // Text animation always shows
+  const [cloudsReady, setCloudsReady] = useState(!showClouds); // If not showing clouds, they're "ready" immediately
 
-  // Generate small cloud particles for the animation - with minimal delay
-  const cloudParticles = Array.from({ length: 20 }, (_, i) => ({
+  // Debug logging
+  console.log('Animation states:', {
+    showClouds,
+    showTextAnimation,
+    cloudsReady,
+    isInternal: !showClouds
+  });// Set up initial background hiding and animation sequence
+  useEffect(() => {
+    // Only run cloud animation setup if showing clouds
+    if (showClouds) {
+      // Keep content hidden at the start
+      // The clouds will naturally dissipate during the animation sequence
+      const timer = setTimeout(() => {
+        setCloudsReady(true);
+      }, 100); // Reduced to 0.1 seconds as requested
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showClouds]);
+  // Generate small cloud particles for the animation - with minimal delay (only if showing clouds)
+  const cloudParticles = showClouds ? Array.from({ length: 20 }, (_, i) => ({
     id: i,
     delay: Math.random() * 1.0, // Less random delay to better align with the longer cloud display time
     top: `${Math.random() * 100}%`,
     left: `${Math.random() * 100}%`,
     size: Math.random() < 0.5 ? "sm" : "md",
     opacity: 0.25 + Math.random() * 0.35, // Reduced opacity for less brightness
-  }));
+  })) : [];
 
   // Animation stays on screen indefinitely
   useEffect(() => {
     // No timeout to remove the animation - text will stay indefinitely as requested
-  }, []);
-
-  const handleShopClick = () => {
+  }, []);  const handleShopClick = () => {
     setIsNavigating(true);
     setShowLoading(true);
+    setShowTextAnimation(false); // Hide text animation on navigation
+    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
     
     // Wait for swoop animation to complete
     setTimeout(() => {
       setLocation("/shop");
     }, 800);
-  };  // Handlers for the other icons
+  };
+
+  // Handlers for the other icons
   const handleTheaterClick = () => {
     setIsNavigating(true);
     setShowLoading(true);
+    setShowTextAnimation(false); // Hide text animation on navigation
+    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
     
     // Navigate to birds eye view page (now under theater)
     setTimeout(() => {
@@ -197,6 +242,8 @@ export default function Home() {
   const handleActivitiesClick = () => {
     setIsNavigating(true);
     setShowLoading(true);
+    setShowTextAnimation(false); // Hide text animation on navigation
+    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
     
     // Navigate to activities page
     setTimeout(() => {
@@ -207,6 +254,8 @@ export default function Home() {
   const handleInformationClick = () => {
     setIsNavigating(true);
     setShowLoading(true);
+    setShowTextAnimation(false); // Hide text animation on navigation
+    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
     
     // Navigate to information page
     setTimeout(() => {
@@ -220,31 +269,29 @@ export default function Home() {
       handler();
     }
   };
-
   return (
-    <>
-      {/* Initial white overlay that ensures nothing shows before clouds are ready */}
-      <div 
-        className={`fixed inset-0 bg-white z-[60] transition-opacity duration-1000`}
-        style={{ 
-          opacity: cloudsReady ? 0 : 1,
-          pointerEvents: cloudsReady ? 'none' : 'auto'
-        }}
-      ></div>
-
-      {/* Cloud and Text Animation Overlay */}
+    <>      {/* Initial white overlay that ensures nothing shows before clouds are ready - only for cloud animation */}
+      {showClouds && (
+        <div 
+          className={`fixed inset-0 bg-white z-[60] transition-opacity duration-1000`}
+          style={{ 
+            opacity: cloudsReady ? 0 : 1,
+            pointerEvents: cloudsReady ? 'none' : 'auto'
+          }}
+        ></div>
+      )}      {/* Cloud Animation Overlay - only when showing clouds */}
       <AnimatePresence>
-        {showIntro && (
+        {showClouds && (
           <motion.div 
             className="fixed inset-0 bg-gradient-to-br from-sky-700/50 via-gray-800/40 to-blue-900/50 z-40 flex items-center justify-center overflow-hidden"
             style={{
+              background: 'linear-gradient(135deg, #87CEEB 0%, #E0F6FF 20%, #F0F8FF 40%, #FFFFFF 60%, #F0F8FF 80%, #87CEEB 100%)',
               backgroundColor: "transparent", // Allow background to show through after clouds dissipate
               pointerEvents: "none" // Ensure underlying elements are clickable through this layer
             }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            // No exit animation - will stay indefinitely
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ exit: { duration: 1 } }}
           >
             {/* Full-screen cloud cover - First layer (back) - reduced delays and brightness */}
             <Cloud delay={0} position={{ top: '-15%', left: '-15%' }} size="xl" opacity={0.85} />
@@ -453,6 +500,166 @@ export default function Home() {
                             animate={{ opacity: 1 }}
                             transition={{ 
                               delay: 5.7, // Further adjusted to appear immediately after the stroke animation completes
+                              duration: 0.3,
+                            }}
+                          >
+                            ASB
+                          </motion.text>
+                        </svg>
+                      </motion.div>
+                    </div>
+                  </motion.h1>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          </motion.div>        )}
+      </AnimatePresence>
+
+      {/* Standalone Text Animation - Always shows regardless of internal navigation */}
+      <AnimatePresence>
+        {showTextAnimation && (
+          <motion.div 
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Text Animation - Cursive white text with drawing effect */}
+            <motion.div
+              className="relative z-10 mb-32" /* Moved text higher by adding margin-bottom */
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: showClouds ? 1.0 : 0.2, duration: 0.8 }} /* Faster delay for internal navigation */
+            >
+              {/* El Segundo High School text with handwriting animation */}
+              <motion.div 
+                className="flex flex-col items-center justify-center"
+                initial={{ filter: "blur(2px)" }}
+                animate={{ filter: "blur(0px)" }}
+                transition={{ delay: showClouds ? 1.0 : 0.2, duration: 0.8 }}
+              >
+                {/* First line - El Segundo High School */}
+                <motion.h1
+                  className="font-['Great_Vibes',_cursive] text-6xl md:text-7xl lg:text-8xl text-center text-white tracking-wide"
+                  style={{ 
+                    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5))',
+                    WebkitTextStroke: '0.5px rgba(0, 0, 0, 0.3)'
+                  }}
+                >
+                  <div className="relative">
+                    {/* Invisible text to maintain layout */}
+                    <span className="invisible whitespace-nowrap">El Segundo High School</span>
+                    
+                    {/* SVG Text Drawing Animation */}
+                    <motion.div 
+                      className="absolute inset-0 flex items-center justify-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: showClouds ? 1.3 : 0.5, duration: 0.3 }}
+                    >
+                      <svg width="100%" height="100%" viewBox="0 0 700 120" className="absolute inset-0">
+                        <motion.text
+                          x="50%"
+                          y="50%"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="1.5"
+                          fontFamily="'Great Vibes', cursive"
+                          fontSize="58"
+                          className="text-shadow-sm"
+                          initial={{ strokeDasharray: 1000, strokeDashoffset: 1000 }}
+                          animate={{ strokeDashoffset: 0 }}
+                          transition={{ 
+                            delay: showClouds ? 2.0 : 0.8, 
+                            duration: showClouds ? 3.0 : 2.0, // Faster for internal navigation
+                            ease: "easeOut"
+                          }}
+                        >
+                          El Segundo High School
+                        </motion.text>
+                        <motion.text
+                          x="50%"
+                          y="50%"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fill="white"
+                          fontFamily="'Great Vibes', cursive"
+                          fontSize="58"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ 
+                            delay: showClouds ? 5.0 : 2.8, // Faster for internal navigation
+                            duration: 0.3,
+                          }}
+                        >
+                          El Segundo High School
+                        </motion.text>
+                      </svg>
+                    </motion.div>
+                  </div>
+                </motion.h1>
+                
+                {/* Second line - ASB */}
+                <motion.div 
+                  className="mt-8 block text-center"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: showClouds ? 3.5 : 1.5, duration: 0.5 }} /* Faster for internal navigation */
+                >
+                  <motion.h1
+                    className="font-['Great_Vibes',_cursive] text-8xl md:text-9xl lg:text-[10rem] font-bold text-white"
+                    style={{ 
+                      filter: 'drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5))',
+                      WebkitTextStroke: '0.8px rgba(0, 0, 0, 0.3)'
+                    }}
+                  >
+                    <div className="relative">
+                      {/* Invisible text to maintain layout */}
+                      <span className="invisible whitespace-nowrap">ASB</span>
+                      
+                      {/* SVG Text Drawing Animation */}
+                      <motion.div 
+                        className="absolute inset-0 flex items-center justify-center"
+                      >
+                        <svg width="100%" height="100%" viewBox="0 0 250 140" className="absolute inset-0">
+                          <motion.text
+                            x="50%"
+                            y="50%"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="none"
+                            stroke="white"
+                            strokeWidth="2.5"
+                            fontFamily="'Great Vibes', cursive"
+                            fontSize="100"
+                            fontWeight="bold"
+                            className="text-shadow-sm"
+                            initial={{ strokeDasharray: 400, strokeDashoffset: 400 }}
+                            animate={{ strokeDashoffset: 0 }}
+                            transition={{ 
+                              delay: showClouds ? 4.5 : 2.0, 
+                              duration: showClouds ? 2.0 : 1.5, // Faster for internal navigation
+                              ease: "easeOut"
+                            }}
+                          >
+                            ASB
+                          </motion.text>
+                          <motion.text
+                            x="50%"
+                            y="50%"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="white"
+                            fontFamily="'Great Vibes', cursive"
+                            fontSize="100"
+                            fontWeight="bold"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ 
+                              delay: showClouds ? 6.5 : 3.5, // Faster for internal navigation
                               duration: 0.3,
                             }}
                           >

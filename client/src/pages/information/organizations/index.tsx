@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton, ThemedInput, ThemedTabs } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
 
 // Types for organizations data
@@ -303,9 +304,8 @@ export default function OrganizationsPage() {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
-
   return (
-    <div className="min-h-screen flex flex-col">
+    <ThemedPageWrapper pageType="information">
       {/* Background Video with Overlay */}
       <div className="fixed inset-0 z-0 overflow-hidden">
         <video
@@ -360,10 +360,9 @@ export default function OrganizationsPage() {
         </div>
 
         {/* Organizations Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredOrganizations.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">          {filteredOrganizations.length > 0 ? (
             filteredOrganizations.map((org) => (
-              <Card 
+              <ThemedCard 
                 key={org.id} 
                 className="overflow-hidden border-2 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
                 onClick={() => handleOrganizationClick(org)}
@@ -391,9 +390,8 @@ export default function OrganizationsPage() {
                 </CardContent>
                 <CardFooter className="px-4 py-3 pt-0 text-xs text-gray-500 flex justify-between">
                   <span><i className="fas fa-users mr-1"></i> {org.members || "N/A"} members</span>
-                  <span><i className="fas fa-calendar mr-1"></i> {org.meetingSchedule || "Schedule varies"}</span>
-                </CardFooter>
-              </Card>
+                  <span><i className="fas fa-calendar mr-1"></i> {org.meetingSchedule || "Schedule varies"}</span>                </CardFooter>
+              </ThemedCard>
             ))
           ) : (
             <div className="col-span-3 text-center py-8 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg">
@@ -584,9 +582,8 @@ export default function OrganizationsPage() {
             <div className="flex justify-end">
               <Button variant="ghost" onClick={() => setShowModal(false)}>Close</Button>
             </div>
-          </DialogContent>
-        </Dialog>
+          </DialogContent>        </Dialog>
       )}
-    </div>
+    </ThemedPageWrapper>
   );
 }

@@ -163,8 +163,8 @@ export default function Shop() {
   const handleCartClick = () => {
     setLocation("/shop/cart");
   };
-  
-  const handleBackClick = () => {
+    const handleBackClick = () => {
+    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
     setLocation("/");
   };
   return (
@@ -210,97 +210,35 @@ export default function Shop() {
             </h1>
           </div>
 
-          {/* Shop Hub Banner */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6 mb-8 text-white">
-            <div className="flex flex-col md:flex-row items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold mb-2">
-                  Eagles Spirit Shop
-                </h2>
-                <p className="mb-4">
-                  Show your school pride with official El Segundo High School merchandise
-                </p>
-                <div className="flex space-x-2">
-                  <PrimaryButton
-                    onClick={() => setActiveTab("featured")}
-                  >
-                    View Featured Items
-                  </PrimaryButton>
-                  <OutlineButton
-                    onClick={() => setActiveTab("apparel")}
-                  >
-                    Shop Apparel
-                  </OutlineButton>
+          {/* Important Shopping Information */}
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+            <div className="space-y-4">
+              <div className="p-4 rounded-lg border border-blue-400/50 bg-blue-500/20">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-semibold text-white">Free Shipping on Orders Over $50</h3>
+                  <span className="text-sm text-gray-300">Offer</span>
                 </div>
+                <p className="text-sm mt-2 text-gray-200">Get free standard shipping on all orders over $50. No promo code needed!</p>
               </div>
-              <div className="mt-6 md:mt-0 h-24 w-24 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-full flex items-center justify-center">
-                <svg
-                  className="h-12 w-12 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
+              <div className="p-4 rounded-lg border border-green-400/50 bg-green-500/20">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-semibold text-white">Student Discounts Available</h3>
+                  <span className="text-sm text-gray-300">Discount</span>
+                </div>
+                <p className="text-sm mt-2 text-gray-200">Current students get 15% off with valid student ID at pickup.</p>
+              </div>
+              <div className="p-4 rounded-lg border border-amber-400/50 bg-amber-500/20">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-semibold text-white">Pickup Available at School Office</h3>
+                  <span className="text-sm text-gray-300">Pickup</span>
+                </div>
+                <p className="text-sm mt-2 text-gray-200">Order online and pick up your items during school hours at the main office.</p>
               </div>
             </div>
           </div>
 
-          {/* Featured Products Section */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Featured Merchandise
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {merchandiseItems.filter(item => item.featured).map((item) => (
-                <ThemedCard
-                  key={item.id}
-                  className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:shadow-2xl transition-transform hover:scale-[1.01] cursor-pointer"
-                  onClick={() => handleProductClick(item.id)}
-                >
-                  <div className="h-48 bg-gray-900 overflow-hidden">
-                    <img 
-                      src={item.image} 
-                      alt={item.name}
-                      className="w-full h-full object-cover transition-transform hover:scale-105"
-                      onError={(e) => {
-                        e.currentTarget.src = "https://via.placeholder.com/300?text=Product+Image";
-                      }}
-                    />
-                  </div>
-                  <CardHeader className="relative pb-2">
-                    <div className="absolute top-4 right-4">
-                      <Badge variant="default" className="bg-orange-500">Featured</Badge>
-                    </div>
-                    <CardTitle className="text-lg">
-                      {item.name}
-                    </CardTitle>
-                    <div className="flex justify-between items-center mt-2">
-                      <span className="text-xl font-bold text-blue-400">${item.price}</span>
-                      <Badge variant="outline">{item.category}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-gray-300 text-sm mb-3">{item.description}</p>
-                    <div className="text-xs text-gray-400">
-                      {organizations.find(org => org.id === item.organization)?.name}
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <PrimaryButton className="w-full">
-                      Add to Cart
-                    </PrimaryButton>
-                  </CardFooter>
-                </ThemedCard>
-              ))}
-            </div>
-          </div>
+          <br />
+
 
           {/* Filter and Navigation */}
           <div className="mb-8">
@@ -457,33 +395,7 @@ export default function Shop() {
             </ThemedCard>
           )}
           
-          {/* Important Shopping Information */}
-          <h2 className="text-2xl font-bold text-white mb-6">Shopping Information</h2>
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg border border-blue-400/50 bg-blue-500/20">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-white">Free Shipping on Orders Over $50</h3>
-                  <span className="text-sm text-gray-300">Offer</span>
-                </div>
-                <p className="text-sm mt-2 text-gray-200">Get free standard shipping on all orders over $50. No promo code needed!</p>
-              </div>
-              <div className="p-4 rounded-lg border border-green-400/50 bg-green-500/20">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-white">Student Discounts Available</h3>
-                  <span className="text-sm text-gray-300">Discount</span>
-                </div>
-                <p className="text-sm mt-2 text-gray-200">Current students get 15% off with valid student ID at pickup.</p>
-              </div>
-              <div className="p-4 rounded-lg border border-amber-400/50 bg-amber-500/20">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-white">Pickup Available at School Office</h3>
-                  <span className="text-sm text-gray-300">Pickup</span>
-                </div>
-                <p className="text-sm mt-2 text-gray-200">Order online and pick up your items during school hours at the main office.</p>
-              </div>
-            </div>
-          </div>
+        
         </div>
       </div>
     </ThemedPageWrapper>

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton, ThemedInput, ThemedTabs } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
 
 // Types for election data
@@ -218,9 +219,8 @@ export default function Elections() {
     if (activeTab === "past") return election.status === "past";
     return true;
   });
-
   return (
-    <>
+    <ThemedPageWrapper pageType="information">
       {/* Background Video */}
       <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
         <video 
@@ -255,14 +255,13 @@ export default function Elections() {
           <div className="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-800 rounded-xl shadow-lg p-6 mb-8 text-white">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold mb-2">Student Government Elections</h2>                <p className="mb-4">Make your voice heard! Learn about upcoming elections, positions, and how to run for office.</p>
-                <div className="flex space-x-2">
-                  <Button className="bg-amber-700 text-white hover:bg-amber-600">
+                <h2 className="text-2xl font-bold mb-2">Student Government Elections</h2>                <p className="mb-4">Make your voice heard! Learn about upcoming elections, positions, and how to run for office.</p>                <div className="flex space-x-2">
+                  <PrimaryButton className="bg-amber-700 text-white hover:bg-amber-600">
                     Election Guidelines
-                  </Button>
-                  <Button variant="outline" className="text-white border-white hover:bg-amber-700">
+                  </PrimaryButton>
+                  <OutlineButton className="text-white border-white hover:bg-amber-700">
                     View Election Calendar
-                  </Button>
+                  </OutlineButton>
                 </div>
               </div>
               <div className="mt-6 md:mt-0 h-24 w-24 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20">
@@ -282,10 +281,9 @@ export default function Elections() {
             </TabsList>
 
             {/* Tab contents */}
-            <div className="mt-6">
-              {filteredElections.length > 0 ? (
+            <div className="mt-6">              {filteredElections.length > 0 ? (
                 filteredElections.map((election) => (
-                  <Card key={election.id} className="mb-8 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                  <ThemedCard key={election.id} className="mb-8">
                     <CardHeader>
                       <div className="flex justify-between items-center flex-wrap gap-2">
                         <div>
@@ -354,9 +352,8 @@ export default function Elections() {
                           <Button variant="outline">
                             View Election Results
                           </Button>
-                        </div>
-                      )}                    </CardContent>
-                  </Card>
+                        </div>                      )}                    </CardContent>
+                  </ThemedCard>
                 ))
               ) : (
                 <div className="text-center py-12 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg">
@@ -464,9 +461,8 @@ export default function Elections() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setApplicationDialogOpen(false)}>Cancel</Button>
             <Button>Submit Application</Button>
-          </DialogFooter>
-        </DialogContent>
+          </DialogFooter>        </DialogContent>
       </Dialog>
-    </>
+    </ThemedPageWrapper>
   );
 }

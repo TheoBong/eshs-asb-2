@@ -32,13 +32,13 @@ const videoPosts: VideoPost[] = [
     title: "Homecoming Week Highlights 2025",
     description: "Catch all the excitement from this year's homecoming festivities! From the rally to the game to the dance, see what made this year special.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    thumbnailUrl: "/api/placeholder/640/360",
+    thumbnailUrl: "https://preview.colorkit.co/color/808080.png?size=wallpaper&static=true",
     date: "October 18, 2025",
     author: {
       name: "ASB Media Team",
       avatarUrl: "/api/placeholder/40/40"
     },
-    category: "Events",
+    category: "District",
     views: 1247,
     featured: true
   },
@@ -47,7 +47,7 @@ const videoPosts: VideoPost[] = [
     title: "Digital Art Showcase: Spring Exhibition",
     description: "Students from the Digital Arts program showcase their incredible work from the spring semester.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    thumbnailUrl: "/api/placeholder/640/360",
+    thumbnailUrl: "https://preview.colorkit.co/color/808080.png?size=wallpaper&static=true",
     date: "May 15, 2025",
     author: {
       name: "Arts Department",
@@ -62,7 +62,7 @@ const videoPosts: VideoPost[] = [
     title: "Eagles Basketball Championship Victory",
     description: "Relive the excitement as our Eagles basketball team wins the regional championship!",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    thumbnailUrl: "/api/placeholder/640/360",
+    thumbnailUrl: "https://preview.colorkit.co/color/808080.png?size=wallpaper&static=true",
     date: "March 25, 2025",
     author: {
       name: "Sports Media Club",
@@ -77,7 +77,7 @@ const videoPosts: VideoPost[] = [
     title: "Science Fair 2025: Innovation on Display",
     description: "Take a tour of the incredible projects at this year's science fair, featuring interviews with our young scientists.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    thumbnailUrl: "/api/placeholder/640/360",
+    thumbnailUrl: "https://preview.colorkit.co/color/808080.png?size=wallpaper&static=true",
     date: "April 12, 2025",
     author: {
       name: "Science Department",
@@ -91,7 +91,7 @@ const videoPosts: VideoPost[] = [
     title: "Earth Day Beach Cleanup Initiative",
     description: "Students join forces with local environmental groups for our annual Earth Day beach cleanup event.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    thumbnailUrl: "/api/placeholder/640/360",
+    thumbnailUrl: "https://preview.colorkit.co/color/808080.png?size=wallpaper&static=true",
     date: "April 22, 2025",
     author: {
       name: "Environmental Club",
@@ -105,7 +105,7 @@ const videoPosts: VideoPost[] = [
     title: "Behind the Scenes: Spring Musical Preparation",
     description: "Get an exclusive look at the preparation for this year's spring musical, featuring interviews with the cast and crew.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    thumbnailUrl: "/api/placeholder/640/360",
+    thumbnailUrl: "https://preview.colorkit.co/color/808080.png?size=wallpaper&static=true",
     date: "March 5, 2025",
     author: {
       name: "Drama Club",
@@ -119,13 +119,13 @@ const videoPosts: VideoPost[] = [
     title: "College Application Tips from Recent Grads",
     description: "Recent graduates share their advice on navigating the college application process successfully.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    thumbnailUrl: "/api/placeholder/640/360",
+    thumbnailUrl: "https://preview.colorkit.co/color/808080.png?size=wallpaper&static=true",
     date: "February 18, 2025",
     author: {
       name: "College Counseling",
       avatarUrl: "/api/placeholder/40/40"
     },
-    category: "Academics",
+    category: "Clubs",
     views: 1126
   },
   {
@@ -133,7 +133,7 @@ const videoPosts: VideoPost[] = [
     title: "Student Council Debate: Election 2025",
     description: "Watch the full debate between candidates for next year's student council positions.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    thumbnailUrl: "/api/placeholder/640/360",
+    thumbnailUrl: "https://preview.colorkit.co/color/808080.png?size=wallpaper&static=true",
     date: "April 5, 2025",
     author: {
       name: "ASB Media Team",
@@ -160,8 +160,8 @@ export default function BirdsEyeView() {
   
   // Get unique categories
   const categories = ["all", ...Array.from(new Set(videoPosts.map(video => video.category.toLowerCase())))];
-  
-  const handleBackClick = () => {
+    const handleBackClick = () => {
+    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
     setLocation("/");
   };
   
@@ -203,7 +203,7 @@ export default function BirdsEyeView() {
               </svg>
             </Button>
             <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">
-              Theater & Productions
+              Birds Eye View
             </h1>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -243,26 +243,6 @@ export default function BirdsEyeView() {
                     <div className="text-sm text-gray-400">{selectedVideo.date}</div>
                   </div>
                 </div>
-              </div>{/* Video Description and Theater Info */}              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl mb-6">
-                <CardHeader>
-                  <CardTitle>About This Production</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="mb-4">
-                    {selectedVideo.description} This video showcases our talented drama department's productions and performances.
-                  </p>
-                  <p className="mb-4">
-                    The El Segundo High School Theater Department produces multiple shows each year, including a fall play, spring musical, and various showcases.
-                  </p>
-                  <div className="flex flex-col sm:flex-row sm:justify-between mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
-                    <Button className="btn-primary">
-                      <i className="fas fa-ticket-alt mr-2"></i> Buy Tickets
-                    </Button>
-                    <Button variant="outline" className="btn-outline">
-                      <i className="fas fa-calendar-alt mr-2"></i> View Event Schedule
-                    </Button>
-                  </div>
-                </CardContent>
                 <CardFooter className="bg-gray-800/80 backdrop-blur-md border-t border-gray-500/50 pt-4 flex justify-between">
                   <div className="flex space-x-2">
                     <Button variant="outline" size="sm" className="btn-outline">
@@ -280,7 +260,7 @@ export default function BirdsEyeView() {
                   </div>
                   <Button variant="ghost" size="sm" className="text-gray-300 hover:bg-accent">Report</Button>
                 </CardFooter>
-              </Card>
+              </div>
             </div>
 
             {/* Video List Column */}
@@ -338,125 +318,9 @@ export default function BirdsEyeView() {
                     </CardContent>
                   </Card>
                 ))}
-              </div>                {/* Season Tickets Card */}
-              <Card className="bg-gradient-to-r from-amber-900 to-orange-800 text-white mt-6">
-                <CardHeader>
-                  <CardTitle>Season Tickets</CardTitle>
-                  <CardDescription className="text-amber-100">
-                    Get access to all of our productions for the 2025-2026 season
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-xl font-bold mb-2">$65.00</div>
-                  <p className="text-sm mb-4">Includes tickets to our Fall Play, Winter Showcase, and Spring Musical - a $20 savings!</p>
-                  <ul className="text-sm space-y-1 mb-4">
-                    <li className="flex items-center">
-                      <i className="fas fa-check-circle mr-2 text-amber-300"></i>
-                      Reserved premium seating
-                    </li>
-                    <li className="flex items-center">
-                      <i className="fas fa-check-circle mr-2 text-amber-300"></i>
-                      Early access to ticket selection
-                    </li>
-                    <li className="flex items-center">
-                      <i className="fas fa-check-circle mr-2 text-amber-300"></i>
-                      Exclusive behind-the-scenes content
-                    </li>
-                  </ul>
-                </CardContent>
-                <CardFooter>
-                  <Button className="w-full theater-action">
-                    <i className="fas fa-ticket-alt mr-2"></i>
-                    Buy Season Pass
-                  </Button>
-                </CardFooter>
-              </Card>
-            </div>
-          </div>            {/* Theater Information Section */}
-          <div className="mt-12 mb-8">
-            <h2 className="text-3xl font-bold text-white mb-6">Theater Department Information</h2>            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">              {/* Upcoming Productions */}
-              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                <CardHeader>
-                  <div className="flex items-center mb-2">
-                    <i className="fas fa-theater-masks text-amber-500 text-xl mr-2"></i>
-                    <CardTitle>Upcoming Productions</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold">Fall Play 2025: "A Midsummer Night's Dream"</h4>
-                    <p className="text-sm text-gray-300">October 22-24, 2025</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold">Winter Showcase</h4>
-                    <p className="text-sm text-gray-300">December 12, 2025</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold">Spring Musical 2026: "Hairspray"</h4>
-                    <p className="text-sm text-gray-300">April 15-18, 2026</p>
-                  </div>
-                  <Button variant="outline" className="btn-outline w-full mt-2">View All Shows</Button>
-                </CardContent>
-              </Card>              {/* Audition Info */}
-              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                <CardHeader>
-                  <div className="flex items-center mb-2">
-                    <i className="fas fa-microphone text-amber-500 text-xl mr-2"></i>
-                    <CardTitle>Auditions</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="mb-4">Interested in auditioning for our next production? Check our schedule for upcoming audition dates.</p>
-                  <p className="text-sm text-gray-300 mb-4">Next auditions: August 28-29, 2025 for the Fall Play</p>
-                  <Button variant="outline" className="btn-outline w-full">Audition Information</Button>
-                </CardContent>
-              </Card>              {/* Tech Crew */}
-              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                <CardHeader>
-                  <div className="flex items-center mb-2">
-                    <i className="fas fa-sliders-h text-amber-500 text-xl mr-2"></i>
-                    <CardTitle>Tech Crew</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="mb-4">Not interested in being on stage? Join our technical crew and learn about lighting, sound, set design, and more!</p>
-                  <p className="text-sm text-gray-300 mb-4">No experience necessary - we'll train you!</p>
-                  <Button variant="outline" className="btn-outline w-full">Join Tech Crew</Button>
-                </CardContent>
-              </Card>              {/* Contact */}
-              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                <CardHeader>
-                  <div className="flex items-center mb-2">
-                    <i className="fas fa-envelope text-amber-500 text-xl mr-2"></i>
-                    <CardTitle>Contact Us</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="mb-4">Have questions about our theater program or upcoming productions?</p>
-                  <div className="space-y-2 text-sm text-gray-300">
-                    <p><span className="font-medium">Director:</span> Ms. Amanda Patel</p>
-                    <p><span className="font-medium">Email:</span> theater@elsegundohs.org</p>
-                    <p><span className="font-medium">Phone:</span> (310) 555-0123</p>
-                    <p><span className="font-medium">Office:</span> Room 214</p>
-                  </div>
-                </CardContent>
-              </Card>
+              </div>
             </div>
           </div>
-            {/* Get Involved Banner */}
-          <div className="mt-12 theater-accent rounded-xl shadow-lg p-6 text-white">
-            <div className="flex flex-col md:flex-row items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold mb-2">Want to Get Involved?</h2>
-                <p className="mb-4">Join the Drama Club! We're always looking for actors, tech crew, directors, and more!</p>
-                <Button className="bg-amber-700 text-white hover:bg-amber-600">
-                  <i className="fas fa-user-plus mr-2"></i> Join Drama Club
-                </Button>
-              </div>
-              <div className="mt-6 md:mt-0 h-24 w-24 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-full flex items-center justify-center">
-                <i className="fas fa-theater-masks text-white text-4xl"></i>
-              </div>
-            </div>          </div>
         </main>
       </div>
     </ThemedPageWrapper>

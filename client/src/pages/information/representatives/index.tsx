@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton, ThemedTabs } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
 
 // Types for representatives data
@@ -210,9 +211,8 @@ export default function Representatives() {
   const handleBackClick = () => {
     setLocation("/information");
   };
-
   return (
-    <>
+    <ThemedPageWrapper pageType="information">
       {/* Background Video */}
       <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
         <video 
@@ -232,18 +232,16 @@ export default function Representatives() {
       {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">
         <div className="container mx-auto px-4">          {/* Navigation */}
-          <Button
+          <SecondaryButton
             onClick={handleBackClick}
-            variant="ghost"
             className="mb-6 flex items-center text-white hover:text-blue-200 transition-colors"
           >
             <div className="bg-black/70 backdrop-blur-xl border border-gray-500/50 shadow-xl rounded-full p-2 mr-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </div>
-            Back to Information
-          </Button>
+            </div>            Back to Information
+          </SecondaryButton>
 
           {/* Header */}
           <div className="text-center mb-8">
@@ -268,7 +266,7 @@ export default function Representatives() {
                 </Select>
               </div>
 
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
+              <ThemedTabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
                 <TabsList>
                   <TabsTrigger value="all">All</TabsTrigger>
                   <TabsTrigger value="officers">Officers</TabsTrigger>
@@ -277,14 +275,14 @@ export default function Representatives() {
                   <TabsTrigger value="sophomore">Sophomore</TabsTrigger>
                   <TabsTrigger value="freshman">Freshman</TabsTrigger>
                 </TabsList>
-              </Tabs>
+              </ThemedTabs>
             </div>
           </div>
 
           {/* Representatives Grid */}
           {filteredRepresentatives.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredRepresentatives.map(rep => (                <Card key={rep.id} className="bg-black/80 backdrop-blur-xl border border-gray-500/50 shadow-xl hover:shadow-2xl transition-all">
+              {filteredRepresentatives.map(rep => (                <ThemedCard key={rep.id} className="hover:shadow-2xl transition-all">
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
                       <Badge 
@@ -299,32 +297,29 @@ export default function Representatives() {
                       <Avatar className="h-16 w-16 border-2 border-blue-100">
                         <AvatarImage src={rep.image} alt={rep.name} />
                         <AvatarFallback>{rep.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>
-                      <div className="ml-4">
-                        <CardTitle className="text-lg">{rep.name}</CardTitle>
-                        <CardDescription>{rep.email}</CardDescription>
-                        {rep.phone && <CardDescription>{rep.phone}</CardDescription>}
+                      </Avatar>                      <div className="ml-4">
+                        <CardTitle className="text-lg text-white">{rep.name}</CardTitle>
+                        <CardDescription className="text-gray-300">{rep.email}</CardDescription>
+                        {rep.phone && <CardDescription className="text-gray-300">{rep.phone}</CardDescription>}
                       </div>
                     </div>
                   </CardHeader>
                   
                   <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-sm text-gray-500 uppercase mb-1">About</h3>
-                        <p className="text-sm">{rep.bio}</p>
+                    <div className="space-y-4">                      <div>
+                        <h3 className="text-sm text-gray-400 uppercase mb-1">About</h3>
+                        <p className="text-sm text-gray-200">{rep.bio}</p>
                       </div>
                       
                       {rep.committee && (
                         <div>
-                          <h3 className="text-sm text-gray-500 uppercase mb-1">Committee</h3>
-                          <p className="text-sm font-medium">{rep.committee}</p>
+                          <h3 className="text-sm text-gray-400 uppercase mb-1">Committee</h3>
+                          <p className="text-sm font-medium text-white">{rep.committee}</p>
                         </div>
                       )}
-                      
-                      <div>
-                        <h3 className="text-sm text-gray-500 uppercase mb-1">Goals</h3>
-                        <ul className="list-disc pl-5 text-sm space-y-1">
+                        <div>
+                        <h3 className="text-sm text-gray-400 uppercase mb-1">Goals</h3>
+                        <ul className="list-disc pl-5 text-sm space-y-1 text-gray-200">
                           {rep.goals.map((goal, idx) => (
                             <li key={idx}>{goal}</li>
                           ))}
@@ -332,7 +327,7 @@ export default function Representatives() {
                       </div>
                     </div>
                   </CardContent>
-                </Card>
+                </ThemedCard>
               ))}
             </div>          ) : (
             <div className="bg-black/85 backdrop-blur-xl border border-gray-500/50 shadow-2xl rounded-xl p-12 text-center">
@@ -348,17 +343,14 @@ export default function Representatives() {
             <h2 className="text-xl font-bold mb-4">Interested in Becoming a Representative?</h2>
             <p className="mb-4">
               Elections for the next term's student representatives will be held in April. Visit the Elections page to learn how you can run for a position and make a difference in our school.
-            </p>
-            <Button 
-              variant="outline" 
+            </p>            <OutlineButton 
               className="bg-transparent border-white text-white hover:bg-blue-800"
               onClick={() => setLocation("/information/elections")}
             >
               Learn About Elections
-            </Button>
-          </div>
-        </div>
+            </OutlineButton>
+          </div>        </div>
       </div>
-    </>
+    </ThemedPageWrapper>
   );
 }

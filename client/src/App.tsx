@@ -12,9 +12,6 @@ import ProductPage from "@/pages/shop/product/index";
 import CartPage from "@/pages/shop/cart/index";
 import CheckoutPage from "@/pages/shop/checkout/index";
 
-// Activities related pages
-import Activities from "@/pages/activities/index";
-import EventPage from "@/pages/activities/event/index";
 
 // Information related pages
 import Information from "@/pages/information/index";
@@ -38,10 +35,6 @@ function Router() {
       <Route path="/shop/product/:id" component={ProductPage} />
       <Route path="/shop/cart" component={CartPage} />
       <Route path="/shop/checkout" component={CheckoutPage} />
-      
-      {/* Activities pages */}
-      <Route path="/activities" component={Activities} />
-      <Route path="/activities/event/:id" component={EventPage} />
       
       {/* Information pages */}
       <Route path="/information" component={Information} />

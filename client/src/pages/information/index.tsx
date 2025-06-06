@@ -12,7 +12,7 @@ const infoSections = [
 		title: "Student Representatives",
 		description:
 			"Meet the students who represent our school in various capacities and committees.",
-		image: "/api/placeholder/300/200",
+		image: "https://images.squarespace-cdn.com/content/v1/57be4dc6f5e231e5516f7e44/1605373317776-D6XRQQFN594G6IUWBECK/StudentCouncil.png",
 		path: "/information/representatives",
 		color: "bg-blue-100/90 border-blue-300",
 		iconColor: "text-blue-800",
@@ -22,7 +22,7 @@ const infoSections = [
 		title: "Elections",
 		description:
 			"Information about upcoming elections, candidate requirements, and how to run for student office.",
-		image: "/api/placeholder/300/200",
+		image: "https://sapro.moderncampus.com/hubfs/Destiny/Imported_Blog_Media/VOTEBOX-4.png",
 		path: "/information/elections",
 		color: "bg-amber-100/90 border-amber-300",
 		iconColor: "text-amber-700",
@@ -32,7 +32,7 @@ const infoSections = [
 		title: "Seniors",
 		description:
 			"Senior-specific information including graduation events, senior activities, and important deadlines.",
-		image: "/api/placeholder/300/200",
+		image: "https://m.media-amazon.com/images/I/61AOqbAHirL.jpg",
 		path: "/information/seniors",
 		color: "bg-emerald-100/90 border-emerald-300",
 		iconColor: "text-emerald-800",
@@ -42,7 +42,7 @@ const infoSections = [
 		title: "Organizations",
 		description:
 			"Explore our school's clubs, sports teams, and other student organizations.",
-		image: "/api/placeholder/300/200",
+		image: "https://www.northnationmedia.com/wp-content/uploads/2023/10/school-clubs-1200x849.png",
 		path: "/information/organizations",
 		color: "bg-purple-100/90 border-purple-300",
 		iconColor: "text-purple-800",
@@ -52,7 +52,7 @@ const infoSections = [
 		title: "Calendar",
 		description:
 			"Stay up to date with all school events, holidays, and important academic dates.",
-		image: "/api/placeholder/300/200",
+		image: "https://cdn.vectorstock.com/i/1000v/32/72/desc-calendar-cartoon-style-design-isolated-vector-36183272.jpg",
 		path: "/information/calendar",
 		color: "bg-rose-100/90 border-rose-300",
 		iconColor: "text-rose-800",
@@ -205,8 +205,8 @@ export default function Information() {
 	const handleNavigate = (path: string) => {
 		setLocation(path);
 	};
-
 	const handleBackClick = () => {
+		sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
 		setLocation("/");
 	};
 	return (
@@ -252,50 +252,41 @@ export default function Information() {
 						<h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">
 							School Information
 						</h1>
-					</div>					{/* Information Hub Banner */}
-					<div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6 mb-8 text-white">
-						<div className="flex flex-col md:flex-row items-center justify-between">
-							<div>
-								<h2 className="text-2xl font-bold mb-2">
-									School Information Hub
-								</h2>
-								<p className="mb-4">
-									Everything you need to know about school activities,
-									organizations, and more
-								</p>
-								<div className="flex space-x-2">
-									<PrimaryButton
-										onClick={() => handleNavigate("/information/calendar")}
-									>
-										View Calendar
-									</PrimaryButton>
-									<OutlineButton
-										onClick={() =>
-											handleNavigate("/information/organizations")
-										}
-									>
-										Explore Organizations
-									</OutlineButton>
-								</div>
-							</div>
-							<div className="mt-6 md:mt-0 h-24 w-24 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-full flex items-center justify-center">
-								<svg
-									className="h-12 w-12 text-white"
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-									/>
-								</svg>
-							</div>
-						</div>
 					</div>
+
+										{/* Important Announcements */}
+					<h2 className="text-2xl font-bold text-white mb-6">Recent Announcements</h2>
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+            <div className="space-y-4">
+              {announcements.map((announcement) => (
+                <div 
+                  key={announcement.id} 
+                  className={`p-4 rounded-lg border ${
+                    announcement.priority === 'high' 
+                      ? 'border-red-400/50 bg-red-500/20' 
+                      : announcement.priority === 'medium'
+                      ? 'border-amber-400/50 bg-amber-500/20'
+                      : 'border-blue-400/50 bg-blue-500/20'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-semibold text-white">{announcement.title}</h3>
+                    <span className="text-sm text-gray-300">{announcement.date}</span>
+                  </div>
+                  <p className="text-sm mt-2 text-gray-200">{announcement.content}</p>
+                  {announcement.priority === 'high' && (
+                    <div className="mt-2 flex items-center text-red-400 text-sm">
+                      <svg className="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      Important Announcement
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+		  <br></br>
 
 					{/* Information Sections */}
 					<div className="mb-12">
@@ -341,38 +332,7 @@ export default function Information() {
 								</ThemedCard>
 							))}
 						</div>
-					</div>					{/* Important Announcements */}
-					<h2 className="text-2xl font-bold text-white mb-6">Recent Announcements</h2>
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
-            <div className="space-y-4">
-              {announcements.map((announcement) => (
-                <div 
-                  key={announcement.id} 
-                  className={`p-4 rounded-lg border ${
-                    announcement.priority === 'high' 
-                      ? 'border-red-400/50 bg-red-500/20' 
-                      : announcement.priority === 'medium'
-                      ? 'border-amber-400/50 bg-amber-500/20'
-                      : 'border-blue-400/50 bg-blue-500/20'
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-semibold text-white">{announcement.title}</h3>
-                    <span className="text-sm text-gray-300">{announcement.date}</span>
-                  </div>
-                  <p className="text-sm mt-2 text-gray-200">{announcement.content}</p>
-                  {announcement.priority === 'high' && (
-                    <div className="mt-2 flex items-center text-red-400 text-sm">
-                      <svg className="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                      Important Announcement
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+					</div>
 				</main>
 			</div>
 		</ThemedPageWrapper>

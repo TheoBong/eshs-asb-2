@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
+import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
 
 // Mock cart items
@@ -82,10 +83,8 @@ export default function CartPage() {
 
   const subtotal = calculateSubtotal();
   const tax = subtotal * 0.0875; // 8.75% tax
-  const total = subtotal + tax;
-
-  return (
-    <>
+  const total = subtotal + tax;  return (
+    <ThemedPageWrapper pageType="shop">
       {/* Background Video */}
       <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
         <video 
@@ -113,7 +112,7 @@ export default function CartPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">            {/* Cart Items */}
             <div className="lg:col-span-2">
-              <Card className="bg-black/85 backdrop-blur-xl border border-gray-500/50 shadow-2xl overflow-hidden">
+              <ThemedCard>
                 <CardContent className="p-6">
                   {cartItems.length > 0 ? (
                     <div className="space-y-6">
@@ -135,13 +134,13 @@ export default function CartPage() {
                           <div className="flex-1">
                             <div className="flex justify-between">
                               <div>
-                                <h3 className="font-semibold">{item.name}</h3>
-                                <div className="text-sm text-gray-500">
+                                <h3 className="font-semibold text-white">{item.name}</h3>
+                                <div className="text-sm text-gray-400">
                                   {item.size && <span className="mr-2">Size: {item.size}</span>}
                                   {item.color && <span>Color: {item.color}</span>}
                                 </div>
                               </div>
-                              <div className="font-semibold">${(item.price * item.quantity).toFixed(2)}</div>
+                              <div className="font-semibold text-white">${(item.price * item.quantity).toFixed(2)}</div>
                             </div>
                             
                             <div className="mt-4 flex justify-between items-center">
@@ -150,18 +149,18 @@ export default function CartPage() {
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  className="h-8 w-8 rounded-r-none"
+                                  className="h-8 w-8 rounded-r-none border-gray-600 text-white hover:bg-gray-700"
                                   onClick={() => handleQuantityChange(item.id, -1)}
                                 >
                                   -
                                 </Button>
-                                <div className="h-8 w-12 flex items-center justify-center border-y border-input">
+                                <div className="h-8 w-12 flex items-center justify-center border-y border-gray-600 bg-gray-800 text-white">
                                   {item.quantity}
                                 </div>
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  className="h-8 w-8 rounded-l-none"
+                                  className="h-8 w-8 rounded-l-none border-gray-600 text-white hover:bg-gray-700"
                                   onClick={() => handleQuantityChange(item.id, 1)}
                                 >
                                   +
@@ -172,7 +171,7 @@ export default function CartPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                className="text-red-400 hover:text-red-300 hover:bg-red-900/30"
                                 onClick={() => handleRemoveItem(item.id)}
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
@@ -189,13 +188,9 @@ export default function CartPage() {
                       
                       {/* Keep Shopping Button */}
                       <div className="text-center">
-                        <Button
-                          variant="outline"
-                          onClick={handleContinueShopping}
-                          className="text-sky-700 border-sky-700 hover:bg-sky-50"
-                        >
+                        <OutlineButton onClick={handleContinueShopping}>
                           Continue Shopping
-                        </Button>
+                        </OutlineButton>
                       </div>
                     </div>
                   ) : (
@@ -203,18 +198,18 @@ export default function CartPage() {
                       <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
-                      <h3 className="mt-2 text-lg font-medium text-gray-900">Your cart is empty</h3>
-                      <p className="mt-1 text-gray-500">Looks like you haven't added anything to your cart yet.</p>
+                      <h3 className="mt-2 text-lg font-medium text-white">Your cart is empty</h3>
+                      <p className="mt-1 text-gray-400">Looks like you haven't added anything to your cart yet.</p>
                       <div className="mt-6">
-                        <Button onClick={handleContinueShopping}>Start Shopping</Button>
+                        <PrimaryButton onClick={handleContinueShopping}>Start Shopping</PrimaryButton>
                       </div>
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </ThemedCard>
             </div>              {/* Order Summary */}
             <div className="lg:col-span-1">
-              <Card className="bg-black/85 backdrop-blur-xl border border-gray-500/50 shadow-2xl overflow-hidden">
+              <ThemedCard>
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold mb-4 text-white">Order Summary</h2>
                   
@@ -239,23 +234,22 @@ export default function CartPage() {
                       <span>${total.toFixed(2)}</span>
                     </div>
                     
-                    <Button
-                      size="lg"
+                    <PrimaryButton
                       className="w-full mt-4"
                       disabled={cartItems.length === 0}
                       onClick={handleCheckout}
                     >
                       Proceed to Checkout
-                    </Button>
+                    </PrimaryButton>
                     
                     <div className="mt-4 text-center">
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-400">
                         By proceeding to checkout, you acknowledge that your order may be subject to additional processing time.
                       </p>
                     </div>
                   </div>
                 </CardContent>
-              </Card>                {/* School Organization Support */}
+              </ThemedCard>                {/* School Organization Support */}
               <div className="mt-6 bg-black/80 backdrop-blur-xl border border-gray-500/50 shadow-xl rounded-xl p-6">
                 <div className="flex items-center mb-4">
                   <Badge className="bg-emerald-500">Supporting School Organizations</Badge>
@@ -265,10 +259,9 @@ export default function CartPage() {
                   Thank you for your contribution to our community!
                 </p>
               </div>
-            </div>
-          </div>
+            </div>          </div>
         </div>
       </div>
-    </>
+    </ThemedPageWrapper>
   );
 }
