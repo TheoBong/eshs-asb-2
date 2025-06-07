@@ -49,103 +49,114 @@ const representativesData: Record<string, Representative[]> = {
       position: "Student Body Vice President",
       email: "michael.chen@student.edu",
       grade: 12,
-      bio: "Michael is focused on creating more opportunities for students to engage in community service and leadership.",
+      bio: "Michael brings experience from the debate team and Model UN to help coordinate school events and represent student interests.",
       image: "/api/placeholder/200/200",
       term: "2024-2025",
       goals: [
-        "Establish a student mentorship program",
-        "Increase participation in community service",
-        "Create leadership workshops for all students"
+        "Organize more inter-grade activities",
+        "Implement a student feedback system",
+        "Support environmental initiatives on campus"
       ]
     },
     {
-      id: "secretary-2024",
-      name: "Sophia Rodriguez",
+      id: "sec-2024",
+      name: "Sarah Williams",
       position: "Secretary",
-      email: "sophia.rodriguez@student.edu",
+      email: "sarah.williams@student.edu",
       grade: 11,
-      bio: "Sophia excels at organization and communication. She's committed to keeping accurate records and improving student body transparency.",
+      bio: "Sarah is dedicated to keeping accurate records and improving communication between the student body and council.",
       image: "/api/placeholder/200/200",
       term: "2024-2025",
       goals: [
-        "Digitize student council records for better accessibility",
-        "Create a monthly student newsletter",
-        "Improve communication about school events"
+        "Digitize all student council records",
+        "Create a monthly newsletter for students",
+        "Establish regular town halls with students"
       ]
     },
     {
-      id: "treasurer-2024",
-      name: "David Wilson",
+      id: "treas-2024",
+      name: "David Kim",
       position: "Treasurer",
-      email: "david.wilson@student.edu",
+      email: "david.kim@student.edu",
       grade: 12,
-      bio: "David has a strong background in mathematics and finance. He's dedicated to responsible fiscal management of student funds.",
+      bio: "David manages the student council budget and helps fund various school programs and activities.",
       image: "/api/placeholder/200/200",
       term: "2024-2025",
       goals: [
-        "Increase funding for student clubs and organizations",
+        "Increase funding for student clubs",
         "Implement transparent budget reporting",
-        "Organize more effective fundraising events"
+        "Support fundraising for school improvements"
       ]
     },
     {
-      id: "senior-rep1-2024",
-      name: "Olivia Taylor",
+      id: "senior-rep-2024",
+      name: "Jessica Martinez",
       position: "Senior Class Representative",
-      email: "olivia.taylor@student.edu",
+      email: "jessica.martinez@student.edu",
       grade: 12,
-      bio: "Olivia is committed to making senior year memorable for all students. She previously served as a junior class representative.",
+      bio: "Jessica represents the senior class and works to make the final year memorable for all students.",
       image: "/api/placeholder/200/200",
-      committee: "Senior Events Committee",
       term: "2024-2025",
       goals: [
-        "Organize an unforgettable prom and graduation",
-        "Create senior-specific career and college preparation events",
-        "Establish a senior legacy project"
+        "Plan memorable senior events",
+        "Coordinate graduation preparations",
+        "Leave a positive legacy for future classes"
       ]
     },
     {
-      id: "senior-rep2-2024",
-      name: "Noah Adams",
-      position: "Senior Class Representative",
-      email: "noah.adams@student.edu",
-      grade: 12,
-      bio: "Noah is focused on creating unity among seniors and ensuring everyone has a voice in important decisions.",
-      image: "/api/placeholder/200/200",
-      committee: "Academic Affairs Committee",
-      term: "2024-2025",
-      goals: [
-        "Create study resources for seniors applying to college",
-        "Organize senior class bonding events",
-        "Advocate for senior privileges"
-      ]
-    },
-    {
-      id: "junior-rep1-2024",
-      name: "Emma Martinez",
+      id: "junior-rep-2024",
+      name: "Alex Thompson",
       position: "Junior Class Representative",
-      email: "emma.martinez@student.edu",
+      email: "alex.thompson@student.edu",
       grade: 11,
-      bio: "Emma is committed to building community among juniors and preparing for leadership roles in senior year.",
+      bio: "Alex advocates for junior class interests and helps prepare students for their senior year.",
       image: "/api/placeholder/200/200",
-      committee: "School Spirit Committee",
       term: "2024-2025",
       goals: [
-        "Organize junior class social events",
-        "Increase junior participation in school activities",
-        "Begin planning for senior year events"
+        "Improve college preparation resources",
+        "Organize junior class fundraisers",
+        "Support academic excellence initiatives"
+      ]
+    },
+    {
+      id: "soph-rep-2024",
+      name: "Maya Patel",
+      position: "Sophomore Class Representative",
+      email: "maya.patel@student.edu",
+      grade: 10,
+      bio: "Maya works to ensure sophomore voices are heard and helps new students adjust to high school life.",
+      image: "/api/placeholder/200/200",
+      term: "2024-2025",
+      goals: [
+        "Create mentorship programs for freshmen",
+        "Organize sophomore social events",
+        "Improve study resources for underclassmen"
+      ]
+    },
+    {
+      id: "fresh-rep-2024",
+      name: "Tyler Brown",
+      position: "Freshman Class Representative",
+      email: "tyler.brown@student.edu",
+      grade: 9,
+      bio: "Tyler represents the freshman class and helps new students get involved in school activities.",
+      image: "/api/placeholder/200/200",
+      term: "2024-2025",
+      goals: [
+        "Help freshmen adjust to high school",
+        "Increase freshman participation in clubs",
+        "Create a welcoming environment for new students"
       ]
     }
   ],
   "2025-2026": [
     {
       id: "pres-2025",
-      name: "Michael Chen",
+      name: "Jordan Alexander",
       position: "Student Body President",
-      email: "michael.chen@student.edu",
-      phone: "310-555-2345",
+      email: "jordan.alexander@student.edu",
       grade: 12,
-      bio: "After serving as Vice President, Michael is now leading the student body with a focus on community engagement and student wellness.",
+      bio: "Jordan is a returning council member who previously served as Vice President and is committed to student advocacy.",
       image: "/api/placeholder/200/200",
       term: "2025-2026",
       goals: [
@@ -206,11 +217,12 @@ export default function Representatives() {
     if (activeTab === "sophomore" && rep.position.includes("Sophomore")) return true;
     if (activeTab === "freshman" && rep.position.includes("Freshman")) return true;
     return false;
-  });
-
-  const handleBackClick = () => {
+  });  const handleBackClick = () => {
+    // Push state with internal navigation marker
+    window.history.pushState({ internal: true }, '', '/information');
     setLocation("/information");
   };
+
   return (
     <ThemedPageWrapper pageType="information">
       {/* Background Video */}
@@ -228,97 +240,89 @@ export default function Representatives() {
 
       {/* Overlay to darken the background video */}
       <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
-
+      
       {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">
-        <div className="container mx-auto px-4">          {/* Navigation */}
-          <SecondaryButton
-            onClick={handleBackClick}
-            className="mb-6 flex items-center text-white hover:text-blue-200 transition-colors"
-          >
-            <div className="bg-black/70 backdrop-blur-xl border border-gray-500/50 shadow-xl rounded-full p-2 mr-2">
+        <div className="container mx-auto px-4">          {/* Header with back button */}
+          <div className="flex items-center mb-8">
+            <Button
+              variant="ghost"
+              onClick={handleBackClick}
+              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </div>            Back to Information
-          </SecondaryButton>
-
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Student Representatives</h1>
-            <p className="text-xl text-blue-100">Meet the students who represent our school</p>
-          </div>          {/* Term Selection and Filtering */}
-          <div className="bg-black/85 backdrop-blur-xl border border-gray-500/50 shadow-2xl rounded-xl p-6 mb-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="w-full md:w-auto">
-                <h2 className="text-lg font-semibold mb-2 text-white">Select Term</h2>
-                <Select value={selectedTerm} onValueChange={setSelectedTerm}>
-                  <SelectTrigger className="bg-white/5 backdrop-blur-xl border-white/10 w-[200px]">
-                    <SelectValue placeholder="Select term" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableTerms.map(term => (
-                      <SelectItem key={term} value={term}>
-                        {term} School Year
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <ThemedTabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
-                <TabsList>
-                  <TabsTrigger value="all">All</TabsTrigger>
-                  <TabsTrigger value="officers">Officers</TabsTrigger>
-                  <TabsTrigger value="senior">Senior</TabsTrigger>
-                  <TabsTrigger value="junior">Junior</TabsTrigger>
-                  <TabsTrigger value="sophomore">Sophomore</TabsTrigger>
-                  <TabsTrigger value="freshman">Freshman</TabsTrigger>
-                </TabsList>
-              </ThemedTabs>
-            </div>
-          </div>
-
-          {/* Representatives Grid */}
+            </Button>
+            <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">Student Representatives</h1>
+          </div>{/* Term selector */}
+          <div className="mb-6">
+            <Select value={selectedTerm} onValueChange={setSelectedTerm}>
+              <SelectTrigger className="w-48 bg-white/5 backdrop-blur-xl border border-white/10 text-white">
+                <SelectValue placeholder="Select Term" />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-900 border-gray-700">
+                {availableTerms.map(term => (
+                  <SelectItem key={term} value={term} className="text-white hover:bg-gray-800">
+                    {term}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>          {/* Tabs for filtering representatives */}
+          <ThemedTabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+            <TabsList className="grid w-full grid-cols-6 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <TabsTrigger value="all" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">All</TabsTrigger>
+              <TabsTrigger value="officers" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Officers</TabsTrigger>
+              <TabsTrigger value="senior" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Seniors</TabsTrigger>
+              <TabsTrigger value="junior" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Juniors</TabsTrigger>
+              <TabsTrigger value="sophomore" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Sophomores</TabsTrigger>
+              <TabsTrigger value="freshman" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Freshmen</TabsTrigger>
+            </TabsList>
+          </ThemedTabs>{/* Representatives grid */}
           {filteredRepresentatives.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredRepresentatives.map(rep => (                <ThemedCard key={rep.id} className="hover:shadow-2xl transition-all">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <Badge 
-                        variant={rep.position.includes("President") ? "default" : rep.position.includes("Vice") ? "secondary" : "outline"}
-                        className={rep.position.includes("President") ? "bg-amber-500" : ""}
-                      >
-                        {rep.position}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {filteredRepresentatives.map((rep) => (
+                <div key={rep.id} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl overflow-hidden hover:bg-white/10 transition-all duration-300">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant="secondary" className="bg-blue-600 text-white">
+                        Grade {rep.grade}
                       </Badge>
-                      <div className="text-sm text-gray-400">Grade {rep.grade}</div>
+                      <Badge variant="outline" className="border-gray-400 text-gray-300">
+                        {rep.term}
+                      </Badge>
                     </div>
                     <div className="flex items-center mt-4">
-                      <Avatar className="h-16 w-16 border-2 border-blue-100">
+                      <Avatar className="h-16 w-16 border-2 border-blue-200">
                         <AvatarImage src={rep.image} alt={rep.name} />
-                        <AvatarFallback>{rep.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>                      <div className="ml-4">
+                        <AvatarFallback className="bg-blue-100 text-blue-800">{rep.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      </Avatar>
+                      <div className="ml-4">
                         <CardTitle className="text-lg text-white">{rep.name}</CardTitle>
-                        <CardDescription className="text-gray-300">{rep.email}</CardDescription>
-                        {rep.phone && <CardDescription className="text-gray-300">{rep.phone}</CardDescription>}
+                        <CardDescription className="font-medium text-blue-300">{rep.position}</CardDescription>
+                        <CardDescription className="text-sm text-gray-300">{rep.email}</CardDescription>
+                        {rep.phone && <CardDescription className="text-sm text-gray-300">{rep.phone}</CardDescription>}
                       </div>
                     </div>
                   </CardHeader>
                   
                   <CardContent>
-                    <div className="space-y-4">                      <div>
-                        <h3 className="text-sm text-gray-400 uppercase mb-1">About</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-400 uppercase mb-1">About</h3>
                         <p className="text-sm text-gray-200">{rep.bio}</p>
                       </div>
                       
                       {rep.committee && (
                         <div>
-                          <h3 className="text-sm text-gray-400 uppercase mb-1">Committee</h3>
+                          <h3 className="text-sm font-medium text-gray-400 uppercase mb-1">Committee</h3>
                           <p className="text-sm font-medium text-white">{rep.committee}</p>
                         </div>
                       )}
-                        <div>
-                        <h3 className="text-sm text-gray-400 uppercase mb-1">Goals</h3>
+                      
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-400 uppercase mb-1">Goals</h3>
                         <ul className="list-disc pl-5 text-sm space-y-1 text-gray-200">
                           {rep.goals.map((goal, idx) => (
                             <li key={idx}>{goal}</li>
@@ -327,10 +331,11 @@ export default function Representatives() {
                       </div>
                     </div>
                   </CardContent>
-                </ThemedCard>
+                </div>
               ))}
-            </div>          ) : (
-            <div className="bg-black/85 backdrop-blur-xl border border-gray-500/50 shadow-2xl rounded-xl p-12 text-center">
+            </div>
+          ) : (
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-12 text-center">
               <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
@@ -338,18 +343,21 @@ export default function Representatives() {
               <p className="mt-1 text-gray-300">There are no representatives matching your current filter.</p>
             </div>
           )}
-            {/* Elections Information */}
-          <div className="mt-12 bg-blue-900/90 backdrop-blur-xl border border-blue-500/50 shadow-2xl rounded-xl p-6 text-white">
-            <h2 className="text-xl font-bold mb-4">Interested in Becoming a Representative?</h2>
-            <p className="mb-4">
+
+          {/* Elections Information */}
+          <div className="bg-blue-900/90 backdrop-blur-xl border border-blue-500/50 shadow-2xl rounded-xl p-6">
+            <h2 className="text-xl font-bold text-white mb-4">Interested in Becoming a Representative?</h2>
+            <p className="text-blue-100 mb-4">
               Elections for the next term's student representatives will be held in April. Visit the Elections page to learn how you can run for a position and make a difference in our school.
-            </p>            <OutlineButton 
-              className="bg-transparent border-white text-white hover:bg-blue-800"
+            </p>
+            <OutlineButton 
+              className="bg-transparent border-white text-white hover:bg-blue-800 transition-colors"
               onClick={() => setLocation("/information/elections")}
             >
               Learn About Elections
             </OutlineButton>
-          </div>        </div>
+          </div>
+        </div>
       </div>
     </ThemedPageWrapper>
   );
