@@ -26,7 +26,7 @@ import Activities from "@/pages/activities/index";
 import EventDetails from "@/pages/activities/details";
 
 // Birds Eye View page
-import BirdsEyeView from "@/pages/birds-eye-view/index";
+import BirdsEyeView from "./pages/birds-eye-view";
 
 // Admin page
 import Admin from "@/pages/admin/index";
@@ -72,8 +72,7 @@ function Router() {
         <Route path="/information/arts" component={() => <PageWrapper><Arts /></PageWrapper>} />
         <Route path="/information/clubs" component={() => <PageWrapper><Clubs /></PageWrapper>} />
         
-        {/* Activities page */}
-        <Route path="/activities" component={() => <PageWrapper><Activities /></PageWrapper>} />
+        {/* Activities page */}        <Route path="/activities" component={() => <PageWrapper><Activities /></PageWrapper>} />
         <Route path="/activities/details/:id" component={() => <PageWrapper><EventDetails /></PageWrapper>} />
         
         {/* Birds Eye View */}

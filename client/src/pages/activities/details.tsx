@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
-import { events, Event } from "./index";
+import { getEvents, type Event } from "@/lib/api";
 import schoolVideo from "../../../../attached_assets/school2.mp4";
 
 // Types for form data
@@ -33,6 +33,8 @@ export default function EventDetails() {
   const [, setLocation] = useLocation();
   const [eventId, setEventId] = useState<string>("");
   const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     contractForm: null,
     guestForm: null,
@@ -82,29 +84,53 @@ export default function EventDetails() {
   };
 
   useEffect(() => {
-    // Extract event ID from the URL
-    const currentPath = window.location.pathname;
-    const matches = currentPath.match(/\/activities\/details\/(.+)$/);
-    if (matches) {
-      const id = matches[1];
-      setEventId(id);
-      const selectedEvent = events.find(e => e.id === id);
-      setEvent(selectedEvent || null);
-      setShowApprovalForm(selectedEvent?.requiresApproval || false);
-    }
+    const loadEventData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    // Load cart from cookies
-    setCart(getCartFromCookies());
+        // Extract event ID from the URL
+        const currentPath = window.location.pathname;
+        const matches = currentPath.match(/\/activities\/details\/(.+)$/);
+        
+        if (matches) {
+          const id = matches[1];
+          setEventId(id);
+          
+          // Fetch all events and find the specific one
+          const eventsData = await getEvents();
+          const selectedEvent = eventsData.find(e => e._id === id);
+          
+          if (selectedEvent) {
+            setEvent(selectedEvent);
+            setShowApprovalForm(selectedEvent.requiresApproval || false);
+          } else {
+            setError('Event not found');
+          }
+        } else {
+          setError('Invalid event URL');
+        }
+
+        // Load cart from cookies
+        setCart(getCartFromCookies());
+      } catch (err) {
+        console.error('Failed to load event:', err);
+        setError('Failed to load event data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEventData();
   }, []);
 
   const handleBackClick = () => {
     sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
     setLocation("/activities");
   };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
+  const formatDate = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('en-US', { 
       weekday: 'long', 
       year: 'numeric', 
       month: 'long', 
@@ -112,19 +138,25 @@ export default function EventDetails() {
     });
   };
 
-  const getAvailabilityStatus = (remaining: number, max: number) => {
-    const percentage = (remaining / max) * 100;
+  const getAvailabilityStatus = (maxTickets?: number) => {
+    if (!maxTickets) return { status: "Available", color: "bg-green-500/20 text-green-200 border-green-500/30" };
+    
+    // For now, assume tickets are available since we don't track sold tickets yet
+    const remaining = maxTickets; // This would be calculated from actual sales in a real system
+    const percentage = (remaining / maxTickets) * 100;
+    
     if (percentage > 50) return { status: "Available", color: "bg-green-500/20 text-green-200 border-green-500/30" };
     if (percentage > 20) return { status: "Limited", color: "bg-yellow-500/20 text-yellow-200 border-yellow-500/30" };
     if (percentage > 0) return { status: "Few Left", color: "bg-red-500/20 text-red-200 border-red-500/30" };
     return { status: "Sold Out", color: "bg-gray-500/20 text-gray-200 border-gray-500/30" };
   };
-
   const handleQuantityChange = (quantity: number) => {
     if (event) {
+      // For now, allow up to 10 tickets or maxTickets if specified
+      const maxAllowed = event.maxTickets ? Math.min(10, event.maxTickets) : 10;
       setFormData(prev => ({
         ...prev,
-        quantity: Math.max(1, Math.min(quantity, Math.min(10, event.remainingTickets)))
+        quantity: Math.max(1, Math.min(quantity, maxAllowed))
       }));
     }
   };
@@ -139,7 +171,7 @@ export default function EventDetails() {
   const handleSubmitApproval = async () => {
     if (!event) return;
 
-    // Validate required forms for dance events
+    // Validate required forms for approval-required events
     if (event.requiresApproval && (!formData.contractForm || !formData.studentId)) {
       // Could implement a toast notification here instead of alert
       return;
@@ -160,16 +192,14 @@ export default function EventDetails() {
   };
 
   const handleDirectPurchase = () => {
-    if (!event) return;
-
-    // Add to cart for non-approval events using cookies
+    if (!event) return;    // Add to cart for non-approval events using cookies
     const cartItem: CartItem = {
-      id: event.id,
+      id: event._id,
       name: event.title,
       price: event.price,
       quantity: formData.quantity,
       type: 'event',
-      eventId: event.id,
+      eventId: event._id,
       image: "/api/placeholder/300/300" // Default image for events
     };
 
@@ -209,7 +239,7 @@ export default function EventDetails() {
     );
   }
 
-  const availability = getAvailabilityStatus(event.remainingTickets, event.maxTickets);
+  const availability = getAvailabilityStatus(event.maxTickets);
 
   return (
     <ThemedPageWrapper pageType="information">
@@ -249,13 +279,7 @@ export default function EventDetails() {
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
-                    <h2 className="text-3xl font-bold text-white">{event.title}</h2>
-                    {event.isPopular && (
-                      <Badge variant="outline" className="bg-yellow-500/20 text-yellow-200 border-yellow-500/30">
-                        Popular
-                      </Badge>
-                    )}
-                    {event.requiresApproval && (
+                    <h2 className="text-3xl font-bold text-white">{event.title}</h2>                    {event.requiresApproval && (
                       <Badge variant="outline" className="bg-orange-500/20 text-orange-200 border-orange-500/30">
                         Requires Approval
                       </Badge>
@@ -299,11 +323,10 @@ export default function EventDetails() {
                     </span>
                     {event.price > 0 && <p className="text-gray-400">per ticket</p>}
                   </div>
-                  
-                  <div className={`p-4 rounded-lg border ${availability.color}`}>
+                    <div className={`p-4 rounded-lg border ${availability.color}`}>
                     <div className="text-center">
                       <p className="font-medium">{availability.status}</p>
-                      <p className="text-sm">{event.remainingTickets} of {event.maxTickets} remaining</p>
+                      <p className="text-sm">{event.maxTickets ? event.maxTickets : 'Unlimited'} max tickets</p>
                     </div>
                   </div>
                 </div>
@@ -346,11 +369,10 @@ export default function EventDetails() {
                   >
                     -
                   </button>
-                  <span className="text-2xl font-bold text-white min-w-[3rem] text-center">{formData.quantity}</span>
-                  <button
+                  <span className="text-2xl font-bold text-white min-w-[3rem] text-center">{formData.quantity}</span>                  <button
                     onClick={() => handleQuantityChange(formData.quantity + 1)}
                     className="w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors flex items-center justify-center text-xl font-bold"
-                    disabled={formData.quantity >= Math.min(10, event.remainingTickets)}
+                    disabled={formData.quantity >= Math.min(10, event.maxTickets || 100)}
                   >
                     +
                   </button>
@@ -417,10 +439,9 @@ export default function EventDetails() {
 
               {/* Action Buttons */}
               <div className="flex space-x-4">
-                {showApprovalForm ? (
-                  <PrimaryButton
+                {showApprovalForm ? (                  <PrimaryButton
                     onClick={handleSubmitApproval}
-                    disabled={isSubmitting || event.remainingTickets === 0 || !formData.contractForm || !formData.studentId}
+                    disabled={isSubmitting || !formData.contractForm || !formData.studentId}
                     className="flex-1 bg-orange-500/20 border border-orange-500/30 text-orange-200 hover:bg-orange-500/30 disabled:opacity-50 disabled:cursor-not-allowed py-4 text-lg font-semibold"
                   >
                     {isSubmitting ? (
@@ -435,17 +456,12 @@ export default function EventDetails() {
                       `Submit for Approval - ${formData.quantity} ticket${formData.quantity > 1 ? 's' : ''}`
                     )}
                   </PrimaryButton>
-                ) : (
-                  <PrimaryButton
+                ) : (                  <PrimaryButton
                     onClick={handleDirectPurchase}
-                    disabled={event.remainingTickets === 0}
+                    disabled={false} // For now, always allow purchase since we don't track remaining tickets
                     className="flex-1 bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed py-4 text-lg font-semibold"
                   >
-                    {event.remainingTickets === 0 ? (
-                      "Sold Out"
-                    ) : (
-                      `Add to Cart - ${event.price === 0 ? "FREE" : `$${(event.price * formData.quantity).toFixed(2)}`}`
-                    )}
+                    {`Add to Cart - ${event.price === 0 ? "FREE" : `$${(event.price * formData.quantity).toFixed(2)}`}`}
                   </PrimaryButton>
                 )}
                 

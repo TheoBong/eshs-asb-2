@@ -1,137 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
-
-// Types for athletic programs
-interface AthleticProgram {
-  id: string;
-  name: string;
-  season: string;
-  description: string;
-  coach: string;
-  practiceSchedule: string;
-  location: string;
-  requirements: string[];
-  achievements?: string[];
-}
-
-// Mock data for athletic programs
-const athleticPrograms: AthleticProgram[] = [
-  {
-    id: "football",
-    name: "Football",
-    season: "Fall",
-    description: "Varsity football team competing in the regional league.",
-    coach: "Coach Johnson",
-    practiceSchedule: "Monday-Friday 3:30-5:30 PM",
-    location: "Main Football Field",
-    requirements: [
-      "Physical examination required",
-      "Minimum 2.0 GPA",
-      "Attendance at tryouts",
-      "Parent consent form"
-    ],
-    achievements: [
-      "Regional Champions 2024",
-      "League Champions 2023",
-      "State Semifinalists 2023"
-    ]
-  },
-  {
-    id: "basketball",
-    name: "Basketball",
-    season: "Winter",
-    description: "Boys and Girls varsity basketball teams.",
-    coach: "Coach Martinez",
-    practiceSchedule: "Monday-Friday 3:00-5:00 PM",
-    location: "Main Gymnasium",
-    requirements: [
-      "Physical examination required",
-      "Minimum 2.0 GPA",
-      "Attendance at tryouts",
-      "Previous basketball experience preferred"
-    ],
-    achievements: [
-      "District Champions 2024",
-      "Regional Tournament 2024"
-    ]
-  },
-  {
-    id: "soccer",
-    name: "Soccer",
-    season: "Spring",
-    description: "Competitive soccer program for boys and girls.",
-    coach: "Coach Rodriguez",
-    practiceSchedule: "Monday-Friday 3:30-5:30 PM",
-    location: "Soccer Fields",
-    requirements: [
-      "Physical examination required",
-      "Minimum 2.0 GPA",
-      "Soccer cleats required",
-      "Team physical fitness test"
-    ],
-    achievements: [
-      "League Champions 2024",
-      "State Tournament Qualifiers 2024"
-    ]
-  },
-  {
-    id: "track",
-    name: "Track & Field",
-    season: "Spring",
-    description: "Track and field events including running, jumping, and throwing.",
-    coach: "Coach Thompson",
-    practiceSchedule: "Monday-Friday 3:00-5:00 PM",
-    location: "Track & Field Complex",
-    requirements: [
-      "Physical examination required",
-      "Minimum 2.0 GPA",
-      "Running shoes required",
-      "Commitment to training schedule"
-    ],
-    achievements: [
-      "Individual State Champions 2024",
-      "Regional Team Champions 2024"
-    ]
-  },
-  {
-    id: "volleyball",
-    name: "Volleyball",
-    season: "Fall",
-    description: "Girls varsity volleyball team.",
-    coach: "Coach Davis",
-    practiceSchedule: "Monday-Friday 3:00-5:00 PM",
-    location: "Gymnasium B",
-    requirements: [
-      "Physical examination required",
-      "Minimum 2.0 GPA",
-      "Volleyball shoes required",
-      "Height advantage preferred"
-    ],
-    achievements: [
-      "District Champions 2024",
-      "Regional Tournament 2024"
-    ]
-  },
-  {
-    id: "tennis",
-    name: "Tennis",
-    season: "Spring",
-    description: "Boys and Girls tennis teams.",
-    coach: "Coach Wilson",
-    practiceSchedule: "Monday-Friday 3:30-5:30 PM",
-    location: "Tennis Courts",
-    requirements: [
-      "Physical examination required",
-      "Minimum 2.0 GPA",
-      "Tennis racket required",
-      "Basic tennis skills preferred"
-    ]
-  }
-];
+import { Athletic, getAthletics } from "@/lib/api";
 
 // Athletic resources
 const athleticResources = [
@@ -160,6 +33,26 @@ const athleticResources = [
 export default function Athletics() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("All");
+  const [athleticPrograms, setAthleticPrograms] = useState<Athletic[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAthletics = async () => {
+      try {
+        setLoading(true);
+        const data = await getAthletics();
+        setAthleticPrograms(data);
+      } catch (err) {
+        setError('Failed to load athletic programs');
+        console.error('Error fetching athletics:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAthletics();
+  }, []);
 
   const handleBackClick = () => {
     setLocation("/information");
@@ -171,6 +64,68 @@ export default function Athletics() {
     : athleticPrograms.filter(program => program.season === activeTab);
 
   const seasons = ["All", "Fall", "Winter", "Spring"];
+
+  if (loading) {
+    return (
+      <ThemedPageWrapper pageType="information">
+        {/* Background Video */}
+        <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+          >
+            <source src={schoolVideo} type="video/mp4" />
+          </video>
+        </div>
+        
+        {/* Overlay to darken the background video */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
+        
+        {/* Loading content */}
+        <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
+          <div className="text-white text-xl">Loading athletic programs...</div>
+        </div>
+      </ThemedPageWrapper>
+    );
+  }
+
+  if (error) {
+    return (
+      <ThemedPageWrapper pageType="information">
+        {/* Background Video */}
+        <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+          >
+            <source src={schoolVideo} type="video/mp4" />
+          </video>
+        </div>
+        
+        {/* Overlay to darken the background video */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
+        
+        {/* Error content */}
+        <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-white text-xl mb-4">{error}</div>
+            <OutlineButton
+              onClick={handleBackClick}
+              className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold"
+            >
+              Back to Information
+            </OutlineButton>
+          </div>
+        </div>
+      </ThemedPageWrapper>
+    );
+  }
 
   return (
     <ThemedPageWrapper pageType="information">
@@ -234,23 +189,23 @@ export default function Athletics() {
           <Tabs defaultValue="All" className="mb-8" onValueChange={setActiveTab}>
             <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg grid grid-cols-4 w-full max-w-2xl mx-auto">
               <TabsTrigger value="All" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">All</TabsTrigger>
-              <TabsTrigger value="Fall" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Fall</TabsTrigger>
-              <TabsTrigger value="Winter" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Winter</TabsTrigger>
-              <TabsTrigger value="Spring" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Spring</TabsTrigger>
+              <TabsTrigger value="fall" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Fall</TabsTrigger>
+              <TabsTrigger value="winter" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Winter</TabsTrigger>
+              <TabsTrigger value="spring" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Spring</TabsTrigger>
             </TabsList>
           </Tabs>
 
           {/* Athletic Programs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {filteredPrograms.map((program) => (
-              <ThemedCard key={program.id} className="hover:shadow-md transition-all bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <ThemedCard key={program._id} className="hover:shadow-md transition-all bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-xl font-semibold text-white mb-2">{program.name}</h3>
+                      <h3 className="text-xl font-semibold text-white mb-2">{program.sport}</h3>
                       <p className="text-gray-300 mb-3">{program.description}</p>
                     </div>
-                    <Badge variant="outline" className="ml-2">
+                    <Badge variant="outline" className="ml-2 capitalize">
                       {program.season}
                     </Badge>
                   </div>
@@ -259,32 +214,20 @@ export default function Athletics() {
                     <div>
                       <p className="text-sm font-medium text-gray-200">Coach: <span className="text-white">{program.coach}</span></p>
                     </div>
+                    {program.assistantCoach && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-200">Assistant Coach: <span className="text-white">{program.assistantCoach}</span></p>
+                      </div>
+                    )}
                     <div>
                       <p className="text-sm font-medium text-gray-200">Practice: <span className="text-white">{program.practiceSchedule}</span></p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-200">Location: <span className="text-white">{program.location}</span></p>
+                      <p className="text-sm font-medium text-gray-200">Home Venue: <span className="text-white">{program.homeVenue}</span></p>
                     </div>
-                  </div>
-
-                  {program.achievements && (
-                    <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
-                      <p className="text-sm font-medium text-blue-200 mb-2">Recent Achievements:</p>
-                      <ul className="text-sm text-blue-100 space-y-1">
-                        {program.achievements.map((achievement, index) => (
-                          <li key={index}>• {achievement}</li>
-                        ))}
-                      </ul>
+                    <div>
+                      <p className="text-sm font-medium text-gray-200">Roster Size: <span className="text-white">{program.rosterCount}</span></p>
                     </div>
-                  )}
-
-                  <div className="mb-4">
-                    <h4 className="font-medium text-gray-200 mb-2">Requirements:</h4>
-                    <ul className="list-disc list-inside space-y-1">
-                      {program.requirements.map((requirement, index) => (
-                        <li key={index} className="text-gray-300 text-sm">{requirement}</li>
-                      ))}
-                    </ul>
                   </div>
 
                   <div className="flex space-x-2">

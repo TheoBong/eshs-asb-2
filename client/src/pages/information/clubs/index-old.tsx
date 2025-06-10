@@ -6,6 +6,200 @@ import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/c
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
 import { Club, getClubs } from "@/lib/api";
 
+// Types for clubs
+interface Club {
+  id: string;
+  name: string;
+  category: "Academic" | "Service" | "Special Interest" | "Honor Society";
+  description: string;
+  advisor: string;
+  meetingTime: string;
+  location: string;
+  requirements: string[];
+  activities?: string[];
+  memberCount?: number;
+}
+
+// Mock data for clubs
+const clubs: Club[] = [
+  {
+    id: "debate",
+    name: "Debate Team",
+    category: "Academic",
+    description: "Develop critical thinking and public speaking skills through competitive debate.",
+    advisor: "Mr. Thompson",
+    meetingTime: "Tuesdays & Thursdays 3:30-5:00 PM",
+    location: "Room 215",
+    requirements: [
+      "Strong interest in current events",
+      "Commitment to research and preparation",
+      "Attendance at tournaments",
+      "Maintain academic standing"
+    ],
+    activities: [
+      "Regional debate tournaments",
+      "Mock trial competitions",
+      "Public speaking workshops",
+      "Parliamentary procedure training"
+    ],
+    memberCount: 24
+  },
+  {
+    id: "robotics",
+    name: "Robotics Club",
+    category: "Academic",
+    description: "Design, build, and program robots for competition and learning.",
+    advisor: "Ms. Chen",
+    meetingTime: "Monday-Friday 3:30-6:00 PM",
+    location: "Engineering Lab",
+    requirements: [
+      "Interest in STEM fields",
+      "Commitment to build season (September-February)",
+      "Participation in competitions",
+      "Safety training completion"
+    ],
+    activities: [
+      "FIRST Robotics Competition",
+      "Robot design and construction",
+      "Programming workshops",
+      "Community outreach events"
+    ],
+    memberCount: 32
+  },
+  {
+    id: "key-club",
+    name: "Key Club",
+    category: "Service",
+    description: "Student-led service organization dedicated to community involvement.",
+    advisor: "Ms. Rodriguez",
+    meetingTime: "First Wednesday of each month",
+    location: "Cafeteria",
+    requirements: [
+      "Minimum 20 service hours per semester",
+      "Regular meeting attendance",
+      "Participation in service projects",
+      "Payment of club dues"
+    ],
+    activities: [
+      "Food bank volunteering",
+      "Community clean-up events",
+      "Fundraising for charities",
+      "Elder care facility visits"
+    ],
+    memberCount: 56
+  },
+  {
+    id: "environmental",
+    name: "Environmental Club",
+    category: "Service",
+    description: "Promote environmental awareness and sustainability on campus and in the community.",
+    advisor: "Mr. Davis",
+    meetingTime: "Fridays 3:30-4:30 PM",
+    location: "Science Wing",
+    requirements: [
+      "Passion for environmental issues",
+      "Participation in campus initiatives",
+      "Commitment to sustainability practices",
+      "Community project involvement"
+    ],
+    activities: [
+      "Campus recycling program",
+      "Earth Day celebration",
+      "Environmental awareness campaigns",
+      "Tree planting initiatives"
+    ],
+    memberCount: 28
+  },
+  {
+    id: "anime",
+    name: "Anime Club",
+    category: "Special Interest",
+    description: "Celebrate Japanese animation, manga, and pop culture.",
+    advisor: "Ms. Johnson",
+    meetingTime: "Wednesdays 3:30-4:30 PM",
+    location: "Library Conference Room",
+    requirements: [
+      "Interest in anime and manga",
+      "Respectful participation in discussions",
+      "Help with club events",
+      "Follow school media policies"
+    ],
+    activities: [
+      "Weekly anime screenings",
+      "Manga reading sessions",
+      "Japanese culture discussions",
+      "Cosplay events"
+    ],
+    memberCount: 35
+  },
+  {
+    id: "chess",
+    name: "Chess Club",
+    category: "Special Interest",
+    description: "Learn and compete in the strategic game of chess.",
+    advisor: "Mr. Wilson",
+    meetingTime: "Tuesdays & Thursdays 3:30-4:30 PM",
+    location: "Room 102",
+    requirements: [
+      "Basic knowledge of chess rules helpful",
+      "Regular meeting attendance",
+      "Sportsmanlike conduct",
+      "Participation in tournaments optional"
+    ],
+    activities: [
+      "Weekly chess tournaments",
+      "Strategy lessons",
+      "Inter-school competitions",
+      "Chess puzzle challenges"
+    ],
+    memberCount: 18
+  },
+  {
+    id: "national-honor-society",
+    name: "National Honor Society",
+    category: "Honor Society",
+    description: "Recognize and encourage academic achievement while developing leadership and service.",
+    advisor: "Dr. Anderson",
+    meetingTime: "Monthly meetings",
+    location: "Main Conference Room",
+    requirements: [
+      "Minimum 3.5 GPA",
+      "Demonstrated leadership experience",
+      "Completion of service hours",
+      "Faculty recommendation required"
+    ],
+    activities: [
+      "Tutoring programs",
+      "Academic recognition ceremonies",
+      "Community service projects",
+      "Leadership development workshops"
+    ],
+    memberCount: 42
+  },
+  {
+    id: "drama",
+    name: "Drama Club",
+    category: "Special Interest",
+    description: "Support theatrical productions and develop acting skills.",
+    advisor: "Ms. Martinez",
+    meetingTime: "Monday-Thursday 3:30-5:30 PM",
+    location: "Theater",
+    requirements: [
+      "Interest in theater arts",
+      "Commitment to productions",
+      "Attendance at rehearsals",
+      "Participation in fundraising"
+    ],
+    activities: [
+      "Fall and spring productions",
+      "One-act play festivals",
+      "Improv workshops",
+      "Theater trip opportunities"
+    ],
+    memberCount: 29
+  }
+];
+
 // Club resources
 const clubResources = [
   {
@@ -63,8 +257,7 @@ export default function Clubs() {
     ? clubs 
     : clubs.filter(club => club.category === activeTab);
 
-  // Get unique categories from the data
-  const categories = ["All", ...new Set(clubs.map(club => club.category))];
+  const categories = ["All", "Academic", "Service", "Special Interest", "Honor Society"];
 
   if (loading) {
     return (
@@ -174,7 +367,7 @@ export default function Clubs() {
                     Join a Club
                   </PrimaryButton>
                   <OutlineButton className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold">
-                    Start a Club
+                    Start New Club
                   </OutlineButton>
                 </div>
               </div>
@@ -188,32 +381,33 @@ export default function Clubs() {
 
           {/* Category Filter Tabs */}
           <Tabs defaultValue="All" className="mb-8" onValueChange={setActiveTab}>
-            <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg flex flex-wrap w-full justify-center">
-              {categories.map((category) => (
-                <TabsTrigger 
-                  key={category}
-                  value={category} 
-                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white m-1"
-                >
-                  {category}
-                </TabsTrigger>
-              ))}
+            <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg grid grid-cols-5 w-full max-w-3xl mx-auto">
+              <TabsTrigger value="All" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">All</TabsTrigger>
+              <TabsTrigger value="Academic" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Academic</TabsTrigger>
+              <TabsTrigger value="Service" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Service</TabsTrigger>
+              <TabsTrigger value="Special Interest" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Special Interest</TabsTrigger>
+              <TabsTrigger value="Honor Society" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Honor Society</TabsTrigger>
             </TabsList>
           </Tabs>
 
           {/* Clubs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {filteredClubs.map((club) => (
-              <ThemedCard key={club._id} className="hover:shadow-md transition-all bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <ThemedCard key={club.id} className="hover:shadow-md transition-all bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="text-xl font-semibold text-white mb-2">{club.name}</h3>
                       <p className="text-gray-300 mb-3">{club.description}</p>
                     </div>
-                    <Badge variant="outline" className="ml-2">
-                      {club.category}
-                    </Badge>
+                    <div className="flex flex-col items-end space-y-2">
+                      <Badge variant="outline" className="ml-2">
+                        {club.category}
+                      </Badge>
+                      {club.memberCount && (
+                        <span className="text-sm text-gray-400">{club.memberCount} members</span>
+                      )}
+                    </div>
                   </div>
                   
                   <div className="space-y-3 mb-4">
@@ -221,40 +415,32 @@ export default function Clubs() {
                       <p className="text-sm font-medium text-gray-200">Advisor: <span className="text-white">{club.advisor}</span></p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-200">Meeting Time: <span className="text-white">{club.meetingTime}</span></p>
+                      <p className="text-sm font-medium text-gray-200">Meetings: <span className="text-white">{club.meetingTime}</span></p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-200">Location: <span className="text-white">{club.location}</span></p>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-200">Members: <span className="text-white">{club.memberCount}</span></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-200">Contact: <span className="text-white">{club.contactEmail}</span></p>
-                    </div>
                   </div>
 
-                  {club.requirements && club.requirements.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="font-medium text-gray-200 mb-2">Requirements:</h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {club.requirements.map((requirement, index) => (
-                          <li key={index} className="text-gray-300 text-sm">{requirement}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {club.activities && club.activities.length > 0 && (
-                    <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
-                      <p className="text-sm font-medium text-blue-200 mb-2">Activities:</p>
-                      <ul className="text-sm text-blue-100 space-y-1">
+                  {club.activities && (
+                    <div className="mb-4 p-3 bg-rose-500/20 rounded-lg border border-rose-500/30">
+                      <p className="text-sm font-medium text-rose-200 mb-2">Club Activities:</p>
+                      <ul className="text-sm text-rose-100 space-y-1">
                         {club.activities.map((activity, index) => (
                           <li key={index}>• {activity}</li>
                         ))}
                       </ul>
                     </div>
                   )}
+
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-200 mb-2">Requirements:</h4>
+                    <ul className="list-disc list-inside space-y-1">
+                      {club.requirements.map((requirement, index) => (
+                        <li key={index} className="text-gray-300 text-sm">{requirement}</li>
+                      ))}
+                    </ul>
+                  </div>
 
                   <div className="flex space-x-2">
                     <OutlineButton className="text-white hover:text-gray-300" size="sm">
@@ -300,19 +486,19 @@ export default function Clubs() {
             <div className="space-y-4">
               <div className="border-b border-white/10 pb-4">
                 <h3 className="font-semibold mb-2 text-white">How do I join a club?</h3>
-                <p className="text-gray-300">Contact the club advisor or attend one of their meetings. Most clubs welcome new members throughout the year, though some may have specific enrollment periods.</p>
+                <p className="text-gray-300">Most clubs welcome new members throughout the year. Contact the club advisor or attend a meeting to get started. Some clubs may have specific requirements or application processes.</p>
               </div>
               <div className="border-b border-white/10 pb-4">
-                <h3 className="font-semibold mb-2 text-white">Can I start a new club?</h3>
+                <h3 className="font-semibold mb-2 text-white">Can I join multiple clubs?</h3>
+                <p className="text-gray-300">Absolutely! Many students participate in several clubs. Just be mindful of time commitments and meeting schedules to ensure you can be an active member.</p>
+              </div>
+              <div className="border-b border-white/10 pb-4">
+                <h3 className="font-semibold mb-2 text-white">How do I start a new club?</h3>
                 <p className="text-gray-300">To start a new club, you need at least 10 interested students, a faculty advisor, and approval from student activities. Submit a proposal with your club's purpose and planned activities.</p>
               </div>
-              <div className="border-b border-white/10 pb-4">
+              <div>
                 <h3 className="font-semibold mb-2 text-white">Are there leadership opportunities in clubs?</h3>
                 <p className="text-gray-300">Yes! Most clubs elect officers annually, including president, vice president, secretary, and treasurer. These positions provide valuable leadership experience.</p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2 text-white">Do clubs have membership fees?</h3>
-                <p className="text-gray-300">Some clubs may have small dues to cover activities and materials. Check with individual clubs about their fee structure and any available financial assistance.</p>
               </div>
             </div>
           </div>
