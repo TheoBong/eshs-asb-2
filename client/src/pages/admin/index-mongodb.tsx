@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, Edit, Trash2, Package, Calendar, Info, Video, FileText, Check, X, Eye, BarChart3, Users } from 'lucide-react';
 import { ThemedCard, PrimaryButton, SecondaryButton, OutlineButton } from '@/components/ThemedComponents';
+import { CommaSeparatedInput } from '@/components/ui/comma-separated-input';
 import schoolVideo from "../../../../attached_assets/school2.mp4";
 import {
   getProducts, createProduct, updateProduct, deleteProduct,
@@ -274,16 +275,13 @@ function EventForm({ event, onSubmit, onCancel }: {
             placeholder="0"
           />
         </div>
-      </div>
-
-      <div>
+      </div>      <div>
         <label className="block text-sm font-medium text-white mb-2">Features</label>
-        <Input
-          value={formData.features?.join(', ') || ''}
-          onChange={(e) => setFormData({...formData, features: e.target.value.split(',').map(f => f.trim()).filter(f => f)})}
+        <CommaSeparatedInput
+          value={formData.features || []}
+          onChange={(features) => setFormData({...formData, features})}
           placeholder="DJ, Refreshments, Photo Booth"
         />
-        <p className="text-xs text-gray-400 mt-1">Separate with commas</p>
       </div>
 
       <div className="flex items-center space-x-2">

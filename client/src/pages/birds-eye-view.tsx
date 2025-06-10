@@ -99,12 +99,11 @@ const BirdsEyeView = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
 
       <div className="relative z-10 min-h-screen">
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center mb-8">
+        <main className="container mx-auto px-4 py-8">          <div className="flex items-center mb-8">
             <Button
               variant="ghost"
               onClick={handleBackClick}
-              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300"
+              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
             >
               <svg
                 className="w-5 h-5"
@@ -119,6 +118,7 @@ const BirdsEyeView = () => {
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
+              <span>Back</span>
             </Button>
             <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">Bird's Eye View</h1>
           </div>

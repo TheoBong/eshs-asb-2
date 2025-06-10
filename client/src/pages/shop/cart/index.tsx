@@ -82,16 +82,16 @@ export default function CartPage() {
       {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">
         <div className="container mx-auto px-4">
-          {/* Header */}
-          <div className="flex items-center mb-8">
+          {/* Header */}          <div className="flex items-center mb-8">
             <Button
               variant="ghost"
               onClick={handleContinueShopping}
-              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300"
+              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
+              <span>Back</span>
             </Button>
             <div>
               <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">Your Shopping Cart</h1>

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, Edit, Trash2, Package, Calendar, Info, Video, FileText, Check, X, Eye, BarChart3, Users, Download, Send, DollarSign, TrendingUp } from 'lucide-react';
 import { ThemedCard, PrimaryButton, SecondaryButton, OutlineButton } from '@/components/ThemedComponents';
+import { CommaSeparatedInput } from '@/components/ui/comma-separated-input';
 import schoolVideo from "../../../../attached_assets/school2.mp4";
 import {
   getProducts, createProduct, updateProduct, deleteProduct,
@@ -246,20 +247,18 @@ function ProductForm({ product, onSubmit, onCancel }: {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
+      <div className="grid grid-cols-2 gap-4">        <div>
           <label className="block text-sm font-medium text-white mb-2">Available Sizes</label>
-          <Input
-            value={formData.sizes?.join(', ') || ''}
-            onChange={(e) => setFormData({...formData, sizes: e.target.value.split(',').map(s => s.trim()).filter(s => s)})}
+          <CommaSeparatedInput
+            value={formData.sizes || []}
+            onChange={(sizes) => setFormData({...formData, sizes})}
             placeholder="S, M, L, XL"
           />
-        </div>
-        <div>
+        </div>        <div>
           <label className="block text-sm font-medium text-white mb-2">Available Colors</label>
-          <Input
-            value={formData.colors?.join(', ') || ''}
-            onChange={(e) => setFormData({...formData, colors: e.target.value.split(',').map(c => c.trim()).filter(c => c)})}
+          <CommaSeparatedInput
+            value={formData.colors || []}
+            onChange={(colors) => setFormData({...formData, colors})}
             placeholder="Blue, Gold, Red"
           />
         </div>
@@ -464,16 +463,13 @@ function EventForm({ event, onSubmit, onCancel }: {
             placeholder="0"
           />
         </div>
-      </div>
-
-      <div>
+      </div>      <div>
         <label className="block text-sm font-medium text-white mb-2">Features</label>
-        <Input
-          value={formData.features?.join(', ') || ''}
-          onChange={(e) => setFormData({...formData, features: e.target.value.split(',').map(f => f.trim()).filter(f => f)})}
+        <CommaSeparatedInput
+          value={formData.features || []}
+          onChange={(features) => setFormData({...formData, features})}
           placeholder="DJ, Refreshments, Photo Booth"
         />
-        <p className="text-xs text-gray-400 mt-1">Separate with commas</p>
       </div>
 
       <div className="flex items-center space-x-2">
@@ -2048,12 +2044,11 @@ ESHS ASB Team
       {/* Main content */}
       <div className="relative z-10 min-h-screen">
         <main className="container mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="flex items-center mb-8">
+          {/* Header */}          <div className="flex items-center mb-8">
             <Button
               variant="ghost"
               onClick={handleBackClick}
-              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300"
+              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
             >
               <svg
                 className="w-5 h-5"
@@ -2068,6 +2063,7 @@ ESHS ASB Team
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
+              <span>Back</span>
             </Button>
             <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">
               Admin Dashboard

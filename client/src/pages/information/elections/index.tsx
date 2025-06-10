@@ -185,7 +185,7 @@ export default function Elections() {
                 <TabsTrigger 
                   key={level}
                   value={level} 
-                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white text-sm px-3 py-2"
+                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
                 >
                   {level}
                 </TabsTrigger>

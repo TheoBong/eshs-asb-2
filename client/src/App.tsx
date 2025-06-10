@@ -31,6 +31,7 @@ import BirdsEyeView from "./pages/birds-eye-view";
 
 // Admin page
 import Admin from "@/pages/admin/index";
+import CommaTest from "@/pages/admin/comma-test";
 
 // Page wrapper component for fade transitions
 const PageWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -78,9 +79,10 @@ function Router() {
         
         {/* Birds Eye View */}
         <Route path="/birds-eye-view" component={() => <PageWrapper><BirdsEyeView /></PageWrapper>} />
-        
-        {/* Admin page */}
+          {/* Admin page */}
         <Route path="/admin" component={() => <PageWrapper><Admin /></PageWrapper>} />
+        {/* Testing and debugging routes */}
+        <Route path="/comma-test" component={() => <PageWrapper><CommaTest /></PageWrapper>} />
         
         {/* 404 page */}
         <Route component={() => <PageWrapper><NotFound /></PageWrapper>} />
