@@ -181,7 +181,7 @@ export default function Shop() {
           <source src={schoolVideo} type="video/mp4" />
         </video>
       </div>      {/* Overlay to darken the background video */}
-      <div className="fixed inset-0 bg-black bg-opacity-85 -z-10"></div>      {/* Main content */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>    {/* Main content */}
       <div className="relative z-10 min-h-screen">
         <div className="container mx-auto px-4 py-8">
           {/* Transparent back button with title */}
@@ -311,10 +311,10 @@ export default function Shop() {
             {/* Tab Navigation */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
               <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                <TabsTrigger value="all">All Products</TabsTrigger>
-                <TabsTrigger value="featured">Featured</TabsTrigger>
-                <TabsTrigger value="apparel">Apparel</TabsTrigger>
-                <TabsTrigger value="accessories">Accessories</TabsTrigger>
+                <TabsTrigger value="all" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">All Products</TabsTrigger>
+                <TabsTrigger value="featured" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Featured</TabsTrigger>
+                <TabsTrigger value="apparel" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Apparel</TabsTrigger>
+                <TabsTrigger value="accessories" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Accessories</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -324,7 +324,7 @@ export default function Shop() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredItems.map(item => (                <ThemedCard 
                   key={item.id} 
-                  className="hover:shadow-xl transition-transform hover:scale-[1.02] cursor-pointer overflow-hidden"
+                  className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:shadow-2xl transition-transform hover:scale-[1.01] cursor-pointer"
                   onClick={() => handleProductClick(item.id)}
                 >                  {/* Product Image */}
                   <div className="h-48 bg-gray-900 overflow-hidden">

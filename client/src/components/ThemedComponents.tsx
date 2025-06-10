@@ -163,13 +163,16 @@ export const ThemedPageWrapper: React.FC<{
   className?: string;
   pageType?: 'default' | 'theater' | 'shop' | 'activities' | 'information';
 }> = ({ children, className, pageType = 'default' }) => {
+  // For pages with video backgrounds, don't apply solid backgrounds
+  const hasVideoBackground = pageType === 'information' || pageType === 'shop';
+  
   // Different background styles based on page type
   const bgClasses = {
     default: "bg-background text-foreground",
     theater: "bg-gradient-to-br from-black to-amber-950",
-    shop: "bg-gradient-to-br from-black to-blue-950",
+    shop: hasVideoBackground ? "text-white" : "bg-gradient-to-br from-black to-blue-950",
     activities: "bg-gradient-to-br from-black to-green-950",
-    information: "bg-gradient-to-br from-black to-purple-950"
+    information: hasVideoBackground ? "text-white" : "bg-gradient-to-br from-black to-purple-950"
   };
 
   return (

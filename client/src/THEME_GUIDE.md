@@ -101,3 +101,12 @@ Each page type has a unique gradient background:
 7. Use `ThemedCard` for content containers to get rounded corners and blur effects.
 
 By following this guide, we ensure a unified and professional look across the entire website.
+
+
+db.createUser(
+  {
+    user: "tester",
+    pwd:  "tester123",   // or cleartext password
+    roles: [ { role: "readWrite", db: "test" }]
+  }
+)

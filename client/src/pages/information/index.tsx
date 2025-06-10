@@ -8,52 +8,42 @@ import schoolVideo from "../../../../attached_assets/school2.mp4";
 // Mock data for information sections
 const infoSections = [
 	{
-		id: "representatives",
-		title: "Student Representatives",
+		id: "student-government",
+		title: "Student Government",
 		description:
-			"Meet the students who represent our school in various capacities and committees.",
+			"Meet your student government representatives and learn about their roles in representing your voice at school.",
 		image: "https://images.squarespace-cdn.com/content/v1/57be4dc6f5e231e5516f7e44/1605373317776-D6XRQQFN594G6IUWBECK/StudentCouncil.png",
-		path: "/information/representatives",
-		color: "bg-blue-100/90 border-blue-300",
-		iconColor: "text-blue-800",
-	},
-	{
-		id: "elections",
-		title: "Elections",
-		description:
-			"Information about upcoming elections, candidate requirements, and how to run for student office.",
-		image: "https://sapro.moderncampus.com/hubfs/Destiny/Imported_Blog_Media/VOTEBOX-4.png",
-		path: "/information/elections",
+		path: "/information/student-government",
 		color: "bg-amber-100/90 border-amber-300",
 		iconColor: "text-amber-700",
 	},
 	{
-		id: "seniors",
-		title: "Seniors",
+		id: "athletics",
+		title: "Athletics",
 		description:
-			"Senior-specific information including graduation events, senior activities, and important deadlines.",
-		image: "https://m.media-amazon.com/images/I/61AOqbAHirL.jpg",
-		path: "/information/seniors",
-		color: "bg-emerald-100/90 border-emerald-300",
-		iconColor: "text-emerald-800",
+			"Explore our school's sports teams, athletic programs, and upcoming games.",
+		image: "https://www.shutterstock.com/image-vector/sport-balls-collection-isolated-on-260nw-1012538588.jpg",
+		path: "/information/athletics",
+		color: "bg-blue-100/90 border-blue-300",
+		iconColor: "text-blue-800",
 	},
 	{
-		id: "organizations",
-		title: "Organizations",
+		id: "arts",
+		title: "Arts",
 		description:
-			"Explore our school's clubs, sports teams, and other student organizations.",
-		image: "https://www.northnationmedia.com/wp-content/uploads/2023/10/school-clubs-1200x849.png",
-		path: "/information/organizations",
+			"Discover our performing and visual arts programs, theater productions, and art exhibitions.",
+		image: "https://www.shutterstock.com/image-vector/art-palette-brush-vector-icon-260nw-1089070326.jpg",
+		path: "/information/arts",
 		color: "bg-purple-100/90 border-purple-300",
 		iconColor: "text-purple-800",
 	},
 	{
-		id: "calendar",
-		title: "Calendar",
+		id: "clubs",
+		title: "Clubs",
 		description:
-			"Stay up to date with all school events, holidays, and important academic dates.",
-		image: "https://cdn.vectorstock.com/i/1000v/32/72/desc-calendar-cartoon-style-design-isolated-vector-36183272.jpg",
-		path: "/information/calendar",
+			"Join one of our many academic, social, and special interest clubs.",
+		image: "https://www.northnationmedia.com/wp-content/uploads/2023/10/school-clubs-1200x849.png",
+		path: "/information/clubs",
 		color: "bg-rose-100/90 border-rose-300",
 		iconColor: "text-rose-800",
 	},
@@ -63,10 +53,10 @@ const infoSections = [
 const announcements = [
 	{
 		id: 1,
-		title: "New Student Council Members Announced",
+		title: "New Student Government Members Announced",
 		date: "May 28, 2025",
 		content:
-			"Congratulations to our newly elected student council members! The results are now available on the Representatives page.",
+			"Congratulations to our newly elected student council members! View all current representatives on the Student Government page.",
 		priority: "high",
 	},
 	{
@@ -74,46 +64,29 @@ const announcements = [
 		title: "Senior Cap and Gown Distribution",
 		date: "May 15, 2025",
 		content:
-			"Seniors can pick up their caps and gowns from the main office between June 1-3. See the Seniors page for more details.",
+			"Seniors can pick up their caps and gowns from the main office between June 1-3. Contact the senior class president for more details.",
 		priority: "medium",
 	},
 	{
 		id: 3,
-		title: "Club Registration for Fall 2025",
+		title: "Fall Club Registration Open",
 		date: "May 10, 2025",
 		content:
-			"Registration for fall clubs opens on June 15. See the Organizations page for details on how to start or join a club.",
+			"Registration for fall clubs opens on June 15. See the Clubs page for details on how to start or join a club.",
 		priority: "medium",
 	},
 	{
 		id: 4,
-		title: "Calendar Updates for Final Exam Week",
+		title: "Spring Sports Tryouts Announced",
 		date: "May 5, 2025",
 		content:
-			"The final exam schedule has been updated. Please check the Calendar page for the most current information.",
+			"Spring sports tryout schedules have been posted. Check the Athletics page for tryout dates and requirements.",
 		priority: "low",
 	},
 ];
 
 // Icon components
-const RepresentativesIcon = () => (
-	<svg
-		className="h-6 w-6"
-		xmlns="http://www.w3.org/2000/svg"
-		fill="none"
-		viewBox="0 0 24 24"
-		stroke="currentColor"
-	>
-		<path
-			strokeLinecap="round"
-			strokeLinejoin="round"
-			strokeWidth={2}
-			d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-		/>
-	</svg>
-);
-
-const ElectionsIcon = () => (
+const StudentGovernmentIcon = () => (
 	<svg
 		className="h-6 w-6"
 		xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +103,7 @@ const ElectionsIcon = () => (
 	</svg>
 );
 
-const SeniorsIcon = () => (
+const AthleticsIcon = () => (
 	<svg
 		className="h-6 w-6"
 		xmlns="http://www.w3.org/2000/svg"
@@ -142,12 +115,12 @@ const SeniorsIcon = () => (
 			strokeLinecap="round"
 			strokeLinejoin="round"
 			strokeWidth={2}
-			d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+			d="M13 10V3L4 14h7v7l9-11h-7z"
 		/>
 	</svg>
 );
 
-const OrganizationsIcon = () => (
+const ArtsIcon = () => (
 	<svg
 		className="h-6 w-6"
 		xmlns="http://www.w3.org/2000/svg"
@@ -159,12 +132,12 @@ const OrganizationsIcon = () => (
 			strokeLinecap="round"
 			strokeLinejoin="round"
 			strokeWidth={2}
-			d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+			d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v6a2 2 0 002 2h4a2 2 0 002-2V5z"
 		/>
 	</svg>
 );
 
-const CalendarIcon = () => (
+const ClubsIcon = () => (
 	<svg
 		className="h-6 w-6"
 		xmlns="http://www.w3.org/2000/svg"
@@ -176,7 +149,7 @@ const CalendarIcon = () => (
 			strokeLinecap="round"
 			strokeLinejoin="round"
 			strokeWidth={2}
-			d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+			d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
 		/>
 	</svg>
 );
@@ -184,16 +157,14 @@ const CalendarIcon = () => (
 // Get icon based on section ID
 const getIcon = (sectionId: string) => {
 	switch (sectionId) {
-		case "representatives":
-			return <RepresentativesIcon />;
-		case "elections":
-			return <ElectionsIcon />;
-		case "seniors":
-			return <SeniorsIcon />;
-		case "organizations":
-			return <OrganizationsIcon />;
-		case "calendar":
-			return <CalendarIcon />;
+		case "student-government":
+			return <StudentGovernmentIcon />;
+		case "athletics":
+			return <AthleticsIcon />;
+		case "arts":
+			return <ArtsIcon />;
+		case "clubs":
+			return <ClubsIcon />;
 		default:
 			return null;
 	}

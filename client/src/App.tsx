@@ -16,14 +16,20 @@ import CheckoutPage from "@/pages/shop/checkout/index";
 
 // Information related pages
 import Information from "@/pages/information/index";
-import Representatives from "@/pages/information/representatives/index";
 import Elections from "@/pages/information/elections/index";
-import Seniors from "@/pages/information/seniors/index";
-import Organizations from "@/pages/information/organizations/index";
-import Calendar from "@/pages/information/calendar/index";
+import Athletics from "@/pages/information/athletics/index";
+import Arts from "@/pages/information/arts/index";
+import Clubs from "@/pages/information/clubs/index";
+
+// Activities page
+import Activities from "@/pages/activities/index";
+import EventDetails from "@/pages/activities/details";
 
 // Birds Eye View page
 import BirdsEyeView from "@/pages/birds-eye-view/index";
+
+// Admin page
+import Admin from "@/pages/admin/index";
 
 // Page wrapper component for fade transitions
 const PageWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -60,15 +66,21 @@ function Router() {
         
         {/* Information pages */}
         <Route path="/information" component={() => <PageWrapper><Information /></PageWrapper>} />
-        <Route path="/information/representatives" component={() => <PageWrapper><Representatives /></PageWrapper>} />
+        <Route path="/information/student-government" component={() => <PageWrapper><Elections /></PageWrapper>} />
         <Route path="/information/elections" component={() => <PageWrapper><Elections /></PageWrapper>} />
-        <Route path="/information/seniors" component={() => <PageWrapper><Seniors /></PageWrapper>} />
-        <Route path="/information/organizations" component={() => <PageWrapper><Organizations /></PageWrapper>} />
-        <Route path="/information/organizations/:id" component={() => <PageWrapper><Organizations /></PageWrapper>} />
-        <Route path="/information/calendar" component={() => <PageWrapper><Calendar /></PageWrapper>} />
+        <Route path="/information/athletics" component={() => <PageWrapper><Athletics /></PageWrapper>} />
+        <Route path="/information/arts" component={() => <PageWrapper><Arts /></PageWrapper>} />
+        <Route path="/information/clubs" component={() => <PageWrapper><Clubs /></PageWrapper>} />
+        
+        {/* Activities page */}
+        <Route path="/activities" component={() => <PageWrapper><Activities /></PageWrapper>} />
+        <Route path="/activities/details/:id" component={() => <PageWrapper><EventDetails /></PageWrapper>} />
         
         {/* Birds Eye View */}
         <Route path="/birds-eye-view" component={() => <PageWrapper><BirdsEyeView /></PageWrapper>} />
+        
+        {/* Admin page */}
+        <Route path="/admin" component={() => <PageWrapper><Admin /></PageWrapper>} />
         
         {/* 404 page */}
         <Route component={() => <PageWrapper><NotFound /></PageWrapper>} />

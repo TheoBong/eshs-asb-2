@@ -142,21 +142,23 @@ export default function CheckoutPage() {
       <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>      {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">
         <div className="container mx-auto px-4">
-          {/* Transparent back button with title */}
+          {/* Glassmorphism back button with title */}
           <div className="flex items-center mb-8">
-            <Button
+            <OutlineButton
               onClick={handleBackToCart}
-              variant="ghost"
-              className="flex items-center text-white/90 hover:text-white transition-colors font-semibold p-2 mr-4"
+              className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
             >
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </Button>
-            <h1 className="text-3xl font-bold text-white">Checkout</h1>
+              Back to Cart
+            </OutlineButton>
+            <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">Checkout</h1>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">            {/* Checkout Form */}            <div className="lg:col-span-2">              <ThemedCard>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 ">            {/* Checkout Form */}            
+            <div className="lg:col-span-2">              
+              <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                 <form onSubmit={handleSubmit}>
                   <CardContent className="p-6">
                     {/* Contact Information */}
@@ -174,8 +176,8 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="lastName">Last Name *</Label>
-                          <Input
+                          <Label htmlFor="lastName" className="text-gray-200">Last Name *</Label>
+                          <ThemedInput
                             id="lastName"
                             name="lastName"
                             value={formState.lastName}
@@ -184,8 +186,8 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="email">Email *</Label>
-                          <Input
+                          <Label htmlFor="email" className="text-gray-200">Email *</Label>
+                          <ThemedInput
                             id="email"
                             name="email"
                             type="email"
@@ -195,8 +197,8 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="phone">Phone Number *</Label>
-                          <Input
+                          <Label htmlFor="phone" className="text-gray-200">Phone Number *</Label>
+                          <ThemedInput
                             id="phone"
                             name="phone"
                             type="tel"
@@ -210,11 +212,11 @@ export default function CheckoutPage() {
                     
                     {/* Shipping Information */}
                     <div className="mb-8">
-                      <h2 className="text-xl font-semibold mb-4">Shipping Address</h2>
+                      <h2 className="text-xl font-semibold mb-4 text-white">Shipping Address</h2>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="address">Street Address *</Label>
-                          <Input
+                          <Label htmlFor="address" className="text-gray-200">Street Address *</Label>
+                          <ThemedInput
                             id="address"
                             name="address"
                             value={formState.address}
@@ -224,8 +226,8 @@ export default function CheckoutPage() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="space-y-2">
-                            <Label htmlFor="city">City *</Label>
-                            <Input
+                            <Label htmlFor="city" className="text-gray-200">City *</Label>
+                            <ThemedInput
                               id="city"
                               name="city"
                               value={formState.city}
@@ -234,7 +236,7 @@ export default function CheckoutPage() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="state">State *</Label>
+                            <Label htmlFor="state" className="text-gray-200">State *</Label>
                             <Select 
                               value={formState.state} 
                               onValueChange={value => setFormState(prev => ({ ...prev, state: value }))}
@@ -254,8 +256,8 @@ export default function CheckoutPage() {
                             </Select>
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="zipCode">ZIP Code *</Label>
-                            <Input
+                            <Label htmlFor="zipCode" className="text-gray-200">ZIP Code *</Label>
+                            <ThemedInput
                               id="zipCode"
                               name="zipCode"
                               value={formState.zipCode}
@@ -270,32 +272,32 @@ export default function CheckoutPage() {
                     {/* Billing Information */}
                     <div className="mb-8">
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-semibold">Billing Information</h2>
+                        <h2 className="text-xl font-semibold text-white">Billing Information</h2>
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="billing-same"
                             checked={billingIsSameAsShipping}
                             onCheckedChange={(checked) => setBillingIsSameAsShipping(checked as boolean)}
                           />
-                          <Label htmlFor="billing-same" className="text-sm">
+                          <Label htmlFor="billing-same" className="text-sm text-gray-200">
                             Billing address is same as shipping
                           </Label>
                         </div>
                       </div>
                       
                       {!billingIsSameAsShipping && (
-                        <div className="space-y-4 border-t pt-4">
+                        <div className="space-y-4 border-t border-white/10 pt-4">
                           <div className="space-y-2">
-                            <Label htmlFor="billingAddress">Street Address *</Label>
-                            <Input id="billingAddress" required={!billingIsSameAsShipping} />
+                            <Label htmlFor="billingAddress" className="text-gray-200">Street Address *</Label>
+                            <ThemedInput id="billingAddress" required={!billingIsSameAsShipping} />
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                              <Label htmlFor="billingCity">City *</Label>
-                              <Input id="billingCity" required={!billingIsSameAsShipping} />
+                              <Label htmlFor="billingCity" className="text-gray-200">City *</Label>
+                              <ThemedInput id="billingCity" required={!billingIsSameAsShipping} />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="billingState">State *</Label>
+                              <Label htmlFor="billingState" className="text-gray-200">State *</Label>
                               <Select defaultValue="CA">
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select state" />
@@ -312,8 +314,8 @@ export default function CheckoutPage() {
                               </Select>
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="billingZipCode">ZIP Code *</Label>
-                              <Input id="billingZipCode" required={!billingIsSameAsShipping} />
+                              <Label htmlFor="billingZipCode" className="text-gray-200">ZIP Code *</Label>
+                              <ThemedInput id="billingZipCode" required={!billingIsSameAsShipping} />
                             </div>
                           </div>
                         </div>
@@ -322,11 +324,11 @@ export default function CheckoutPage() {
                     
                     {/* Payment Information */}
                     <div>
-                      <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
+                      <h2 className="text-xl font-semibold mb-4 text-white">Payment Method</h2>
                       <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="mb-4">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="credit" id="payment-credit" />
-                          <Label htmlFor="payment-credit" className="flex items-center">
+                          <Label htmlFor="payment-credit" className="flex items-center text-gray-200">
                             Credit Card
                             <div className="ml-2 flex space-x-1">
                               <svg className="h-6 w-auto" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -349,15 +351,15 @@ export default function CheckoutPage() {
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="schoolpay" id="payment-schoolpay" />
-                          <Label htmlFor="payment-schoolpay">SchoolPay (Online Student Account)</Label>
+                          <Label htmlFor="payment-schoolpay" className="text-gray-200">SchoolPay (Online Student Account)</Label>
                         </div>
                       </RadioGroup>
 
                       {paymentMethod === "credit" && (
-                        <div className="space-y-4 border-t pt-4">
+                        <div className="space-y-4 border-t border-white/10 pt-4">
                           <div className="space-y-2">
-                            <Label htmlFor="cardNumber">Card Number *</Label>
-                            <Input
+                            <Label htmlFor="cardNumber" className="text-gray-200">Card Number *</Label>
+                            <ThemedInput
                               id="cardNumber"
                               name="cardNumber"
                               placeholder="XXXX XXXX XXXX XXXX"
@@ -367,8 +369,8 @@ export default function CheckoutPage() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="cardName">Name on Card *</Label>
-                            <Input
+                            <Label htmlFor="cardName" className="text-gray-200">Name on Card *</Label>
+                            <ThemedInput
                               id="cardName"
                               name="cardName"
                               value={formState.cardName}
@@ -378,8 +380,8 @@ export default function CheckoutPage() {
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <Label htmlFor="expiry">Expiration Date (MM/YY) *</Label>
-                              <Input
+                              <Label htmlFor="expiry" className="text-gray-200">Expiration Date (MM/YY) *</Label>
+                              <ThemedInput
                                 id="expiry"
                                 name="expiry"
                                 placeholder="MM/YY"
@@ -389,8 +391,8 @@ export default function CheckoutPage() {
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="cvv">Security Code (CVV) *</Label>
-                              <Input
+                              <Label htmlFor="cvv" className="text-gray-200">Security Code (CVV) *</Label>
+                              <ThemedInput
                                 id="cvv"
                                 name="cvv"
                                 type="password"
@@ -404,9 +406,9 @@ export default function CheckoutPage() {
                       )}
 
                       {paymentMethod === "schoolpay" && (
-                        <div className="space-y-4 border-t pt-4">
-                          <div className="p-4 bg-blue-50 rounded-md">
-                            <p className="text-sm">
+                        <div className="space-y-4 border-t border-white/10 pt-4">
+                          <div className="p-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg">
+                            <p className="text-sm text-gray-200">
                               You will be redirected to the SchoolPay system to complete this purchase using your student account balance.
                             </p>
                           </div>
@@ -416,7 +418,7 @@ export default function CheckoutPage() {
                   </CardContent>                </form>
               </ThemedCard>
             </div>            {/* Order Summary */}            <div className="lg:col-span-1">
-              <ThemedCard className="sticky top-8">
+              <ThemedCard className=" top-8  bg-white/5 backdrop-blur-xl border border-white/10">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold mb-4 text-white">Order Summary</h2>
                   
@@ -437,28 +439,28 @@ export default function CheckoutPage() {
                     ))}
                   </div>
                   
-                  <Separator className="my-4" />
+                  <Separator className="my-4 bg-white/10" />
                   
                   {/* Price Breakdown */}
                   <div className="space-y-2">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-gray-300">
                       <span>Subtotal</span>
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-gray-300">
                       <span>Estimated Tax (8.75%)</span>
                       <span>${tax.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-gray-300">
                       <span>Shipping</span>
-                      <span className="text-green-600">Free</span>
+                      <span className="text-green-400">Free</span>
                     </div>
                   </div>
                   
                   <Separator className="my-4" />
                   
                   {/* Total */}
-                  <div className="flex justify-between text-lg font-bold">
+                  <div className="flex justify-between text-lg font-bold text-white">
                     <span>Total</span>
                     <span>${total.toFixed(2)}</span>
                   </div>
