@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThemedPageWrapper, PrimaryButton, OutlineButton, ThemedCard, ThemedInput } from "@/components/ThemedComponents";
 import { getProducts, type Product } from "@/lib/api";
 import schoolVideo from "../../../../attached_assets/school2.mp4";
+import { useCart } from "@/contexts/CartContext";
 
 export default function Shop() {
   const [, setLocation] = useLocation();
@@ -74,7 +75,8 @@ export default function Shop() {
   
   const handleProductClick = (productId: string) => {
     setLocation(`/shop/product/${productId}`);
-  };
+  };  // Use cart count from CartContext
+  const { cartCount } = useCart();
 
   const handleCartClick = () => {
     setLocation("/shop/cart");
@@ -178,87 +180,34 @@ export default function Shop() {
                 Try Again
               </PrimaryButton>
             </ThemedCard>
-          )}
-
-          {!loading && !error && (
+          )}          {!loading && !error && (
             <>
               {/* Filter and Navigation */}
               <div className="mb-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  {/* Search Box */}
-                  <div>
-                    <ThemedInput
-                      type="text"
-                      placeholder="Search merchandise..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
+                <div className="flex items-center justify-between mt-6">
+                  {/* Tab Navigation */}
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
+                    <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                      <TabsTrigger value="all" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">All Products</TabsTrigger>
+                      <TabsTrigger value="featured" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Featured</TabsTrigger>
+                      <TabsTrigger value="apparel" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Apparel</TabsTrigger>
+                      <TabsTrigger value="accessories" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Accessories</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                   
-                  {/* Mobile Filters Toggle Button */}
-                  <div className="md:hidden">
-                    <OutlineButton 
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="w-full"
+                  {/* Cart Button */}
+                  <div className="ml-6">
+                    <PrimaryButton 
+                      onClick={handleCartClick} 
+                      className="bg-white/10 hover:bg-white/20 text-white shadow-xl border border-white/20 backdrop-blur-xl px-4 py-2 text-sm font-medium rounded-lg flex items-center space-x-2 opacity-100"
                     >
-                      {showFilters ? "Hide Filters" : "Show Filters"}
-                    </OutlineButton>
-                  </div>
-                  
-                  {/* Filters - Desktop visible always, mobile conditionally */}
-                  <div className={`md:flex md:space-x-3 ${showFilters ? 'block' : 'hidden md:block'}`}>
-                    {/* Category Filter */}
-                    <div className="w-full md:w-auto mb-2 md:mb-0">
-                      <Select value={filterCategory} onValueChange={setFilterCategory}>
-                        <SelectTrigger className="bg-white/5 backdrop-blur-xl border border-white/10 text-white shadow-2xl">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map(category => (
-                            <SelectItem key={category} value={category}>
-                              {category === "all" ? "All Categories" : category}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                      {/* Organization Filter */}
-                    <div className="w-full md:w-auto">
-                      <Select value={filterOrganization} onValueChange={setFilterOrganization}>
-                        <SelectTrigger className="bg-white/5 backdrop-blur-xl border border-white/10 text-white shadow-2xl">
-                          <SelectValue placeholder="Select organization" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {organizations.map(org => (
-                            <SelectItem key={org.id} value={org.id}>
-                              {org.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  
-                  {/* View Cart Button (Desktop) */}
-                  <div className="hidden md:flex justify-end">
-                    <PrimaryButton onClick={handleCartClick} className="space-x-2">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
-                      <span>View Cart (2)</span>
+                      <span>Cart {cartCount > 0 ? `(${cartCount})` : ""}</span>
                     </PrimaryButton>
                   </div>
                 </div>
-
-                {/* Tab Navigation */}
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-                  <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                    <TabsTrigger value="all" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">All Products</TabsTrigger>
-                    <TabsTrigger value="featured" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Featured</TabsTrigger>
-                    <TabsTrigger value="apparel" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Apparel</TabsTrigger>
-                    <TabsTrigger value="accessories" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">Accessories</TabsTrigger>
-                  </TabsList>
-                </Tabs>
               </div>
               
               {/* Product Grid */}
@@ -327,10 +276,9 @@ export default function Shop() {
                 </div>
               </ThemedCard>            )}
             </>
-          )}
-        
-        </div>
+          )}        </div>
       </div>
+
     </ThemedPageWrapper>
   );
 }

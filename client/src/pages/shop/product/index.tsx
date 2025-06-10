@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useRoute } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -7,100 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton, ThemedInput } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
-
-// Mock product data (in a real app, this would come from an API)
-const productsData = {
-  "1": {
-    id: 1,
-    name: "El Segundo Eagles T-Shirt",
-    price: 25.99,
-    category: "Apparel",
-    description: "Comfortable cotton t-shirt with school logo. Show your school spirit with this high-quality shirt featuring the El Segundo Eagles logo on the front and mascot on the back.",
-    inStock: true,
-    rating: 4.8,
-    images: ["/api/placeholder/500/500", "/api/placeholder/500/500", "/api/placeholder/500/500"],
-    organization: "Athletics Department",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Blue", "White", "Gray"],
-    details: [
-      "100% cotton material",
-      "Screen printed logo",
-      "Machine washable",
-      "Unisex fit",
-      "Made in USA"
-    ],
-    reviews: [
-      {
-        id: 1,
-        user: "John S.",
-        rating: 5,
-        comment: "Great quality shirt! The sizing is accurate and the material is comfortable."
-      },
-      {
-        id: 2,
-        user: "Emily R.",
-        rating: 4,
-        comment: "Nice shirt, I like the design. Washes well without fading."
-      }
-    ]
-  },
-  "2": {
-    id: 2,
-    name: "School Hoodie",
-    price: 45.99,
-    category: "Apparel",
-    description: "Stay warm while showing your school spirit with this comfortable hoodie featuring the El Segundo High School logo.",
-    inStock: true,
-    rating: 4.9,
-    images: ["/api/placeholder/500/500", "/api/placeholder/500/500"],
-    organization: "Student Council",
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    colors: ["Blue", "Gray"],
-    details: [
-      "80% cotton, 20% polyester",
-      "Front pocket",
-      "Adjustable hood",
-      "Printed logo on front and sleeve",
-      "Machine washable"
-    ],
-    reviews: [
-      {
-        id: 1,
-        user: "Mike T.",
-        rating: 5,
-        comment: "This hoodie is super comfortable and keeps me warm during morning classes."
-      }
-    ]
-  },
-  "3": {
-    id: 3,
-    name: "Eagles Water Bottle",
-    price: 15.99,
-    category: "Accessories",
-    description: "Stainless steel water bottle with school logo. Keep your drinks cold for up to 24 hours or hot for up to 12 hours.",
-    inStock: true,
-    rating: 4.7,
-    images: ["/api/placeholder/500/500"],
-    organization: "Environmental Club",
-    sizes: ["One Size"],
-    colors: ["Silver", "Blue", "Black"],
-    details: [
-      "24oz capacity",
-      "Double-walled stainless steel",
-      "BPA free",
-      "Leak-proof lid",
-      "School logo printed on side"
-    ],
-    reviews: [
-      {
-        id: 1,
-        user: "Sarah L.",
-        rating: 5,
-        comment: "Great bottle! Keeps water cold all day and doesn't leak in my backpack."
-      }
-    ]
-  }
-};
+import { getProduct } from "@/lib/api";
+import { useCart } from "@/contexts/CartContext";
 
 export default function ProductPage() {
   const [match, params] = useRoute("/shop/product/:id");
@@ -109,11 +17,44 @@ export default function ProductPage() {
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { addToCart } = useCart();
 
-  // Get product data based on URL parameter
-  const product = params?.id ? productsData[params.id as keyof typeof productsData] : null;
-  if (!product) {
+  // Fetch product data from API
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!params?.id) return;
+      
+      try {
+        setLoading(true);
+        const data = await getProduct(params.id);
+        setProduct(data);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to load product:', err);
+        setError('Failed to load product');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [params?.id]);  if (loading) {
+    return (
+      <ThemedPageWrapper pageType="shop">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2 text-white">Loading Product...</h2>
+            <p className="mb-4 text-gray-300">Please wait while we fetch the product details</p>
+          </div>
+        </div>
+      </ThemedPageWrapper>
+    );
+  }
+  
+  if (error || !product) {
     return (
       <ThemedPageWrapper pageType="shop">
         <div className="min-h-screen flex items-center justify-center">
@@ -126,6 +67,24 @@ export default function ProductPage() {
       </ThemedPageWrapper>
     );
   }
+  // Cart utility functions
+  const getCartFromCookies = (): any[] => {
+    try {
+      const cartData = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('cart='))
+        ?.split('=')[1];
+      return cartData ? JSON.parse(decodeURIComponent(cartData)) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const saveCartToCookies = (items: any[]) => {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000)); // 24 hours
+    document.cookie = `cart=${encodeURIComponent(JSON.stringify(items))}; path=/; expires=${expires.toUTCString()}`;
+  };
 
   const handleAddToCart = () => {
     if (!selectedSize && product.sizes.length > 1) {
@@ -146,10 +105,22 @@ export default function ProductPage() {
       return;
     }
 
-    // In a real app, you'd add to cart in state/context or send to API
+    // Add the product to the cart using CartContext
+    addToCart({
+      id: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: quantity,
+      size: selectedSize || undefined,
+      color: selectedColor || undefined,
+      type: 'product'
+    });
+
+    // Show toast notification
     toast({
       title: "Added to cart!",
-      description: `${quantity} x ${product.name} (${selectedSize}, ${selectedColor}) added to your cart`,
+      description: `${quantity} x ${product.name} (${selectedSize || 'No size'}, ${selectedColor || 'No color'}) added to your cart`,
     });
     
     // Navigate to cart page after short delay
@@ -200,12 +171,15 @@ export default function ProductPage() {
           {/* Product Details */}
           <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-              {/* Product Images */}
-              <div className="space-y-4">
+              {/* Product Images */}              <div className="space-y-4">
                 {/* Main Image */}
                 <div className="aspect-square w-full rounded-lg overflow-hidden bg-gray-900">
                   <img
-                    src={product.images[activeImageIndex]}
+                    src={activeImageIndex === 0 ? 
+                      product.image : 
+                      (product.images && product.images.length > 0 ? 
+                        product.images[activeImageIndex - 1] : 
+                        product.image)}
                     alt={product.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -214,15 +188,33 @@ export default function ProductPage() {
                   />
                 </div>
 
-                {/* Thumbnail Images */}
-                {product.images.length > 1 && (
+                {/* Thumbnail Images - Include main image as first thumbnail and any additional images */}
+                {((product.images && product.images.length > 0) || product.image) && (
                   <div className="flex space-x-2 overflow-x-auto pb-2">
-                    {product.images.map((img: string, idx: number) => (
+                    {/* Main image thumbnail */}
+                    <button
+                      onClick={() => setActiveImageIndex(0)}
+                      className={`relative rounded-md overflow-hidden h-20 w-20 border-2 ${
+                        activeImageIndex === 0 ? "border-blue-400" : "border-white/20"
+                      }`}
+                    >
+                      <img
+                        src={product.image}
+                        alt={`${product.name} - main view`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://via.placeholder.com/100?text=Thumbnail";
+                        }}
+                      />
+                    </button>
+                    
+                    {/* Additional image thumbnails */}
+                    {product.images && product.images.map((img: string, idx: number) => (
                       <button
                         key={idx}
-                        onClick={() => setActiveImageIndex(idx)}
+                        onClick={() => setActiveImageIndex(idx + 1)}
                         className={`relative rounded-md overflow-hidden h-20 w-20 border-2 ${
-                          idx === activeImageIndex ? "border-blue-400" : "border-white/20"
+                          idx + 1 === activeImageIndex ? "border-blue-400" : "border-white/20"
                         }`}
                       >
                         <img
@@ -242,34 +234,22 @@ export default function ProductPage() {
               {/* Product Information */}
               <div className="space-y-6">
                 {/* Header information */}
-                <div>
-                  <div className="flex items-center justify-between">
+                <div>                  <div className="flex items-center justify-between">
                     <Badge className="mb-2 bg-blue-600 text-white">{product.category}</Badge>
-                    <Badge variant={product.inStock ? "outline" : "secondary"} className={product.inStock ? "border-green-400 text-green-400" : "bg-red-600 text-white"}>
-                      {product.inStock ? "In Stock" : "Out of Stock"}
+                    <Badge variant={product.stock > 0 ? "outline" : "secondary"} className={product.stock > 0 ? "border-green-400 text-green-400" : "bg-red-600 text-white"}>
+                      {product.stock > 0 ? "In Stock" : "Out of Stock"}
                     </Badge>
                   </div>
                   <h1 className="text-3xl font-bold mb-2 text-white">{product.name}</h1>
                   <p className="text-sm text-gray-300 mb-2">By {product.organization}</p>
-                  <div className="flex items-center mb-4">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`w-5 h-5 ${
-                            i < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-500"
-                          } fill-current`}
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                    </div>
-                    <span className="text-sm ml-2 text-gray-300">
-                      {product.rating} ({product.reviews.length} review{product.reviews.length !== 1 ? 's' : ''})
-                    </span>
+                  <div className="mb-4">
+                    {product.stock > 0 && (
+                      <p className="text-sm text-gray-300">
+                        {product.stock} items available
+                      </p>
+                    )}
                   </div>
-                  <div className="text-3xl font-bold text-blue-400">${product.price}</div>
+                  <div className="text-3xl font-bold text-blue-400">${product.price.toFixed(2)}</div>
                 </div>
 
                 <div className="space-y-4">
@@ -374,90 +354,21 @@ export default function ProductPage() {
                         +
                       </OutlineButton>
                     </div>
-                  </div>
-
-                  {/* Add to Cart Button */}
+                  </div>                  {/* Add to Cart Button */}
                   <div className="pt-4">
                     <PrimaryButton 
                       size="lg" 
-                      className="w-full" 
+                      className="w-full bg-white/10 hover:bg-blue-600/80 backdrop-blur-xl border border-white/20 shadow-lg" 
                       onClick={handleAddToCart}
-                      disabled={!product.inStock}
+                      disabled={!(product.stock > 0)}
                     >
-                      {product.inStock ? "Add to Cart" : "Out of Stock"}
+                      {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
                     </PrimaryButton>
                   </div>
                 </div>
               </div>
             </div>
           </ThemedCard>
-
-          {/* Product Details Tabs */}
-          <div className="mt-8">
-            <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-white/10 border border-white/20">
-                  <TabsTrigger value="description" className="text-gray-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-                    Description
-                  </TabsTrigger>
-                  <TabsTrigger value="reviews" className="text-gray-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-                    Reviews ({product.reviews.length})
-                  </TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="description" className="mt-6 p-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2 text-white">Product Description</h3>
-                      <p className="text-gray-300 leading-relaxed">{product.description}</p>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2 text-white">Product Details</h3>
-                      <ul className="list-disc list-inside space-y-1 text-gray-300">
-                        {product.details.map((detail: string, index: number) => (
-                          <li key={index}>{detail}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="reviews" className="mt-6 p-6">
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-semibold text-white">Customer Reviews</h3>
-                    {product.reviews.length > 0 ? (
-                      <div className="space-y-4">
-                        {product.reviews.map((review: any) => (
-                          <div key={review.id} className="border-b border-white/10 pb-4 last:border-b-0">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="font-medium text-white">{review.user}</span>
-                              <div className="flex">
-                                {[...Array(5)].map((_, i) => (
-                                  <svg
-                                    key={i}
-                                    className={`w-4 h-4 ${
-                                      i < review.rating ? "text-yellow-400" : "text-gray-500"
-                                    } fill-current`}
-                                    viewBox="0 0 20 20"
-                                  >
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                  </svg>
-                                ))}
-                              </div>
-                            </div>
-                            <p className="text-gray-300">{review.comment}</p>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-gray-300">No reviews yet. Be the first to review this product!</p>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </ThemedCard>
-          </div>
         </div>
       </div>
     </ThemedPageWrapper>

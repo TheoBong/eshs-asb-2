@@ -62,9 +62,8 @@ export default function Clubs() {
   const filteredClubs = activeTab === "All" 
     ? clubs 
     : clubs.filter(club => club.category === activeTab);
-
   // Get unique categories from the data
-  const categories = ["All", ...new Set(clubs.map(club => club.category))];
+  const categories = ["All", ...Array.from(new Set(clubs.map(club => club.category)))];
 
   if (loading) {
     return (
@@ -184,16 +183,15 @@ export default function Clubs() {
                 </svg>
               </div>
             </div>
-          </div>
-
-          {/* Category Filter Tabs */}
+          </div>          {/* Category Filter Tabs */}
           <Tabs defaultValue="All" className="mb-8" onValueChange={setActiveTab}>
-            <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg flex flex-wrap w-full justify-center">
+            <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg grid w-full max-w-3xl mx-auto" 
+                     style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
               {categories.map((category) => (
                 <TabsTrigger 
                   key={category}
                   value={category} 
-                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white m-1"
+                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
                 >
                   {category}
                 </TabsTrigger>

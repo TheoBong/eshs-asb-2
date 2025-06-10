@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,30 +12,26 @@ import { toast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton, ThemedInput } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
+import { createPurchase } from "@/lib/api";
 
-// Mock cart items for the order summary
-const cartItems = [
-  {
-    id: 1,
-    name: "El Segundo Eagles T-Shirt",
-    price: 25.99,
-    quantity: 1,
-    size: "M",
-    color: "Blue"
-  },
-  {
-    id: 3,
-    name: "Eagles Water Bottle",
-    price: 15.99,
-    quantity: 2,
-    color: "Silver"
-  }
-];
+// Cart item interface
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  image?: string;
+  quantity: number;
+  size?: string;
+  color?: string;
+  type?: 'product' | 'event';
+  eventId?: string;
+}
 
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   const [paymentMethod, setPaymentMethod] = useState("credit");
   const [billingIsSameAsShipping, setBillingIsSameAsShipping] = useState(true);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [formState, setFormState] = useState({
     firstName: "",
     lastName: "",
@@ -52,13 +48,31 @@ export default function CheckoutPage() {
   });
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Load cart items from cookies on component mount
+  useEffect(() => {
+    const getCartFromCookies = (): CartItem[] => {
+      try {
+        const cartData = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('cart='))
+          ?.split('=')[1];
+        return cartData ? JSON.parse(decodeURIComponent(cartData)) : [];
+      } catch {
+        return [];
+      }
+    };
+
+    const cookieCart = getCartFromCookies();
+    setCartItems(cookieCart);
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormState(prev => ({ ...prev, [name]: value }));
   };
 
   const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total: number, item: CartItem) => total + (item.price * item.quantity), 0);
   };
 
   const handleBackToCart = () => {
@@ -100,24 +114,56 @@ export default function CheckoutPage() {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
+    if (cartItems.length === 0) {
+      toast({
+        title: "Empty cart",
+        description: "Your cart is empty. Add items before checking out.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setIsProcessing(true);
     
-    // Simulate processing
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      // Create purchase record in database
+      await createPurchase({
+        studentName: `${formState.firstName} ${formState.lastName}`,
+        productName: cartItems.map(item => item.name).join(', '),
+        quantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+        amount: subtotal + tax,
+        paymentMethod: paymentMethod,
+        status: 'completed',
+        date: new Date(),
+        notes: cartItems.map(item => `${item.name} x${item.quantity}`).join('; '),
+      });
+
+      // Clear cart from cookies
+      document.cookie = "cart=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      
       toast({
         title: "Order successfully placed!",
-        description: "Thank you for your purchase. You will receive an email confirmation shortly.",
+        description: "Thank you for your purchase. You will receive a confirmation shortly.",
       });
       
-      // Redirect to a thank you page (could be implemented later)
-      setLocation("/shop");
-    }, 2000);
+      // Redirect to shop page
+      setTimeout(() => {
+        setLocation("/shop");
+      }, 1500);
+    } catch (err) {
+      console.error('Failed to process order:', err);
+      toast({
+        title: "Order processing failed",
+        description: "There was a problem processing your order. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const subtotal = calculateSubtotal();
@@ -417,26 +463,34 @@ export default function CheckoutPage() {
                     </div>
                   </CardContent>                </form>
               </ThemedCard>
-            </div>            {/* Order Summary */}            <div className="lg:col-span-1">
-              <ThemedCard className=" top-8  bg-white/5 backdrop-blur-xl border border-white/10">
+            </div>            {/* Order Summary */}            <div className="lg:col-span-1">              <ThemedCard className="sticky top-8 bg-white/5 backdrop-blur-xl border border-white/10">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold mb-4 text-white">Order Summary</h2>
                   
                   {/* Cart Items */}
                   <div className="space-y-4 mb-6">
-                    {cartItems.map((item) => (
-                      <div key={item.id} className="flex justify-between text-gray-300">
-                        <div>
-                          <div className="font-medium text-white">{item.name}</div>
-                          <div className="text-sm text-gray-400">
-                            {item.size && <span className="mr-1">Size: {item.size}</span>}
-                            {item.color && <span>Color: {item.color}</span>}
+                    {cartItems.length > 0 ? (
+                      cartItems.map((item) => (
+                        <div key={item.id} className="flex justify-between text-gray-300">
+                          <div>
+                            <div className="font-medium text-white">{item.name}</div>
+                            <div className="text-sm text-gray-400">
+                              {item.size && <span className="mr-1">Size: {item.size}</span>}
+                              {item.color && <span>Color: {item.color}</span>}
+                            </div>
+                            <div className="text-sm">Qty: {item.quantity}</div>
                           </div>
-                          <div className="text-sm">Qty: {item.quantity}</div>
+                          <div className="font-medium text-white">${(item.price * item.quantity).toFixed(2)}</div>
                         </div>
-                        <div className="font-medium text-white">${(item.price * item.quantity).toFixed(2)}</div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4">
+                        <p className="text-gray-300">Your cart is empty</p>
+                        <OutlineButton className="mt-2" onClick={() => setLocation('/shop')}>
+                          Return to Shop
+                        </OutlineButton>
                       </div>
-                    ))}
+                    )}
                   </div>
                   
                   <Separator className="my-4 bg-white/10" />

@@ -103,11 +103,6 @@ export default function Activities() {
               <div>
                 <h2 className="text-2xl font-bold mb-2">Upcoming Events & Ticket Sales</h2>
                 <p className="mb-4">Don't miss out on exciting school events! View event details and purchase tickets.</p>
-                <div className="flex space-x-2">
-                  <OutlineButton className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold">
-                    Event Calendar
-                  </OutlineButton>
-                </div>
               </div>
               <div className="mt-6 md:mt-0 h-24 w-24 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20">
                 <svg className="h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

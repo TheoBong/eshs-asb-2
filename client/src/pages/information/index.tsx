@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ThemedPageWrapper, PrimaryButton, OutlineButton, ThemedCard } from "@/components/ThemedComponents";
+import { getAnnouncements, Announcement } from "@/lib/api";
 import schoolVideo from "../../../../attached_assets/school2.mp4";
 
 // Mock data for information sections
@@ -22,7 +23,7 @@ const infoSections = [
 		title: "Athletics",
 		description:
 			"Explore our school's sports teams, athletic programs, and upcoming games.",
-		image: "https://www.shutterstock.com/image-vector/sport-balls-collection-isolated-on-260nw-1012538588.jpg",
+		image: "https://npr.brightspotcdn.com/6e/1a/ad489ab04171a3f71807e59124fe/pexels-jean-daniel-2570139.jpg",
 		path: "/information/athletics",
 		color: "bg-blue-100/90 border-blue-300",
 		iconColor: "text-blue-800",
@@ -32,7 +33,7 @@ const infoSections = [
 		title: "Arts",
 		description:
 			"Discover our performing and visual arts programs, theater productions, and art exhibitions.",
-		image: "https://www.shutterstock.com/image-vector/art-palette-brush-vector-icon-260nw-1089070326.jpg",
+		image: "https://3.files.edl.io/3fbe/21/09/17/181225-152dd9a9-2f1c-4e98-9b7d-a286a98f950e.jpg",
 		path: "/information/arts",
 		color: "bg-purple-100/90 border-purple-300",
 		iconColor: "text-purple-800",
@@ -46,42 +47,6 @@ const infoSections = [
 		path: "/information/clubs",
 		color: "bg-rose-100/90 border-rose-300",
 		iconColor: "text-rose-800",
-	},
-];
-
-// Mock data for announcements
-const announcements = [
-	{
-		id: 1,
-		title: "New Student Government Members Announced",
-		date: "May 28, 2025",
-		content:
-			"Congratulations to our newly elected student council members! View all current representatives on the Student Government page.",
-		priority: "high",
-	},
-	{
-		id: 2,
-		title: "Senior Cap and Gown Distribution",
-		date: "May 15, 2025",
-		content:
-			"Seniors can pick up their caps and gowns from the main office between June 1-3. Contact the senior class president for more details.",
-		priority: "medium",
-	},
-	{
-		id: 3,
-		title: "Fall Club Registration Open",
-		date: "May 10, 2025",
-		content:
-			"Registration for fall clubs opens on June 15. See the Clubs page for details on how to start or join a club.",
-		priority: "medium",
-	},
-	{
-		id: 4,
-		title: "Spring Sports Tryouts Announced",
-		date: "May 5, 2025",
-		content:
-			"Spring sports tryout schedules have been posted. Check the Athletics page for tryout dates and requirements.",
-		priority: "low",
 	},
 ];
 
@@ -172,6 +137,26 @@ const getIcon = (sectionId: string) => {
 
 export default function Information() {
 	const [, setLocation] = useLocation();
+	const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	// Fetch announcements from database
+	useEffect(() => {
+		const fetchAnnouncements = async () => {
+			try {
+				const fetchedAnnouncements = await getAnnouncements();
+				setAnnouncements(fetchedAnnouncements);
+			} catch (error) {
+				console.error('Failed to fetch announcements:', error);
+				// Fallback to empty array if fetch fails
+				setAnnouncements([]);
+			} finally {
+				setLoading(false);
+			}
+		};
+		
+		fetchAnnouncements();
+	}, []);
 
 	const handleNavigate = (path: string) => {
 		setLocation(path);
@@ -225,37 +210,49 @@ export default function Information() {
 						</h1>
 					</div>
 
-										{/* Important Announcements */}
+					{/* Important Announcements */}
 					<h2 className="text-2xl font-bold text-white mb-6">Recent Announcements</h2>
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
-            <div className="space-y-4">
-              {announcements.map((announcement) => (
-                <div 
-                  key={announcement.id} 
-                  className={`p-4 rounded-lg border ${
-                    announcement.priority === 'high' 
-                      ? 'border-red-400/50 bg-red-500/20' 
-                      : announcement.priority === 'medium'
-                      ? 'border-amber-400/50 bg-amber-500/20'
-                      : 'border-blue-400/50 bg-blue-500/20'
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-semibold text-white">{announcement.title}</h3>
-                    <span className="text-sm text-gray-300">{announcement.date}</span>
-                  </div>
-                  <p className="text-sm mt-2 text-gray-200">{announcement.content}</p>
-                  {announcement.priority === 'high' && (
-                    <div className="mt-2 flex items-center text-red-400 text-sm">
-                      <svg className="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                      Important Announcement
+            {loading ? (
+              <div className="text-center py-8 text-gray-400">
+                <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2"></div>
+                Loading announcements...
+              </div>
+            ) : announcements.length > 0 ? (
+              <div className="space-y-4">
+                {announcements.map((announcement) => (
+                  <div 
+                    key={announcement._id} 
+                    className={`p-4 rounded-lg border ${
+                      announcement.priority === 'high' 
+                        ? 'border-red-400/50 bg-red-500/20' 
+                        : announcement.priority === 'medium'
+                        ? 'border-amber-400/50 bg-amber-500/20'
+                        : 'border-blue-400/50 bg-blue-500/20'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-semibold text-white">{announcement.title}</h3>
+                      <span className="text-sm text-gray-300">{new Date(announcement.date).toLocaleDateString()}</span>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                    <p className="text-sm mt-2 text-gray-200">{announcement.content}</p>
+                    {announcement.priority === 'high' && (
+                      <div className="mt-2 flex items-center text-red-400 text-sm">
+                        <svg className="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        Important Announcement
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                <div className="mb-2">📢</div>
+                No announcements available at this time.
+              </div>
+            )}
           </div>
 		  <br></br>
 

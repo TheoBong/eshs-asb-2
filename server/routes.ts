@@ -1,6 +1,52 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import express from 'express';
+import {
+  User, Product, Event, VideoPost, Announcement,
+  StudentGovPosition, Club, Athletic, Art, FormSubmission, Purchase
+} from '../shared/mongodb-schema';
+import { connectWithRetry as connectDB } from './mongo-utils';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+// Ensure upload directory exists
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storageConfig = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+  },
+});
+
+const upload = multer({ storage: storageConfig });
+
+// Create router
+export const router = express.Router();
+
+// Connect to MongoDB
+connectDB().catch(console.error);
+
+// General error handler
+const handleError = (res: express.Response, error: any) => {
+  console.error('API Error:', error);
+  res.status(500).json({ error: 'Internal server error' });
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // User routes
@@ -505,6 +551,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(submission);
     } catch (error) {
       res.status(400).json({ message: "Error creating form submission", error });
+    }
+  });
+
+  app.post('/api/form-submissions/upload', upload.array('forms'), async (req, res) => {
+    try {
+      const files = req.files as Express.Multer.File[];
+      
+      // Create file URLs
+      const fileDetails = files.map(file => ({
+        fileName: file.originalname,
+        fileUrl: `/uploads/${file.filename}`,
+        fileType: file.mimetype
+      }));
+      
+      res.status(201).json(fileDetails);
+    } catch (error) {
+      handleError(res, error);
     }
   });
 

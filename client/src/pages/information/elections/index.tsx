@@ -63,11 +63,10 @@ export default function Elections() {
   const filteredPositions = activeTab === "All" 
     ? positions 
     : positions.filter(position => position.gradeLevel === activeTab.toLowerCase());
-
   // Get unique grade levels from the data
-  const gradeLevels = ["All", ...new Set(positions.map(position => 
+  const gradeLevels = ["All", ...Array.from(new Set(positions.map(position => 
     position.gradeLevel.charAt(0).toUpperCase() + position.gradeLevel.slice(1)
-  ))];
+  )))];
 
   if (loading) {
     return (
@@ -179,16 +178,14 @@ export default function Elections() {
                 </svg>
               </div>
             </div>
-          </div>
-
-          {/* Grade Level Filter Tabs */}
+          </div>          {/* Grade Level Filter Tabs */}
           <Tabs defaultValue="All" className="mb-8" onValueChange={setActiveTab}>
-            <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg flex flex-wrap w-full justify-center">
+            <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg grid w-full max-w-4xl mx-auto" style={{gridTemplateColumns: `repeat(${gradeLevels.length}, minmax(0, 1fr))`}}>
               {gradeLevels.map((level) => (
                 <TabsTrigger 
                   key={level}
                   value={level} 
-                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white m-1"
+                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white text-sm px-3 py-2"
                 >
                   {level}
                 </TabsTrigger>
@@ -246,14 +243,6 @@ export default function Elections() {
                         </div>
                       )}
 
-                      <div className="flex space-x-2">
-                        <Button className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3" size="sm">
-                          Contact
-                        </Button>
-                        <Button className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3" size="sm">
-                          Learn More
-                        </Button>
-                      </div>
                     </div>
                   </ThemedCard>
                 ))}

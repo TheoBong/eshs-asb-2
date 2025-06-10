@@ -43,7 +43,8 @@ const productSchema = new mongoose.Schema({
   organization: { type: String, required: true },
   sizes: [{ type: String }],
   colors: [{ type: String }],
-  image: { type: String, required: true },
+  image: { type: String, required: true }, // Keep for backward compatibility
+  images: [{ type: String }], // New field for multiple images
   description: { type: String, required: true },
   stock: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
@@ -61,6 +62,12 @@ const eventSchema = new mongoose.Schema({
   maxTickets: { type: Number },
   features: [{ type: String }],
   requiresApproval: { type: Boolean, default: false },
+  requiredForms: {
+    contractForm: { type: Boolean, default: false },
+    guestForm: { type: Boolean, default: false },
+    studentIdRequired: { type: Boolean, default: false },
+    customForms: [{ type: String }]
+  },
   image: { type: String },
   createdAt: { type: Date, default: Date.now }
 });

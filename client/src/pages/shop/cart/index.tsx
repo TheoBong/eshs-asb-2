@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
+import { useCart } from "@/contexts/CartContext";
 
 // Cart items interface - supports both shop items and event tickets
 interface CartItem {
@@ -23,49 +23,14 @@ interface CartItem {
 
 export default function CartPage() {
   const [, setLocation] = useLocation();
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
 
-  // Cart utility functions
-  const getCartFromCookies = (): CartItem[] => {
-    try {
-      const cartData = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('cart='))
-        ?.split('=')[1];
-      return cartData ? JSON.parse(decodeURIComponent(cartData)) : [];
-    } catch {
-      return [];
-    }
+  const handleQuantityChange = (id: number | string, change: number, size?: string, color?: string) => {
+    updateQuantity(id, change, size, color);
   };
 
-  const saveCartToCookies = (items: CartItem[]) => {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000)); // 24 hours
-    document.cookie = `cart=${encodeURIComponent(JSON.stringify(items))}; expires=${expires.toUTCString()}; path=/`;
-  };
-
-  // Load cart from cookies on component mount
-  useEffect(() => {
-    const cookieCart = getCartFromCookies();
-    setCartItems(cookieCart);
-  }, []);
-
-  const handleQuantityChange = (id: number | string, change: number) => {
-    const updatedItems = cartItems.map(item => {
-      if (item.id === id) {
-        const newQuantity = item.quantity + change;
-        return { ...item, quantity: newQuantity > 0 ? newQuantity : 1 };
-      }
-      return item;
-    });
-    setCartItems(updatedItems);
-    saveCartToCookies(updatedItems);
-  };
-
-  const handleRemoveItem = (id: number | string) => {
-    const updatedItems = cartItems.filter(item => item.id !== id);
-    setCartItems(updatedItems);
-    saveCartToCookies(updatedItems);
+  const handleRemoveItem = (id: number | string, size?: string, color?: string) => {
+    removeFromCart(id, size, color);
     toast({
       title: "Item removed",
       description: "Item has been removed from your cart",
@@ -189,7 +154,7 @@ export default function CartPage() {
                                 <OutlineButton
                                   size="icon"
                                   className="h-8 w-8 rounded-r-none"
-                                  onClick={() => handleQuantityChange(item.id, -1)}
+                                  onClick={() => handleQuantityChange(item.id, -1, item.size, item.color)}
                                 >
                                   -
                                 </OutlineButton>
@@ -199,7 +164,7 @@ export default function CartPage() {
                                 <OutlineButton
                                   size="icon"
                                   className="h-8 w-8 rounded-l-none"
-                                  onClick={() => handleQuantityChange(item.id, 1)}
+                                  onClick={() => handleQuantityChange(item.id, 1, item.size, item.color)}
                                 >
                                   +
                                 </OutlineButton>
@@ -209,7 +174,7 @@ export default function CartPage() {
                               <OutlineButton
                                 size="sm"
                                 className="text-red-400 hover:text-red-300"
-                                onClick={() => handleRemoveItem(item.id)}
+                                onClick={() => handleRemoveItem(item.id, item.size, item.color)}
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                                   <path d="M3 6h18"></path>

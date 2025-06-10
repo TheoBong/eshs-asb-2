@@ -168,14 +168,6 @@ export default function Athletics() {
               <div>
                 <h2 className="text-2xl font-bold mb-2">School Athletic Programs</h2>
                 <p className="mb-4">Join one of our competitive athletic teams and represent our school with pride.</p>
-                <div className="flex space-x-2">
-                  <PrimaryButton className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold">
-                    Tryout Information
-                  </PrimaryButton>
-                  <OutlineButton className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold">
-                    Athletic Calendar
-                  </OutlineButton>
-                </div>
               </div>
               <div className="mt-6 md:mt-0 h-24 w-24 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20">
                 <svg className="h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -230,14 +222,6 @@ export default function Athletics() {
                     </div>
                   </div>
 
-                  <div className="flex space-x-2">
-                    <OutlineButton className="text-white hover:text-gray-300" size="sm">
-                      Join Team
-                    </OutlineButton>
-                    <OutlineButton className="text-white hover:text-gray-300" size="sm">
-                      Learn More
-                    </OutlineButton>
-                  </div>
                 </div>
               </ThemedCard>
             ))}

@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Home from "@/pages/home";
 import Shop from "@/pages/shop";
 import NotFound from "@/pages/not-found";
+import { CartProvider } from "@/contexts/CartContext";
 
 // Shop related pages
 import ProductPage from "@/pages/shop/product/index";
@@ -91,10 +92,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <CartProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </CartProvider>
     </QueryClientProvider>
   );
 }

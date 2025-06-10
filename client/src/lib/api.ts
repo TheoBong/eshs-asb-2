@@ -323,6 +323,7 @@ export interface Product {
   sizes: string[];
   colors: string[];
   image: string;
+  images: string[]; // Array of image URLs for multiple images
   description: string;
   stock: number;
   createdAt: Date;
@@ -342,6 +343,12 @@ export interface Event {
   requiresApproval: boolean;
   image?: string;
   createdAt: Date;
+  requiredForms?: {
+    contractForm: boolean;
+    guestForm: boolean;
+    studentIdRequired: boolean;
+    customForms: string[];
+  };
 }
 
 export interface VideoPost {

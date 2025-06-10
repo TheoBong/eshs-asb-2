@@ -156,18 +156,31 @@ const BirdsEyeView = () => {
             <>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {/* Main Video Player */}
-                <div className="lg:col-span-2 space-y-4">
-                  {selectedVideo ? (
+                <div className="lg:col-span-2 space-y-4">                  {selectedVideo ? (
                     <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl overflow-hidden">
                       <div className="aspect-video bg-black rounded-t-xl overflow-hidden">
-                        <video 
-                          controls 
-                          className="w-full h-full object-cover"
-                          poster={selectedVideo.thumbnailUrl}
-                        >
-                          <source src={selectedVideo.videoUrl} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
+                        {(() => {
+                          // Convert YouTube watch URL to embed URL if needed
+                          let embedUrl = selectedVideo.videoUrl;
+                          if (embedUrl.includes('youtube.com/watch')) {
+                            const videoId = embedUrl.split('v=')[1]?.split('&')[0];
+                            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                          } else if (embedUrl.includes('youtu.be/')) {
+                            const videoId = embedUrl.split('youtu.be/')[1]?.split('?')[0];
+                            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                          }
+                          
+                          return (
+                            <iframe 
+                              src={embedUrl}
+                              frameBorder="0" 
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                              allowFullScreen
+                              className="w-full h-full"
+                              title={selectedVideo.title}
+                            />
+                          );
+                        })()}
                       </div>
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-4">
@@ -221,11 +234,10 @@ const BirdsEyeView = () => {
                     <div className="p-4">
                       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="grid w-full bg-white/5 backdrop-blur-xl border border-white/10" style={{gridTemplateColumns: `repeat(${categories.length}, minmax(0, 1fr))`}}>
-                          {categories.map(category => (
-                            <TabsTrigger 
+                          {categories.map(category => (                            <TabsTrigger 
                               key={category}
                               value={category}
-                              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs px-2"
+                              className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white text-xs px-2"
                             >
                               {category.charAt(0).toUpperCase() + category.slice(1)}
                             </TabsTrigger>

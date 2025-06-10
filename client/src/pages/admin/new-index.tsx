@@ -195,11 +195,10 @@ export default function Admin() {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="merchandise" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-900">
-            <TabsTrigger value="merchandise">Merchandise</TabsTrigger>
-            <TabsTrigger value="activities">Activities</TabsTrigger>
-            <TabsTrigger value="information">Information</TabsTrigger>
-            <TabsTrigger value="birds-eye-view">Birds Eye View</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg">            <TabsTrigger value="merchandise" className="text-white">Merchandise</TabsTrigger>
+            <TabsTrigger value="activities" className="text-white">Activities</TabsTrigger>
+            <TabsTrigger value="information" className="text-white">Information</TabsTrigger>
+            <TabsTrigger value="birds-eye-view" className="text-white">Birds Eye View</TabsTrigger>
           </TabsList>
 
           {/* Merchandise Tab */}

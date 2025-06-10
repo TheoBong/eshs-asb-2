@@ -10,22 +10,22 @@ import { Club, getClubs } from "@/lib/api";
 const clubResources = [
   {
     title: "Club Registration",
-    description: "How to join existing clubs or start a new club",
+    description: "Create a new club on campus",
     link: "#club-registration"
   },
   {
-    title: "Meeting Calendar",
-    description: "Schedule of all club meetings and events",
+    title: "Club Constitutions",
+    description: "View a folder of all club constitutions",
     link: "#meeting-calendar"
   },
   {
-    title: "Club Fair Information",
-    description: "Annual club fair dates and participation details",
+    title: "Club Fair Map",
+    description: "Annual club fair map",
     link: "#club-fair"
   },
   {
-    title: "Leadership Opportunities",
-    description: "Information about club officer positions and elections",
+    title: "Club Renewal Form",
+    description: "Renew your club for the next year",
     link: "#leadership"
   }
 ];
@@ -62,9 +62,8 @@ export default function Clubs() {
   const filteredClubs = activeTab === "All" 
     ? clubs 
     : clubs.filter(club => club.category === activeTab);
-
   // Get unique categories from the data
-  const categories = ["All", ...new Set(clubs.map(club => club.category))];
+  const categories = ["All", ...Array.from(new Set(clubs.map(club => club.category)))];
 
   if (loading) {
     return (
@@ -169,14 +168,6 @@ export default function Clubs() {
               <div>
                 <h2 className="text-2xl font-bold mb-2">Get Involved in School Clubs</h2>
                 <p className="mb-4">Join one of our many clubs to pursue your interests and meet like-minded peers.</p>
-                <div className="flex space-x-2">
-                  <PrimaryButton className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold">
-                    Join a Club
-                  </PrimaryButton>
-                  <OutlineButton className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold">
-                    Start a Club
-                  </OutlineButton>
-                </div>
               </div>
               <div className="mt-6 md:mt-0 h-24 w-24 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20">
                 <svg className="h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -184,16 +175,15 @@ export default function Clubs() {
                 </svg>
               </div>
             </div>
-          </div>
-
-          {/* Category Filter Tabs */}
+          </div>          {/* Category Filter Tabs */}
           <Tabs defaultValue="All" className="mb-8" onValueChange={setActiveTab}>
-            <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg flex flex-wrap w-full justify-center">
+            <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg grid w-full max-w-3xl mx-auto" 
+                     style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
               {categories.map((category) => (
                 <TabsTrigger 
                   key={category}
                   value={category} 
-                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white m-1"
+                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
                 >
                   {category}
                 </TabsTrigger>
@@ -234,17 +224,6 @@ export default function Clubs() {
                     </div>
                   </div>
 
-                  {club.requirements && club.requirements.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="font-medium text-gray-200 mb-2">Requirements:</h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {club.requirements.map((requirement, index) => (
-                          <li key={index} className="text-gray-300 text-sm">{requirement}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
                   {club.activities && club.activities.length > 0 && (
                     <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
                       <p className="text-sm font-medium text-blue-200 mb-2">Activities:</p>
@@ -255,15 +234,6 @@ export default function Clubs() {
                       </ul>
                     </div>
                   )}
-
-                  <div className="flex space-x-2">
-                    <OutlineButton className="text-white hover:text-gray-300" size="sm">
-                      Join Club
-                    </OutlineButton>
-                    <OutlineButton className="text-white hover:text-gray-300" size="sm">
-                      Contact Advisor
-                    </OutlineButton>
-                  </div>
                 </div>
               </ThemedCard>
             ))}
