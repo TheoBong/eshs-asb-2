@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton, ThemedInput } from "@/components/ThemedComponents";
+import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton, ThemedInput, ThemedSelect, ThemedSelectTrigger, ThemedSelectContent, ThemedSelectItem, ThemedSelectValue } from "@/components/ThemedComponents";
 import schoolVideo from "../../../../../attached_assets/school2.mp4";
 import { createPurchase } from "@/lib/api";
 
@@ -283,23 +283,23 @@ export default function CheckoutPage() {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="state" className="text-gray-200">State *</Label>
-                            <Select 
+                            <ThemedSelect 
                               value={formState.state} 
                               onValueChange={value => setFormState(prev => ({ ...prev, state: value }))}
                             >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select state" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="AL">Alabama</SelectItem>
-                                <SelectItem value="AK">Alaska</SelectItem>
-                                <SelectItem value="AZ">Arizona</SelectItem>
-                                <SelectItem value="AR">Arkansas</SelectItem>
-                                <SelectItem value="CA">California</SelectItem>
-                                <SelectItem value="CO">Colorado</SelectItem>
+                              <ThemedSelectTrigger>
+                                <ThemedSelectValue placeholder="Select state" />
+                              </ThemedSelectTrigger>
+                              <ThemedSelectContent>
+                                <ThemedSelectItem value="AL">Alabama</ThemedSelectItem>
+                                <ThemedSelectItem value="AK">Alaska</ThemedSelectItem>
+                                <ThemedSelectItem value="AZ">Arizona</ThemedSelectItem>
+                                <ThemedSelectItem value="AR">Arkansas</ThemedSelectItem>
+                                <ThemedSelectItem value="CA">California</ThemedSelectItem>
+                                <ThemedSelectItem value="CO">Colorado</ThemedSelectItem>
                                 {/* More states would be listed here */}
-                              </SelectContent>
-                            </Select>
+                              </ThemedSelectContent>
+                            </ThemedSelect>
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="zipCode" className="text-gray-200">ZIP Code *</Label>
@@ -344,20 +344,20 @@ export default function CheckoutPage() {
                             </div>
                             <div className="space-y-2">
                               <Label htmlFor="billingState" className="text-gray-200">State *</Label>
-                              <Select defaultValue="CA">
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select state" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="AL">Alabama</SelectItem>
-                                  <SelectItem value="AK">Alaska</SelectItem>
-                                  <SelectItem value="AZ">Arizona</SelectItem>
-                                  <SelectItem value="AR">Arkansas</SelectItem>
-                                  <SelectItem value="CA">California</SelectItem>
-                                  <SelectItem value="CO">Colorado</SelectItem>
+                              <ThemedSelect defaultValue="CA">
+                                <ThemedSelectTrigger>
+                                  <ThemedSelectValue placeholder="Select state" />
+                                </ThemedSelectTrigger>
+                                <ThemedSelectContent>
+                                  <ThemedSelectItem value="AL">Alabama</ThemedSelectItem>
+                                  <ThemedSelectItem value="AK">Alaska</ThemedSelectItem>
+                                  <ThemedSelectItem value="AZ">Arizona</ThemedSelectItem>
+                                  <ThemedSelectItem value="AR">Arkansas</ThemedSelectItem>
+                                  <ThemedSelectItem value="CA">California</ThemedSelectItem>
+                                  <ThemedSelectItem value="CO">Colorado</ThemedSelectItem>
                                   {/* More states would be listed here */}
-                                </SelectContent>
-                              </Select>
+                                </ThemedSelectContent>
+                              </ThemedSelect>
                             </div>
                             <div className="space-y-2">
                               <Label htmlFor="billingZipCode" className="text-gray-200">ZIP Code *</Label>
@@ -463,96 +463,102 @@ export default function CheckoutPage() {
                     </div>
                   </CardContent>                </form>
               </ThemedCard>
-            </div>            {/* Order Summary */}            <div className="lg:col-span-1">              <ThemedCard className="sticky top-8 bg-white/5 backdrop-blur-xl border border-white/10">
-                <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-4 text-white">Order Summary</h2>
-                  
-                  {/* Cart Items */}
-                  <div className="space-y-4 mb-6">
-                    {cartItems.length > 0 ? (
-                      cartItems.map((item) => (
-                        <div key={item.id} className="flex justify-between text-gray-300">
-                          <div>
-                            <div className="font-medium text-white">{item.name}</div>
-                            <div className="text-sm text-gray-400">
-                              {item.size && <span className="mr-1">Size: {item.size}</span>}
-                              {item.color && <span>Color: {item.color}</span>}
+            </div>            {/* Order Summary */}            <div className="lg:col-span-1">              <div className="sticky top-8 space-y-6">
+                <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10">
+                  <CardContent className="p-6">
+                    <h2 className="text-xl font-semibold mb-4 text-white">Order Summary</h2>
+                    
+                    {/* Cart Items */}
+                    <div className="space-y-4 mb-6">
+                      {cartItems.length > 0 ? (
+                        cartItems.map((item) => (
+                          <div key={item.id} className="flex justify-between text-gray-300">
+                            <div>
+                              <div className="font-medium text-white">{item.name}</div>
+                              <div className="text-sm text-gray-400">
+                                {item.size && <span className="mr-1">Size: {item.size}</span>}
+                                {item.color && <span>Color: {item.color}</span>}
+                              </div>
+                              <div className="text-sm">Qty: {item.quantity}</div>
                             </div>
-                            <div className="text-sm">Qty: {item.quantity}</div>
+                            <div className="font-medium text-white">${(item.price * item.quantity).toFixed(2)}</div>
                           </div>
-                          <div className="font-medium text-white">${(item.price * item.quantity).toFixed(2)}</div>
+                        ))
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-gray-300">Your cart is empty</p>
+                          <OutlineButton className="mt-2" onClick={() => setLocation('/shop')}>
+                            Return to Shop
+                          </OutlineButton>
                         </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-4">
-                        <p className="text-gray-300">Your cart is empty</p>
-                        <OutlineButton className="mt-2" onClick={() => setLocation('/shop')}>
-                          Return to Shop
-                        </OutlineButton>
+                      )}
+                    </div>
+                    
+                    <Separator className="my-4 bg-white/10" />
+                    
+                    {/* Price Breakdown */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-gray-300">
+                        <span>Subtotal</span>
+                        <span>${subtotal.toFixed(2)}</span>
                       </div>
-                    )}
-                  </div>
-                  
-                  <Separator className="my-4 bg-white/10" />
-                  
-                  {/* Price Breakdown */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-gray-300">
-                      <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <div className="flex justify-between text-gray-300">
+                        <span>Estimated Tax (8.75%)</span>
+                        <span>${tax.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-300">
+                        <span>Shipping</span>
+                        <span className="text-green-400">Free</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-gray-300">
-                      <span>Estimated Tax (8.75%)</span>
-                      <span>${tax.toFixed(2)}</span>
+                    
+                    <Separator className="my-4" />
+                    
+                    {/* Total */}
+                    <div className="flex justify-between text-lg font-bold text-white">
+                      <span>Total</span>
+                      <span>${total.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-gray-300">
-                      <span>Shipping</span>
-                      <span className="text-green-400">Free</span>
+                      {/* Place Order Button */}
+                    <PrimaryButton
+                      type="button"
+                      onClick={handleSubmit}
+                      className="w-full mt-6"
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Processing...
+                        </>                      ) : (
+                        "Place Order"
+                      )}
+                    </PrimaryButton>
+                      <div className="mt-4 text-center">
+                      <p className="text-xs text-gray-400">
+                        By placing your order, you agree to the Terms of Service and Privacy Policy
+                      </p>
                     </div>
-                  </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  {/* Total */}
-                  <div className="flex justify-between text-lg font-bold text-white">
-                    <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
-                  </div>
-                    {/* Place Order Button */}
-                  <PrimaryButton
-                    type="button"
-                    onClick={handleSubmit}
-                    className="w-full mt-6"
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Processing...
-                      </>                    ) : (
-                      "Place Order"
-                    )}
-                  </PrimaryButton>
-                    <div className="mt-4 text-center">
-                    <p className="text-xs text-gray-400">
-                      By placing your order, you agree to the Terms of Service and Privacy Policy
+                  </CardContent>
+                </ThemedCard>
+                
+                {/* Security Notice */}
+                <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10">
+                  <CardContent className="p-4">
+                    <div className="flex items-center mb-2">
+                      <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                      <span className="font-medium text-white">Secure Checkout</span>
+                    </div>
+                    <p className="text-xs text-gray-300">
+                      All transactions are secure and encrypted. Your personal information is never shared with third parties.
                     </p>
-                  </div>
-                </CardContent>
-              </ThemedCard>                {/* Security Notice */}
-              <div className="mt-6 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-4">
-                <div className="flex items-center mb-2">
-                  <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                  <span className="font-medium text-white">Secure Checkout</span>
-                </div>
-                <p className="text-xs text-gray-300">
-                  All transactions are secure and encrypted. Your personal information is never shared with third parties.
-                </p>
+                  </CardContent>
+                </ThemedCard>
               </div>
             </div>          </div>
         </div>

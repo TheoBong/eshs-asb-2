@@ -109,6 +109,54 @@ export const ThemedInput = React.forwardRef<
 });
 ThemedInput.displayName = "ThemedInput";
 
+// Themed Select Components
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+export const ThemedSelect = Select;
+export const ThemedSelectValue = SelectValue;
+
+export const ThemedSelectTrigger = React.forwardRef<
+  React.ElementRef<typeof SelectTrigger>,
+  React.ComponentPropsWithoutRef<typeof SelectTrigger>
+>(({ className, ...props }, ref) => {
+  return (
+    <SelectTrigger 
+      className={cn("bg-white/5 backdrop-blur-xl border border-white/10 text-white shadow-2xl focus:bg-white/10 focus:border-white/20", className)}
+      ref={ref} 
+      {...props} 
+    />
+  );
+});
+ThemedSelectTrigger.displayName = "ThemedSelectTrigger";
+
+export const ThemedSelectContent = React.forwardRef<
+  React.ElementRef<typeof SelectContent>,
+  React.ComponentPropsWithoutRef<typeof SelectContent>
+>(({ className, ...props }, ref) => {
+  return (
+    <SelectContent 
+      className={cn("bg-black/95 backdrop-blur-xl border border-white/20 text-white shadow-2xl max-h-[300px]", className)}
+      ref={ref} 
+      {...props} 
+    />
+  );
+});
+ThemedSelectContent.displayName = "ThemedSelectContent";
+
+export const ThemedSelectItem = React.forwardRef<
+  React.ElementRef<typeof SelectItem>,
+  React.ComponentPropsWithoutRef<typeof SelectItem>
+>(({ className, ...props }, ref) => {
+  return (
+    <SelectItem 
+      className={cn("text-white focus:bg-white/10 focus:text-white", className)}
+      ref={ref} 
+      {...props} 
+    />
+  );
+});
+ThemedSelectItem.displayName = "ThemedSelectItem";
+
 // Themed Tabs
 export const ThemedTabs = React.forwardRef<
   HTMLDivElement,
