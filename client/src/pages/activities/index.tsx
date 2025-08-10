@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
 import { getEvents, type Event } from "@/lib/api";
+import { useCart } from "@/contexts/CartContext";
 import schoolVideo from "../../../../attached_assets/school2.mp4";
 
 // Mock data for school events (fallback)
@@ -15,6 +16,7 @@ export default function Activities() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { cartCount } = useCart();
 
   // Load events from API
   useEffect(() => {
@@ -60,6 +62,10 @@ export default function Activities() {
 
   const handleEventDetails = (eventId: string) => {
     setLocation(`/activities/details/${eventId}`);
+  };
+
+  const handleCartClick = () => {
+    setLocation("/shop/cart");
   };
 
   return (
@@ -110,21 +116,34 @@ export default function Activities() {
                 </svg>
               </div>
             </div>
-          </div>          {/* Category Filter Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-            <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg grid w-full max-w-3xl mx-auto" 
-                      style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
-              {categories.map(category => (
-                <TabsTrigger 
-                  key={category}
-                  value={category} 
-                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
-                >
-                  {category}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          </div>          {/* Category Filter Tabs with Cart Button */}
+          <div className="mb-8 flex items-center justify-center">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 max-w-3xl">
+              <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg grid w-full h-10" 
+                        style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
+                {categories.map(category => (
+                  <TabsTrigger 
+                    key={category}
+                    value={category} 
+                    className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white h-8"
+                  >
+                    {category}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+            
+            {/* Cart Button - Inline with tabs */}
+            <PrimaryButton 
+              onClick={handleCartClick} 
+              className="bg-white/10 hover:bg-white/20 text-white shadow-xl border border-white/20 backdrop-blur-xl px-4 h-10 text-sm font-medium rounded-lg flex items-center space-x-2 ml-4"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span>Cart {cartCount > 0 ? `(${cartCount})` : ""}</span>
+            </PrimaryButton>
+          </div>
 
           {/* Loading State */}
           {loading && (

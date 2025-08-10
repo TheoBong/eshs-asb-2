@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
 import { getEvents, createFormSubmission, type Event } from "@/lib/api";
+import { useCart } from "@/contexts/CartContext";
 import schoolVideo from "../../../../attached_assets/school2.mp4";
 
 // Types for form data
@@ -56,7 +57,7 @@ export default function EventDetails() {
     email: '',
     quantity: 1,
     notes: ''
-  });  const [cart, setCart] = useState<CartItem[]>([]);
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<FormUploadStatus>({
     uploading: false,
@@ -64,6 +65,7 @@ export default function EventDetails() {
     error: false,
     message: ''
   });
+  const { addToCart } = useCart();
 
   // File input refs
   const fileInputRefs = {
@@ -75,43 +77,6 @@ export default function EventDetails() {
   // Custom forms refs object
   const customFormRefs = useRef<{[key: string]: HTMLInputElement | null}>({});
 
-  // Cart utility functions
-  const getCartFromCookies = (): CartItem[] => {
-    try {
-      const cartData = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('cart='))
-        ?.split('=')[1];
-      return cartData ? JSON.parse(decodeURIComponent(cartData)) : [];
-    } catch {
-      return [];
-    }
-  };
-
-  const saveCartToCookies = (cartItems: CartItem[]) => {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000)); // 24 hours
-    document.cookie = `cart=${encodeURIComponent(JSON.stringify(cartItems))}; expires=${expires.toUTCString()}; path=/`;
-  };
-
-  const addToCart = (eventItem: CartItem) => {
-    const currentCart = getCartFromCookies();
-    const existingItemIndex = currentCart.findIndex(item => item.eventId === eventItem.eventId);
-    
-    let updatedCart;
-    if (existingItemIndex >= 0) {
-      updatedCart = currentCart.map((item, index) =>
-        index === existingItemIndex
-          ? { ...item, quantity: item.quantity + eventItem.quantity }
-          : item
-      );
-    } else {
-      updatedCart = [...currentCart, eventItem];
-    }
-    
-    saveCartToCookies(updatedCart);
-    setCart(updatedCart);
-  };
 
   useEffect(() => {
     const loadEventData = async () => {
@@ -138,9 +103,6 @@ export default function EventDetails() {
         } else {
           setError('Invalid event URL');
         }
-
-        // Load cart from cookies
-        setCart(getCartFromCookies());
       } catch (err) {
         console.error('Failed to load event:', err);
         setError('Failed to load event data. Please try again.');
@@ -376,13 +338,15 @@ export default function EventDetails() {
   };
 
   const handleDirectPurchase = () => {
-    if (!event) return;    // Add to cart for non-approval events using cookies
-    const cartItem: CartItem = {
+    if (!event) return;
+    
+    // Add to cart using CartContext
+    const cartItem = {
       id: event._id,
       name: event.title,
       price: event.price,
       quantity: formData.quantity,
-      type: 'event',
+      type: 'event' as const,
       eventId: event._id,
       image: "/api/placeholder/300/300" // Default image for events
     };

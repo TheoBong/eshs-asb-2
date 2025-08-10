@@ -215,16 +215,32 @@
   filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.25)) !important;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .shop-overlay img {
-    width: 150px;
+/* Mobile-only button sizing - consistent 256px (w-64) for all buttons */
+@media (max-width: 639px) {
+  .shop-overlay img,
+  .theater-overlay img,
+  .activities-overlay img,
+  .information-overlay img {
+    width: 256px !important;
   }
-}
-
-@media (max-width: 480px) {
-  .shop-overlay img {
-    width: 120px;
+  
+  /* Mobile positioning adjustments */
+  .shop-overlay {
+    left: 0.5rem !important;
+  }
+  
+  .theater-overlay {
+    left: 6rem !important;
+    bottom: 13rem !important;
+  }
+  
+  .activities-overlay {
+    right: 0.5rem !important;
+  }
+  
+  .information-overlay {
+    right: 6rem !important;
+    bottom: 13rem !important;
   }
 }
 
