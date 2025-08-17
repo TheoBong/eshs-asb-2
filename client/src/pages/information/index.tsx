@@ -19,26 +19,6 @@ const infoSections = [
 		iconColor: "text-amber-700",
 	},
 	{
-		id: "athletics",
-		title: "Athletics",
-		description:
-			"Explore our school's sports teams, athletic programs, and upcoming games.",
-		image: "https://npr.brightspotcdn.com/6e/1a/ad489ab04171a3f71807e59124fe/pexels-jean-daniel-2570139.jpg",
-		path: "/information/athletics",
-		color: "bg-blue-100/90 border-blue-300",
-		iconColor: "text-blue-800",
-	},
-	{
-		id: "arts",
-		title: "Arts",
-		description:
-			"Discover our performing and visual arts programs, theater productions, and art exhibitions.",
-		image: "https://3.files.edl.io/3fbe/21/09/17/181225-152dd9a9-2f1c-4e98-9b7d-a286a98f950e.jpg",
-		path: "/information/arts",
-		color: "bg-purple-100/90 border-purple-300",
-		iconColor: "text-purple-800",
-	},
-	{
 		id: "clubs",
 		title: "Clubs",
 		description:
@@ -68,39 +48,6 @@ const StudentGovernmentIcon = () => (
 	</svg>
 );
 
-const AthleticsIcon = () => (
-	<svg
-		className="h-6 w-6"
-		xmlns="http://www.w3.org/2000/svg"
-		fill="none"
-		viewBox="0 0 24 24"
-		stroke="currentColor"
-	>
-		<path
-			strokeLinecap="round"
-			strokeLinejoin="round"
-			strokeWidth={2}
-			d="M13 10V3L4 14h7v7l9-11h-7z"
-		/>
-	</svg>
-);
-
-const ArtsIcon = () => (
-	<svg
-		className="h-6 w-6"
-		xmlns="http://www.w3.org/2000/svg"
-		fill="none"
-		viewBox="0 0 24 24"
-		stroke="currentColor"
-	>
-		<path
-			strokeLinecap="round"
-			strokeLinejoin="round"
-			strokeWidth={2}
-			d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v6a2 2 0 002 2h4a2 2 0 002-2V5z"
-		/>
-	</svg>
-);
 
 const ClubsIcon = () => (
 	<svg
@@ -124,10 +71,6 @@ const getIcon = (sectionId: string) => {
 	switch (sectionId) {
 		case "student-government":
 			return <StudentGovernmentIcon />;
-		case "athletics":
-			return <AthleticsIcon />;
-		case "arts":
-			return <ArtsIcon />;
 		case "clubs":
 			return <ClubsIcon />;
 		default:

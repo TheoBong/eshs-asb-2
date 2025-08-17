@@ -465,12 +465,30 @@ export default function EventDetails() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="text-center">
-                    <span className="text-4xl font-bold text-white">
-                      {event.price === 0 ? "FREE" : `$${event.price}`}
-                    </span>
-                    {event.price > 0 && <p className="text-gray-400">per ticket</p>}
-                  </div>
+                  {event.ticketTypes && event.ticketTypes.length > 0 ? (
+                    <div>
+                      <h4 className="text-center font-medium text-gray-200 mb-3">Ticket Options:</h4>
+                      <div className="space-y-2">
+                        {event.ticketTypes.map((ticket, index) => (
+                          <div key={index} className="p-3 bg-white/5 rounded-lg border border-white/10">
+                            <div className="text-center">
+                              <div className="font-medium text-white">{ticket.name}</div>
+                              <div className="text-2xl font-bold text-green-400">${ticket.price.toFixed(2)}</div>
+                              <div className="text-sm text-gray-300">{ticket.description}</div>
+                              <div className="text-xs text-gray-400">Max: {ticket.maxTickets} tickets</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <span className="text-4xl font-bold text-white">
+                        {event.price === 0 ? "FREE" : `$${event.price}`}
+                      </span>
+                      {event.price > 0 && <p className="text-gray-400">per ticket</p>}
+                    </div>
+                  )}
                     <div className={`p-4 rounded-lg border ${availability.color}`}>
                     <div className="text-center">
                       <p className="font-medium">{availability.status}</p>

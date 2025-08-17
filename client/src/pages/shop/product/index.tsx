@@ -14,7 +14,6 @@ export default function ProductPage() {
   const [match, params] = useRoute("/shop/product/:id");
   const [, setLocation] = useLocation();
   const [selectedSize, setSelectedSize] = useState<string>("");
-  const [selectedColor, setSelectedColor] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [activeImageIndex, setActiveImageIndex] = useState(0);  const [product, setProduct] = useState<any>(null);
@@ -87,7 +86,8 @@ export default function ProductPage() {
   };
 
   const handleAddToCart = () => {
-    if (!selectedSize && product.sizes.length > 1) {
+    // Check if size is required for Apparel products
+    if (product.category === 'Apparel' && product.sizeStock && product.sizeStock.length > 1 && !selectedSize) {
       toast({
         title: "Please select a size",
         description: "You need to select a size before adding to cart",
@@ -96,13 +96,17 @@ export default function ProductPage() {
       return;
     }
 
-    if (!selectedColor && product.colors.length > 1) {
-      toast({
-        title: "Please select a color",
-        description: "You need to select a color before adding to cart",
-        variant: "destructive"
-      });
-      return;
+    // Check stock availability for selected size
+    if (product.category === 'Apparel' && selectedSize) {
+      const sizeStockItem = product.sizeStock.find((item: any) => item.size === selectedSize);
+      if (!sizeStockItem || sizeStockItem.stock <= 0) {
+        toast({
+          title: "Size out of stock",
+          description: "The selected size is currently out of stock",
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     // Add the product to the cart using CartContext
@@ -113,14 +117,14 @@ export default function ProductPage() {
       image: product.image,
       quantity: quantity,
       size: selectedSize || undefined,
-      color: selectedColor || undefined,
       type: 'product'
     });
 
     // Show toast notification
+    const sizeText = selectedSize ? ` (${selectedSize})` : '';
     toast({
       title: "Added to cart!",
-      description: `${quantity} x ${product.name} (${selectedSize || 'No size'}, ${selectedColor || 'No color'}) added to your cart`,
+      description: `${quantity} x ${product.name}${sizeText} added to your cart`,
     });
     
     // Navigate to cart page after short delay
@@ -234,27 +238,44 @@ export default function ProductPage() {
               {/* Product Information */}
               <div className="space-y-6">
                 {/* Header information */}
-                <div>                  <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center justify-between">
                     <Badge className="mb-2 bg-blue-600 text-white">{product.category}</Badge>
-                    <Badge variant={product.stock > 0 ? "outline" : "secondary"} className={product.stock > 0 ? "border-green-400 text-green-400" : "bg-red-600 text-white"}>
-                      {product.stock > 0 ? "In Stock" : "Out of Stock"}
-                    </Badge>
+                    {product.category === 'Apparel' ? (
+                      <Badge variant={product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0) ? "outline" : "secondary"} 
+                             className={product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0) ? "border-green-400 text-green-400" : "bg-red-600 text-white"}>
+                        {product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0) ? "In Stock" : "Out of Stock"}
+                      </Badge>
+                    ) : (
+                      <Badge variant={product.stock > 0 ? "outline" : "secondary"} 
+                             className={product.stock > 0 ? "border-green-400 text-green-400" : "bg-red-600 text-white"}>
+                        {product.stock > 0 ? "In Stock" : "Out of Stock"}
+                      </Badge>
+                    )}
                   </div>
                   <h1 className="text-3xl font-bold mb-2 text-white">{product.name}</h1>
                   <p className="text-sm text-gray-300 mb-2">By {product.organization}</p>
                   <div className="mb-4">
-                    {product.stock > 0 && (
-                      <p className="text-sm text-gray-300">
-                        {product.stock} items available
-                      </p>
+                    {product.category === 'Apparel' ? (
+                      product.sizeStock && product.sizeStock.length > 0 && (
+                        <p className="text-sm text-gray-300">
+                          {product.sizeStock.reduce((total: number, item: any) => total + item.stock, 0)} items available across all sizes
+                        </p>
+                      )
+                    ) : (
+                      product.stock > 0 && (
+                        <p className="text-sm text-gray-300">
+                          {product.stock} items available
+                        </p>
+                      )
                     )}
                   </div>
                   <div className="text-3xl font-bold text-blue-400">${product.price.toFixed(2)}</div>
                 </div>
 
                 <div className="space-y-4">
-                  {/* Size Selection */}
-                  {product.sizes.length > 1 && (
+                  {/* Size Selection - Only for Apparel */}
+                  {product.category === 'Apparel' && product.sizeStock && product.sizeStock.length > 0 && (
                     <div>
                       <Label htmlFor="size-select" className="block text-sm font-medium mb-2 text-gray-200">
                         Select Size
@@ -265,50 +286,29 @@ export default function ProductPage() {
                         onValueChange={setSelectedSize}
                         className="flex flex-wrap gap-2"
                       >
-                        {product.sizes.map((size: string) => (
-                          <div key={size} className="flex items-center">
-                            <RadioGroupItem id={`size-${size}`} value={size} className="hidden" />
-                            <Label
-                              htmlFor={`size-${size}`}
-                              className={`px-4 py-2 border rounded-md cursor-pointer text-sm transition-colors ${
-                                selectedSize === size
-                                  ? "border-blue-400 bg-blue-600 text-white"
-                                  : "border-white/20 text-gray-200 hover:border-blue-400 hover:text-blue-400"
-                              }`}
-                            >
-                              {size}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  )}
-
-                  {/* Color Selection */}
-                  {product.colors.length > 1 && (
-                    <div>
-                      <Label htmlFor="color-select" className="block text-sm font-medium mb-2 text-gray-200">
-                        Select Color
-                      </Label>
-                      <RadioGroup
-                        id="color-select"
-                        value={selectedColor}
-                        onValueChange={setSelectedColor}
-                        className="flex flex-wrap gap-2"
-                      >
-                        {product.colors.map((color: string) => (
-                          <div key={color} className="flex items-center">
-                            <RadioGroupItem id={`color-${color}`} value={color} className="hidden" />
-                            <Label
-                              htmlFor={`color-${color}`}
-                              className={`px-4 py-2 border rounded-md cursor-pointer text-sm transition-colors ${
-                                selectedColor === color
-                                  ? "border-blue-400 bg-blue-600 text-white"
-                                  : "border-white/20 text-gray-200 hover:border-blue-400 hover:text-blue-400"
-                              }`}
-                            >
-                              {color}
-                            </Label>
+                        {product.sizeStock.map((sizeItem: any) => (
+                          <div key={sizeItem.size} className="flex items-center">
+                            {sizeItem.stock > 0 ? (
+                              <>
+                                <RadioGroupItem id={`size-${sizeItem.size}`} value={sizeItem.size} className="hidden" />
+                                <Label
+                                  htmlFor={`size-${sizeItem.size}`}
+                                  className={`px-4 py-2 border rounded-md cursor-pointer text-sm transition-colors ${
+                                    selectedSize === sizeItem.size
+                                      ? "border-white/40 bg-white/10 text-white"
+                                      : "border-white/20 text-gray-200 hover:border-white/40 hover:text-white"
+                                  }`}
+                                >
+                                  {sizeItem.size}
+                                  <span className="ml-2 text-xs opacity-75">({sizeItem.stock})</span>
+                                </Label>
+                              </>
+                            ) : (
+                              <div className="px-4 py-2 border border-white/10 rounded-md text-sm text-gray-500 cursor-not-allowed bg-gray-800/50">
+                                {sizeItem.size}
+                                <span className="ml-2 text-xs opacity-75">(0)</span>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </RadioGroup>
@@ -360,9 +360,16 @@ export default function ProductPage() {
                       size="lg" 
                       className="w-full bg-white/10 hover:bg-blue-600/80 backdrop-blur-xl border border-white/20 shadow-lg" 
                       onClick={handleAddToCart}
-                      disabled={!(product.stock > 0)}
+                      disabled={
+                        product.category === 'Apparel' 
+                          ? !(product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0))
+                          : !(product.stock > 0)
+                      }
                     >
-                      {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                      {product.category === 'Apparel' 
+                        ? (product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0) ? "Add to Cart" : "Out of Stock")
+                        : (product.stock > 0 ? "Add to Cart" : "Out of Stock")
+                      }
                     </PrimaryButton>
                   </div>
                 </div>

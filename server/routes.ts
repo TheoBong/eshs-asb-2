@@ -4,9 +4,10 @@ import { storage } from "./storage";
 import express from 'express';
 import {
   User, Product, Event, VideoPost, Announcement,
-  StudentGovPosition, Club, Athletic, Art, FormSubmission, Purchase
+  StudentGovPosition, Club, Athletic, Art, FormSubmission, Purchase, File
 } from '../shared/mongodb-schema';
 import { connectWithRetry as connectDB } from './mongo-utils';
+import { requireAdminAuth, handleAdminLogin, handleAdminLogout, checkAdminAuth } from './auth';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -22,19 +23,29 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure multer for file uploads
-const storageConfig = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
+// Configure multer for memory storage
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname);
-    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-  },
+  fileFilter: (req, file, cb) => {
+    // Allow images and PDFs
+    const allowedMimes = [
+      'image/jpeg',
+      'image/png', 
+      'image/gif',
+      'image/webp',
+      'application/pdf'
+    ];
+    
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only images and PDFs are allowed.'));
+    }
+  }
 });
-
-const upload = multer({ storage: storageConfig });
 
 // Create router
 export const router = express.Router();
@@ -49,6 +60,11 @@ const handleError = (res: express.Response, error: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication routes
+  app.post("/api/admin/login", handleAdminLogin);
+  app.post("/api/admin/logout", handleAdminLogout);
+  app.get("/api/admin/check-auth", checkAdminAuth);
+
   // User routes
   app.get("/api/users/:id", async (req, res) => {
     try {
@@ -105,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/products", async (req, res) => {
+  app.post("/api/products", requireAdminAuth, async (req, res) => {
     try {
       const product = await storage.createProduct(req.body);
       res.status(201).json(product);
@@ -114,7 +130,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/products/:id", async (req, res) => {
+  app.put("/api/products/:id", requireAdminAuth, async (req, res) => {
     try {
       const product = await storage.updateProduct(req.params.id, req.body);
       if (!product) {
@@ -126,7 +142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/products/:id", async (req, res) => {
+  app.delete("/api/products/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deleteProduct(req.params.id);
       if (!success) {
@@ -160,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/events", async (req, res) => {
+  app.post("/api/events", requireAdminAuth, async (req, res) => {
     try {
       const event = await storage.createEvent(req.body);
       res.status(201).json(event);
@@ -169,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/events/:id", async (req, res) => {
+  app.put("/api/events/:id", requireAdminAuth, async (req, res) => {
     try {
       const event = await storage.updateEvent(req.params.id, req.body);
       if (!event) {
@@ -181,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/events/:id", async (req, res) => {
+  app.delete("/api/events/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deleteEvent(req.params.id);
       if (!success) {
@@ -215,7 +231,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/videos", async (req, res) => {
+  app.post("/api/videos", requireAdminAuth, async (req, res) => {
     try {
       const video = await storage.createVideo(req.body);
       res.status(201).json(video);
@@ -224,7 +240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/videos/:id", async (req, res) => {
+  app.put("/api/videos/:id", requireAdminAuth, async (req, res) => {
     try {
       const video = await storage.updateVideo(req.params.id, req.body);
       if (!video) {
@@ -236,7 +252,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/videos/:id", async (req, res) => {
+  app.delete("/api/videos/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deleteVideo(req.params.id);
       if (!success) {
@@ -270,7 +286,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/announcements", async (req, res) => {
+  app.post("/api/announcements", requireAdminAuth, async (req, res) => {
     try {
       const announcement = await storage.createAnnouncement(req.body);
       res.status(201).json(announcement);
@@ -279,7 +295,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/announcements/:id", async (req, res) => {
+  app.put("/api/announcements/:id", requireAdminAuth, async (req, res) => {
     try {
       const announcement = await storage.updateAnnouncement(req.params.id, req.body);
       if (!announcement) {
@@ -291,7 +307,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/announcements/:id", async (req, res) => {
+  app.delete("/api/announcements/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deleteAnnouncement(req.params.id);
       if (!success) {
@@ -325,7 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/student-gov-positions", async (req, res) => {
+  app.post("/api/student-gov-positions", requireAdminAuth, async (req, res) => {
     try {
       const position = await storage.createStudentGovPosition(req.body);
       res.status(201).json(position);
@@ -334,7 +350,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/student-gov-positions/:id", async (req, res) => {
+  app.put("/api/student-gov-positions/:id", requireAdminAuth, async (req, res) => {
     try {
       const position = await storage.updateStudentGovPosition(req.params.id, req.body);
       if (!position) {
@@ -346,7 +362,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/student-gov-positions/:id", async (req, res) => {
+  app.delete("/api/student-gov-positions/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deleteStudentGovPosition(req.params.id);
       if (!success) {
@@ -380,7 +396,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/clubs", async (req, res) => {
+  app.post("/api/clubs", requireAdminAuth, async (req, res) => {
     try {
       const club = await storage.createClub(req.body);
       res.status(201).json(club);
@@ -389,7 +405,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/clubs/:id", async (req, res) => {
+  app.put("/api/clubs/:id", requireAdminAuth, async (req, res) => {
     try {
       const club = await storage.updateClub(req.params.id, req.body);
       if (!club) {
@@ -401,7 +417,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/clubs/:id", async (req, res) => {
+  app.delete("/api/clubs/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deleteClub(req.params.id);
       if (!success) {
@@ -435,7 +451,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/athletics", async (req, res) => {
+  app.post("/api/athletics", requireAdminAuth, async (req, res) => {
     try {
       const athletic = await storage.createAthletic(req.body);
       res.status(201).json(athletic);
@@ -444,7 +460,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/athletics/:id", async (req, res) => {
+  app.put("/api/athletics/:id", requireAdminAuth, async (req, res) => {
     try {
       const athletic = await storage.updateAthletic(req.params.id, req.body);
       if (!athletic) {
@@ -456,7 +472,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/athletics/:id", async (req, res) => {
+  app.delete("/api/athletics/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deleteAthletic(req.params.id);
       if (!success) {
@@ -490,7 +506,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/arts", async (req, res) => {
+  app.post("/api/arts", requireAdminAuth, async (req, res) => {
     try {
       const art = await storage.createArt(req.body);
       res.status(201).json(art);
@@ -499,7 +515,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/arts/:id", async (req, res) => {
+  app.put("/api/arts/:id", requireAdminAuth, async (req, res) => {
     try {
       const art = await storage.updateArt(req.params.id, req.body);
       if (!art) {
@@ -511,7 +527,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/arts/:id", async (req, res) => {
+  app.delete("/api/arts/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deleteArt(req.params.id);
       if (!success) {
@@ -571,7 +587,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/form-submissions/:id", async (req, res) => {
+  app.put("/api/form-submissions/:id", requireAdminAuth, async (req, res) => {
     try {
       const submission = await storage.updateFormSubmission(req.params.id, req.body);
       if (!submission) {
@@ -583,7 +599,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/form-submissions/:id", async (req, res) => {
+  app.delete("/api/form-submissions/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deleteFormSubmission(req.params.id);
       if (!success) {
@@ -626,7 +642,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/purchases/:id", async (req, res) => {
+  app.put("/api/purchases/:id", requireAdminAuth, async (req, res) => {
     try {
       const purchase = await storage.updatePurchase(req.params.id, req.body);
       if (!purchase) {
@@ -638,7 +654,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/purchases/:id", async (req, res) => {
+  app.delete("/api/purchases/:id", requireAdminAuth, async (req, res) => {
     try {
       const success = await storage.deletePurchase(req.params.id);
       if (!success) {
@@ -647,6 +663,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Error deleting purchase", error });
+    }
+  });
+
+  // File upload endpoints
+  app.post("/api/upload", requireAdminAuth, upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const { originalname, mimetype, size, buffer } = req.file;
+      
+      // Convert buffer to base64
+      const base64Data = buffer.toString('base64');
+      
+      // Generate unique filename
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const ext = path.extname(originalname);
+      const filename = `${path.basename(originalname, ext)}-${uniqueSuffix}${ext}`;
+
+      // Save to database
+      const file = new File({
+        filename,
+        originalName: originalname,
+        mimeType: mimetype,
+        size,
+        data: base64Data
+      });
+
+      const savedFile = await file.save();
+      
+      res.json({
+        id: savedFile._id,
+        filename: savedFile.filename,
+        originalName: savedFile.originalName,
+        mimeType: savedFile.mimeType,
+        size: savedFile.size,
+        url: `/api/files/${savedFile._id}`,
+        uploadedAt: savedFile.uploadedAt
+      });
+    } catch (error) {
+      console.error('File upload error:', error);
+      res.status(500).json({ message: "Error uploading file", error: error.message });
+    }
+  });
+
+  // File serving endpoint
+  app.get("/api/files/:id", async (req, res) => {
+    try {
+      const file = await File.findById(req.params.id);
+      
+      if (!file) {
+        return res.status(404).json({ message: "File not found" });
+      }
+
+      // Convert base64 back to buffer
+      const buffer = Buffer.from(file.data, 'base64');
+      
+      // Set appropriate headers
+      res.set({
+        'Content-Type': file.mimeType,
+        'Content-Length': buffer.length,
+        'Content-Disposition': `inline; filename="${file.originalName}"`
+      });
+      
+      res.send(buffer);
+    } catch (error) {
+      console.error('File serving error:', error);
+      res.status(500).json({ message: "Error serving file", error: error.message });
+    }
+  });
+
+  // File deletion endpoint
+  app.delete("/api/files/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const file = await File.findByIdAndDelete(req.params.id);
+      
+      if (!file) {
+        return res.status(404).json({ message: "File not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error('File deletion error:', error);
+      res.status(500).json({ message: "Error deleting file", error: error.message });
     }
   });
 

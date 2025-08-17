@@ -3,10 +3,12 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { connectWithRetry } from "./mongo-utils";
 import { connectDB } from "@shared/mongodb-schema";
+import { sessionConfig } from "./auth";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(sessionConfig);
 
 app.use((req, res, next) => {
   const start = Date.now();

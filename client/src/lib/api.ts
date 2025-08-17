@@ -6,6 +6,7 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
+      credentials: 'include', // Include cookies for session authentication
       headers: {
         'Content-Type': 'application/json',
         ...options?.headers,
@@ -13,10 +14,23 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.error || errorJson.message || errorMessage;
+      } catch {
+        // If not JSON, use the text
+        if (errorText) errorMessage = errorText;
+      }
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    // Handle empty responses (like DELETE)
+    const text = await response.text();
+    if (!text) return undefined as unknown as T;
+    
+    return JSON.parse(text);
   } catch (error) {
     console.error(`API call failed for ${endpoint}:`, error);
     throw error;
@@ -318,14 +332,18 @@ export interface Product {
   _id: string;
   name: string;
   price: number;
-  category: string;
+  category: 'Apparel' | 'Accessories';
   organization: string;
-  sizes: string[];
-  colors: string[];
+  // For Apparel: sizes with individual stock amounts
+  sizeStock: Array<{
+    size: string;
+    stock: number;
+  }>;
+  // For Accessories: generic stock
+  stock: number;
   image: string;
   images: string[]; // Array of image URLs for multiple images
   description: string;
-  stock: number;
   createdAt: Date;
 }
 
@@ -337,17 +355,24 @@ export interface Event {
   time: string;
   location: string;
   description: string;
-  price: number;
-  maxTickets?: number;
+  price: number; // Keep for backward compatibility
+  maxTickets?: number; // Keep for backward compatibility
+  ticketTypes?: Array<{
+    name: string;
+    description: string;
+    price: number;
+    maxTickets: number;
+  }>;
   features: string[];
   requiresApproval: boolean;
   image?: string;
   createdAt: Date;
   requiredForms?: {
-    contractForm: boolean;
-    guestForm: boolean;
     studentIdRequired: boolean;
-    customForms: string[];
+    customForms: Array<{
+      name: string;
+      pdfUrl: string;
+    }>;
   };
 }
 

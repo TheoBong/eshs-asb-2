@@ -250,3 +250,51 @@
     background-attachment: scroll;
   }
 }
+
+/* Safari-specific fixes for background video */
+@supports (-webkit-backdrop-filter: none) {
+  video {
+    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+  }
+  
+  /* Fix for Safari's opacity handling with page transitions */
+  .fixed.inset-0 {
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  /* Prevent black flashes during transitions */
+  body {
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  /* Ensure video stays visible during transitions */
+  video:not(::-webkit-media-controls) {
+    opacity: 1 !important;
+  }
+}
+
+/* Additional Safari fixes */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) and (stroke-color:transparent) {
+    /* Safari-only CSS */
+    .fixed video {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+    
+    /* Prevent black background during transitions */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -100;
+      background: #000;
+    }
+  }
+}

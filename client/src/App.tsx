@@ -18,8 +18,6 @@ import CheckoutPage from "@/pages/shop/checkout/index";
 // Information related pages
 import Information from "@/pages/information/index";
 import Elections from "@/pages/information/elections/index";
-import Athletics from "@/pages/information/athletics/index";
-import Arts from "@/pages/information/arts/index";
 import Clubs from "@/pages/information/clubs/index";
 
 // Activities page
@@ -45,6 +43,12 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
         ease: "easeInOut"
       }}
       className="w-full h-full"
+      style={{
+        // Safari-specific fix for transitions
+        WebkitBackfaceVisibility: 'hidden',
+        WebkitPerspective: 1000,
+        WebkitTransform: 'translate3d(0,0,0)'
+      }}
     >
       {children}
     </motion.div>
@@ -70,8 +74,6 @@ function Router() {
         <Route path="/information" component={() => <PageWrapper><Information /></PageWrapper>} />
         <Route path="/information/student-government" component={() => <PageWrapper><Elections /></PageWrapper>} />
         <Route path="/information/elections" component={() => <PageWrapper><Elections /></PageWrapper>} />
-        <Route path="/information/athletics" component={() => <PageWrapper><Athletics /></PageWrapper>} />
-        <Route path="/information/arts" component={() => <PageWrapper><Arts /></PageWrapper>} />
         <Route path="/information/clubs" component={() => <PageWrapper><Clubs /></PageWrapper>} />
         
         {/* Activities page */}        <Route path="/activities" component={() => <PageWrapper><Activities /></PageWrapper>} />

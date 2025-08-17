@@ -226,11 +226,8 @@ export default function Shop() {
                       />
                     </div>
                     
-                    <CardHeader>                    <div className="flex justify-between">
-                        <div className="flex space-x-1">
-                          {item.stock === 0 && <Badge variant="destructive">Out of Stock</Badge>}
-                        </div>
-                      </div><CardTitle className="text-lg font-semibold text-white mt-2">{item.name}</CardTitle>                    <div className="flex justify-between items-center mt-2">
+                    <CardHeader>
+                      <CardTitle className="text-lg font-semibold text-white">{item.name}</CardTitle>                    <div className="flex justify-between items-center mt-2">
                         <span className="text-xl font-bold text-blue-400">${item.price.toFixed(2)}</span>
                         <Badge variant="outline">{item.category}</Badge>
                       </div>

@@ -8,9 +8,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit, Trash2, Package, Calendar, Info, Video, FileText, Check, X, Eye, BarChart3, Users, Download, Send, DollarSign, TrendingUp } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Package, Calendar, Info, Video, FileText, Check, X, Eye, BarChart3, Users, Download, Send, DollarSign, TrendingUp, LogOut } from 'lucide-react';
 import { ThemedCard, PrimaryButton, SecondaryButton, OutlineButton } from '@/components/ThemedComponents';
 import { CommaSeparatedInput } from '@/components/ui/comma-separated-input';
+import { AdminAuth } from '@/components/AdminAuth';
+import { FileUpload } from '@/components/FileUpload';
 import schoolVideo from "../../../../attached_assets/school2.mp4";
 import {
   getProducts, createProduct, updateProduct, deleteProduct,
@@ -19,11 +21,9 @@ import {
   getAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement,
   getStudentGovPositions, createStudentGovPosition, updateStudentGovPosition, deleteStudentGovPosition,
   getClubs, createClub, updateClub, deleteClub,
-  getAthletics, createAthletic, updateAthletic, deleteAthletic,
-  getArts, createArt, updateArt, deleteArt,
   getFormSubmissions, updateFormSubmission,
   getPurchases,
-  Product, Event, VideoPost, Announcement, StudentGovPosition, Club, Athletic, Art, FormSubmission, Purchase
+  Product, Event, VideoPost, Announcement, StudentGovPosition, Club, FormSubmission, Purchase
 } from '@/lib/api';
 
 // Simple form components for each data type
@@ -94,12 +94,13 @@ function VideoForm({ video, onSubmit, onCancel }: {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Thumbnail URL</label>
-          <Input
+          <FileUpload
             value={formData.thumbnailUrl || ''}
-            onChange={(e) => setFormData({...formData, thumbnailUrl: e.target.value})}
-            placeholder="URL to thumbnail image"
-            required
+            onChange={(url) => setFormData({...formData, thumbnailUrl: url})}
+            label="Thumbnail Image"
+            fileType="image"
+            placeholder="Upload thumbnail image or paste URL"
+            maxSizeMB={5}
           />
         </div>
       </div>
@@ -151,8 +152,15 @@ function VideoForm({ video, onSubmit, onCancel }: {
       </div>
 
       <div className="flex justify-end space-x-4 mt-4">
-        <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button type="submit" className="bg-blue-600 hover:bg-blue-700">Save Video</Button>
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel}
+          className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+        >
+          Cancel
+        </Button>
+        <Button type="submit" className="bg-blue-600/20 hover:bg-blue-600/40 backdrop-blur text-blue-200 border border-blue-600/30">Save Video</Button>
       </div>
     </form>
   );
@@ -162,18 +170,18 @@ function ProductForm({ product, onSubmit, onCancel }: {
   product?: Product;
   onSubmit: (data: Partial<Product>) => void;
   onCancel: () => void;
-}) {  const [formData, setFormData] = useState<Partial<Product>>(
+}) {
+  const [formData, setFormData] = useState<Partial<Product>>(
     product || {
       name: '',
       price: 0,
-      category: '',
+      category: 'Apparel' as 'Apparel' | 'Accessories',
       organization: '',
-      sizes: [],
-      colors: [],
+      sizeStock: [],
+      stock: 0,
       image: '',
       images: [],
-      description: '',
-      stock: 0
+      description: ''
     }
   );
 
@@ -182,120 +190,237 @@ function ProductForm({ product, onSubmit, onCancel }: {
     onSubmit(formData);
   };
 
+  const addSizeStock = () => {
+    setFormData({
+      ...formData,
+      sizeStock: [...(formData.sizeStock || []), { size: '', stock: 0 }]
+    });
+  };
+
+  const removeSizeStock = (index: number) => {
+    const newSizeStock = [...(formData.sizeStock || [])];
+    newSizeStock.splice(index, 1);
+    setFormData({ ...formData, sizeStock: newSizeStock });
+  };
+
+  const updateSizeStock = (index: number, field: 'size' | 'stock', value: string | number) => {
+    const newSizeStock = [...(formData.sizeStock || [])];
+    newSizeStock[index] = { ...newSizeStock[index], [field]: value };
+    setFormData({ ...formData, sizeStock: newSizeStock });
+  };
+
+  const addImage = () => {
+    setFormData({
+      ...formData,
+      images: [...(formData.images || []), '']
+    });
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = [...(formData.images || [])];
+    newImages.splice(index, 1);
+    setFormData({ ...formData, images: newImages });
+  };
+
+  const updateImage = (index: number, value: string) => {
+    const newImages = [...(formData.images || [])];
+    newImages[index] = value;
+    setFormData({ ...formData, images: newImages });
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Product Name</label>
-        <Input
-          value={formData.name || ''}
-          onChange={(e) => setFormData({...formData, name: e.target.value})}
-          placeholder="Enter product name"
-          required
-        />
-      </div>
-      
-      <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Price ($)</label>
+          <label className="block text-sm font-medium text-white mb-2">Product Name</label>
           <Input
-            type="number"
-            value={formData.price || ''}
-            onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
-            placeholder="0.00"
-            step="0.01"
+            value={formData.name || ''}
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            placeholder="Enter product name"
             required
           />
         </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">Price ($)</label>
+            <Input
+              type="number"
+              value={formData.price || ''}
+              onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
+              placeholder="0.00"
+              step="0.01"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">Category</label>
+            <Select
+              value={formData.category || 'Apparel'}
+              onValueChange={(value: 'Apparel' | 'Accessories') => setFormData({...formData, category: value})}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Apparel">Apparel</SelectItem>
+                <SelectItem value="Accessories">Accessories</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Stock</label>
+          <label className="block text-sm font-medium text-white mb-2">Organization</label>
           <Input
-            type="number"
-            value={formData.stock || ''}
-            onChange={(e) => setFormData({...formData, stock: parseInt(e.target.value)})}
-            placeholder="0"
+            value={formData.organization || ''}
+            onChange={(e) => setFormData({...formData, organization: e.target.value})}
+            placeholder="ASB, Drama Club, etc."
+            required
           />
         </div>
-      </div>
 
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Category</label>
-        <Input
-          value={formData.category || ''}
-          onChange={(e) => setFormData({...formData, category: e.target.value})}
-          placeholder="e.g., Apparel, Accessories"
-          required
-        />
-      </div>
+        {/* Conditional stock fields based on category */}
+        {formData.category === 'Apparel' ? (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-white">Size & Stock</label>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addSizeStock}
+                className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+              >
+                <PlusCircle className="w-4 h-4 mr-1" />
+                Add Size
+              </Button>
+            </div>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {(formData.sizeStock || []).map((sizeStock, index) => (
+                <div key={index} className="flex gap-2 items-center">
+                  <Input
+                    placeholder="Size (e.g., S, M, L)"
+                    value={sizeStock.size}
+                    onChange={(e) => updateSizeStock(index, 'size', e.target.value)}
+                    className="flex-1"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Stock"
+                    value={sizeStock.stock}
+                    onChange={(e) => updateSizeStock(index, 'stock', parseInt(e.target.value) || 0)}
+                    className="w-24"
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => removeSizeStock(index)}
+                    className="p-2 bg-red-600/20 hover:bg-red-600/40 text-red-200 border-red-600/30"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+              {(formData.sizeStock || []).length === 0 && (
+                <p className="text-sm text-gray-400 italic">No sizes added yet. Click "Add Size" to get started.</p>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">Stock</label>
+            <Input
+              type="number"
+              value={formData.stock || ''}
+              onChange={(e) => setFormData({...formData, stock: parseInt(e.target.value) || 0})}
+              placeholder="0"
+            />
+          </div>
+        )}
 
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Organization</label>
-        <Input
-          value={formData.organization || ''}
-          onChange={(e) => setFormData({...formData, organization: e.target.value})}
-          placeholder="ASB, Drama Club, etc."
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Description</label>
-        <Textarea
-          value={formData.description || ''}
-          onChange={(e) => setFormData({...formData, description: e.target.value})}
-          placeholder="Product description"
-          rows={3}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">        <div>
-          <label className="block text-sm font-medium text-white mb-2">Available Sizes</label>
-          <CommaSeparatedInput
-            value={formData.sizes || []}
-            onChange={(sizes) => setFormData({...formData, sizes})}
-            placeholder="S, M, L, XL"
-          />
-        </div>        <div>
-          <label className="block text-sm font-medium text-white mb-2">Available Colors</label>
-          <CommaSeparatedInput
-            value={formData.colors || []}
-            onChange={(colors) => setFormData({...formData, colors})}
-            placeholder="Blue, Gold, Red"
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">Description</label>
+          <Textarea
+            value={formData.description || ''}
+            onChange={(e) => setFormData({...formData, description: e.target.value})}
+            placeholder="Product description"
+            rows={3}
           />
         </div>
-      </div>      <div>
-        <label className="block text-sm font-medium text-white mb-2">Main Image URL</label>
-        <Input
-          value={formData.image || ''}
-          onChange={(e) => setFormData({...formData, image: e.target.value})}
-          placeholder="/api/placeholder/400/400"
-        />
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Additional Image URLs</label>
-        <div className="space-y-2">
-          <Input
-            value={formData.images?.join('\n') || ''}
-            onChange={(e) => setFormData({
-              ...formData, 
-              images: e.target.value.split('\n').map(s => s.trim()).filter(s => s)
-            })}
-            placeholder="Enter each image URL on a new line"
-            multiple
-          />
-          <p className="text-xs text-gray-400">Enter each image URL on a new line</p>
-        </div>
-      </div>
 
-      <div className="flex gap-2 pt-4">
-        <PrimaryButton type="submit">
-          {product ? 'Update Product' : 'Add Product'}
-        </PrimaryButton>
-        <OutlineButton type="button" onClick={onCancel}>
-          Cancel
-        </OutlineButton>
-      </div>
-    </form>
+        <div>
+          <FileUpload
+            value={formData.image || ''}
+            onChange={(url) => setFormData({...formData, image: url})}
+            label="Main Product Image"
+            fileType="image"
+            placeholder="Upload product image or paste URL"
+            maxSizeMB={5}
+          />
+        </div>
+        
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-white">Additional Images</label>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addImage}
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+            >
+              <PlusCircle className="w-4 h-4 mr-1" />
+              Add Image
+            </Button>
+          </div>
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {(formData.images || []).map((image, index) => (
+              <div key={index} className="flex gap-2 items-start">
+                <div className="flex-1">
+                  <FileUpload
+                    value={image}
+                    onChange={(url) => updateImage(index, url)}
+                    label={`Additional Image ${index + 1}`}
+                    fileType="image"
+                    placeholder="Upload image or paste URL"
+                    maxSizeMB={5}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => removeImage(index)}
+                  className="mt-6 p-2 bg-red-600/20 hover:bg-red-600/40 text-red-200 border-red-600/30"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+            {(formData.images || []).length === 0 && (
+              <p className="text-sm text-gray-400 italic">No additional images added yet. Click "Add Image" to get started.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-2 pt-4">
+          <Button 
+            type="submit"
+            className="bg-blue-600/20 hover:bg-blue-600/40 backdrop-blur text-blue-200 border border-blue-600/30"
+          >
+            {product ? 'Update Product' : 'Add Product'}
+          </Button>
+          <Button 
+            type="button" 
+            variant="outline"
+            onClick={onCancel}
+            className="bg-white/10 hover:bg-white/20 backdrop-blur text-white border-white/20"
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
   );
 }
 
@@ -313,18 +438,18 @@ function EventForm({ event, onSubmit, onCancel }: {
       description: '',
       price: 0,
       maxTickets: 0,
+      ticketTypes: [],
       features: [],
       requiresApproval: false,
       requiredForms: {
-        contractForm: false,
-        guestForm: false,
         studentIdRequired: false,
         customForms: []
       }
     }
   );
   
-  const [newCustomForm, setNewCustomForm] = useState('');
+  const [newCustomForm, setNewCustomForm] = useState({ name: '', pdfUrl: '' });
+  const [newTicketType, setNewTicketType] = useState({ name: '', description: '', price: 0, maxTickets: 0 });
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -342,15 +467,18 @@ function EventForm({ event, onSubmit, onCancel }: {
   };
   
   const addCustomForm = () => {
-    if (newCustomForm.trim() && formData.requiredForms) {
+    if (newCustomForm.name.trim() && newCustomForm.pdfUrl.trim() && formData.requiredForms) {
       setFormData({
         ...formData,
         requiredForms: {
           ...formData.requiredForms,
-          customForms: [...(formData.requiredForms.customForms || []), newCustomForm.trim()]
+          customForms: [...(formData.requiredForms.customForms || []), { 
+            name: newCustomForm.name.trim(), 
+            pdfUrl: newCustomForm.pdfUrl.trim() 
+          }]
         }
       });
-      setNewCustomForm('');
+      setNewCustomForm({ name: '', pdfUrl: '' });
     }
   };
 
@@ -365,17 +493,35 @@ function EventForm({ event, onSubmit, onCancel }: {
       });
     }
   };
-  // Fix the required forms handlers to properly maintain all fields
-  const updateRequiredForm = (field: 'contractForm' | 'guestForm' | 'studentIdRequired' | 'customForms', value: any) => {
+  const updateStudentIdRequired = (value: boolean) => {
     setFormData({
       ...formData,
       requiredForms: {
-        contractForm: formData.requiredForms?.contractForm || false,
-        guestForm: formData.requiredForms?.guestForm || false,
-        studentIdRequired: formData.requiredForms?.studentIdRequired || false,
-        customForms: formData.requiredForms?.customForms || [],
-        [field]: value
+        studentIdRequired: value,
+        customForms: formData.requiredForms?.customForms || []
       }
+    });
+  };
+
+  const addTicketType = () => {
+    if (newTicketType.name.trim() && newTicketType.description.trim() && newTicketType.price > 0 && newTicketType.maxTickets > 0) {
+      setFormData({
+        ...formData,
+        ticketTypes: [...(formData.ticketTypes || []), { 
+          name: newTicketType.name.trim(), 
+          description: newTicketType.description.trim(),
+          price: newTicketType.price,
+          maxTickets: newTicketType.maxTickets
+        }]
+      });
+      setNewTicketType({ name: '', description: '', price: 0, maxTickets: 0 });
+    }
+  };
+
+  const removeTicketType = (index: number) => {
+    setFormData({
+      ...formData,
+      ticketTypes: formData.ticketTypes?.filter((_, i) => i !== index) || []
     });
   };
 
@@ -443,9 +589,10 @@ function EventForm({ event, onSubmit, onCancel }: {
         />
       </div>
 
+      {/* Legacy Price & Max Tickets - Keep for backward compatibility */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Price ($)</label>
+          <label className="block text-sm font-medium text-white mb-2">Legacy Price ($)</label>
           <Input
             type="number"
             value={formData.price || ''}
@@ -453,15 +600,99 @@ function EventForm({ event, onSubmit, onCancel }: {
             placeholder="0.00"
             step="0.01"
           />
+          <p className="text-xs text-gray-400 mt-1">Only used if no ticket types are defined</p>
         </div>
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Max Tickets</label>
+          <label className="block text-sm font-medium text-white mb-2">Legacy Max Tickets</label>
           <Input
             type="number"
             value={formData.maxTickets || ''}
             onChange={(e) => setFormData({...formData, maxTickets: parseInt(e.target.value)})}
             placeholder="0"
           />
+          <p className="text-xs text-gray-400 mt-1">Only used if no ticket types are defined</p>
+        </div>
+      </div>
+
+      {/* Ticket Types Section */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-sm font-medium text-white">Ticket Types</label>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={addTicketType}
+            className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+          >
+            <PlusCircle className="w-4 h-4 mr-1" />
+            Add Ticket Type
+          </Button>
+        </div>
+        
+        {/* New Ticket Type Form */}
+        <div className="mb-4 p-4 rounded-lg border border-white/20 bg-white/5">
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <Input
+              placeholder="Ticket Type Name (e.g., General Admission)"
+              value={newTicketType.name}
+              onChange={(e) => setNewTicketType({...newTicketType, name: e.target.value})}
+            />
+            <Input
+              type="number"
+              placeholder="Price"
+              value={newTicketType.price}
+              onChange={(e) => setNewTicketType({...newTicketType, price: parseFloat(e.target.value) || 0})}
+              step="0.01"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              placeholder="Description (e.g., Includes dinner and dancing)"
+              value={newTicketType.description}
+              onChange={(e) => setNewTicketType({...newTicketType, description: e.target.value})}
+            />
+            <Input
+              type="number"
+              placeholder="Max Tickets"
+              value={newTicketType.maxTickets}
+              onChange={(e) => setNewTicketType({...newTicketType, maxTickets: parseInt(e.target.value) || 0})}
+            />
+          </div>
+        </div>
+
+        {/* Existing Ticket Types List */}
+        <div className="space-y-2 max-h-40 overflow-y-auto">
+          {(formData.ticketTypes || []).map((ticketType, index) => (
+            <div key={index} className="flex gap-2 items-center p-3 bg-white/5 rounded-lg border border-white/10">
+              <div className="flex-1 grid grid-cols-4 gap-2 text-sm">
+                <div>
+                  <p className="font-medium text-white">{ticketType.name}</p>
+                </div>
+                <div>
+                  <p className="text-gray-300">{ticketType.description}</p>
+                </div>
+                <div>
+                  <p className="text-green-400">${ticketType.price.toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="text-blue-400">{ticketType.maxTickets} tickets</p>
+                </div>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                variant="destructive"
+                onClick={() => removeTicketType(index)}
+                className="p-2 bg-red-600/20 hover:bg-red-600/40 text-red-200 border-red-600/30"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          {(formData.ticketTypes || []).length === 0 && (
+            <p className="text-sm text-gray-400 italic">No ticket types added yet. Add ticket types above for multiple pricing options.</p>
+          )}
         </div>
       </div>      <div>
         <label className="block text-sm font-medium text-white mb-2">Features</label>
@@ -490,91 +721,82 @@ function EventForm({ event, onSubmit, onCancel }: {
         <div className="border border-white/20 rounded-lg p-4 bg-white/5 space-y-4">
           <h3 className="text-lg font-semibold text-white">Form Requirements</h3>
           
-          {/* Standard Forms */}
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2">              <input
-                type="checkbox"
-                id="contractForm"
-                checked={formData.requiredForms?.contractForm || false}                onChange={(e) => updateRequiredForm('contractForm', e.target.checked)}
-                className="rounded border-gray-600 bg-gray-700"
+          {/* Student ID Required */}
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="studentIdRequired"
+              checked={formData.requiredForms?.studentIdRequired || false}
+              onChange={(e) => updateStudentIdRequired(e.target.checked)}
+              className="rounded border-gray-600 bg-gray-700"
+            />
+            <label htmlFor="studentIdRequired" className="text-sm font-medium text-gray-300">
+              Student ID Required
+            </label>
+          </div>
+
+          {/* Custom Forms Section */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-white mb-2">Required Forms</label>
+            
+            {/* Add Custom Form */}
+            <div className="space-y-4 mb-4">
+              <Input
+                value={newCustomForm.name}
+                onChange={(e) => setNewCustomForm({...newCustomForm, name: e.target.value})}
+                placeholder="Form name (e.g., Permission Slip, Medical Form)"
+                className="w-full"
               />
-              <label htmlFor="contractForm" className="text-sm font-medium text-gray-300">
-                Contract Form Required
-              </label>
+              <FileUpload
+                value={newCustomForm.pdfUrl}
+                onChange={(url) => setNewCustomForm({...newCustomForm, pdfUrl: url})}
+                label="Form PDF"
+                fileType="pdf"
+                placeholder="Upload a PDF form or paste URL"
+                maxSizeMB={5}
+              />
+              <Button 
+                type="button" 
+                onClick={addCustomForm}
+                variant="outline" 
+                size="sm"
+                className="border-white/20 text-gray-300 hover:bg-white/10"
+                disabled={!newCustomForm.name.trim() || !newCustomForm.pdfUrl.trim()}
+              >
+                <PlusCircle className="h-4 w-4 mr-1" />
+                Add Form
+              </Button>
             </div>
 
-            <div className="flex items-center space-x-2">              <input
-                type="checkbox"
-                id="guestForm"
-                checked={formData.requiredForms?.guestForm || false}                onChange={(e) => updateRequiredForm('guestForm', e.target.checked)}
-                className="rounded border-gray-600 bg-gray-700"
-              />
-              <label htmlFor="guestForm" className="text-sm font-medium text-gray-300">
-                Guest Form Required
-              </label>
-            </div>
-
-            <div className="flex items-center space-x-2">              <input
-                type="checkbox"
-                id="studentIdRequired"
-                checked={formData.requiredForms?.studentIdRequired || false}                onChange={(e) => updateRequiredForm('studentIdRequired', e.target.checked)}
-                className="rounded border-gray-600 bg-gray-700"
-              />
-              <label htmlFor="studentIdRequired" className="text-sm font-medium text-gray-300">
-                Student ID Required
-              </label>
-            </div>
-
-            {/* Custom Forms Section */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-white mb-2">Custom Forms</label>
-              
-              {/* Add Custom Form */}
-              <div className="flex gap-2 mb-3">
-                <Input
-                  value={newCustomForm}
-                  onChange={(e) => setNewCustomForm(e.target.value)}
-                  placeholder="Enter custom form name"
-                  className="flex-1"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addCustomForm();
-                    }
-                  }}
-                />
-                <Button 
-                  type="button" 
-                  onClick={addCustomForm}
-                  variant="outline" 
-                  size="sm"
-                  className="border-white/20 text-gray-300 hover:bg-white/10"
-                >
-                  <PlusCircle className="h-4 w-4 mr-1" />
-                  Add
-                </Button>
-              </div>
-
-              {/* Custom Forms List */}
-              {formData.requiredForms?.customForms && formData.requiredForms.customForms.length > 0 && (
-                <div className="space-y-2">
-                  {formData.requiredForms.customForms.map((form, index) => (
-                    <div key={index} className="flex items-center justify-between bg-white/10 rounded-lg p-2">
-                      <span className="text-sm text-gray-300">{form}</span>
-                      <Button
-                        type="button"
-                        onClick={() => removeCustomForm(index)}
-                        variant="destructive"
-                        size="sm"
-                        className="h-6 px-2 text-xs"
+            {/* Custom Forms List */}
+            {formData.requiredForms?.customForms && formData.requiredForms.customForms.length > 0 && (
+              <div className="space-y-2">
+                {formData.requiredForms.customForms.map((form, index) => (
+                  <div key={index} className="flex items-center justify-between bg-white/10 rounded-lg p-3">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">{form.name}</p>
+                      <a 
+                        href={form.pdfUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-400 hover:text-blue-300 break-all"
                       >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
+                        {form.pdfUrl}
+                      </a>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    <Button
+                      type="button"
+                      onClick={() => removeCustomForm(index)}
+                      variant="destructive"
+                      size="sm"
+                      className="h-8 w-8 p-0 ml-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -936,11 +1158,13 @@ function ClubForm({ club, onSubmit, onCancel }: {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Image URL</label>
-          <Input
+          <FileUpload
             value={formData.image || ''}
-            onChange={(e) => setFormData({...formData, image: e.target.value})}
-            placeholder="/api/placeholder/400/300"
+            onChange={(url) => setFormData({...formData, image: url})}
+            label="Club Image"
+            fileType="image"
+            placeholder="Upload club image or paste URL"
+            maxSizeMB={5}
           />
         </div>
       </div>
@@ -990,288 +1214,13 @@ function ClubForm({ club, onSubmit, onCancel }: {
   );
 }
 
-// Athletic Form
-function AthleticForm({ athletic, onSubmit, onCancel }: {
-  athletic?: Athletic;
-  onSubmit: (data: Partial<Athletic>) => void;
-  onCancel: () => void;
-}) {
-  const [formData, setFormData] = useState<Partial<Athletic>>(
-    athletic || {
-      sport: '',
-      season: '',
-      coach: '',
-      assistantCoach: '',
-      practiceSchedule: '',
-      homeVenue: '',
-      description: '',
-      image: '',
-      rosterCount: 0,
-      achievements: [],
-      schedule: []
-    }
-  );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Sport</label>
-          <Input
-            value={formData.sport || ''}
-            onChange={(e) => setFormData({...formData, sport: e.target.value})}
-            placeholder="Basketball"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Season</label>
-          <Input
-            value={formData.season || ''}
-            onChange={(e) => setFormData({...formData, season: e.target.value})}
-            placeholder="Fall, Winter, Spring"
-            required
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Description</label>
-        <Textarea
-          value={formData.description || ''}
-          onChange={(e) => setFormData({...formData, description: e.target.value})}
-          placeholder="Sport description"
-          rows={3}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Head Coach</label>
-          <Input
-            value={formData.coach || ''}
-            onChange={(e) => setFormData({...formData, coach: e.target.value})}
-            placeholder="Coach Martinez"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Assistant Coach</label>
-          <Input
-            value={formData.assistantCoach || ''}
-            onChange={(e) => setFormData({...formData, assistantCoach: e.target.value})}
-            placeholder="Coach Davis (optional)"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Practice Schedule</label>
-          <Input
-            value={formData.practiceSchedule || ''}
-            onChange={(e) => setFormData({...formData, practiceSchedule: e.target.value})}
-            placeholder="Monday-Friday 3:30-5:30 PM"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Home Venue</label>
-          <Input
-            value={formData.homeVenue || ''}
-            onChange={(e) => setFormData({...formData, homeVenue: e.target.value})}
-            placeholder="ESHS Gymnasium"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Roster Count</label>
-          <Input
-            type="number"
-            value={formData.rosterCount || ''}
-            onChange={(e) => setFormData({...formData, rosterCount: parseInt(e.target.value)})}
-            placeholder="24"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Image URL</label>
-          <Input
-            value={formData.image || ''}
-            onChange={(e) => setFormData({...formData, image: e.target.value})}
-            placeholder="/api/placeholder/400/300"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Achievements</label>
-        <Textarea
-          value={formData.achievements?.join('\n') || ''}
-          onChange={(e) => setFormData({...formData, achievements: e.target.value.split('\n').filter(a => a.trim())})}
-          placeholder="Enter each achievement on a new line"
-          rows={2}
-        />
-      </div>
-
-      <div className="flex gap-2 pt-4">
-        <Button type="submit">
-          {athletic ? 'Update Program' : 'Add Program'}
-        </Button>
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-      </div>
-    </form>
-  );
-}
-
-// Art Form
-function ArtForm({ art, onSubmit, onCancel }: {
-  art?: Art;
-  onSubmit: (data: Partial<Art>) => void;
-  onCancel: () => void;
-}) {
-  const [formData, setFormData] = useState<Partial<Art>>(
-    art || {
-      program: '',
-      type: '',
-      instructor: '',
-      description: '',
-      meetingTime: '',
-      location: '',
-      image: '',
-      requirements: [],
-      showcaseInfo: '',
-      memberCount: 0
-    }
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Program Name</label>
-          <Input
-            value={formData.program || ''}
-            onChange={(e) => setFormData({...formData, program: e.target.value})}
-            placeholder="Concert Band"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Type</label>
-          <Input
-            value={formData.type || ''}
-            onChange={(e) => setFormData({...formData, type: e.target.value})}
-            placeholder="Visual, Performing, Media"
-            required
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Description</label>
-        <Textarea
-          value={formData.description || ''}
-          onChange={(e) => setFormData({...formData, description: e.target.value})}
-          placeholder="Program description"
-          rows={3}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Instructor</label>
-          <Input
-            value={formData.instructor || ''}
-            onChange={(e) => setFormData({...formData, instructor: e.target.value})}
-            placeholder="Mr. Williams"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Meeting Time</label>
-          <Input
-            value={formData.meetingTime || ''}
-            onChange={(e) => setFormData({...formData, meetingTime: e.target.value})}
-            placeholder="Periods 6-7"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Location</label>
-          <Input
-            value={formData.location || ''}
-            onChange={(e) => setFormData({...formData, location: e.target.value})}
-            placeholder="Music Room"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Member Count</label>
-          <Input
-            type="number"
-            value={formData.memberCount || ''}
-            onChange={(e) => setFormData({...formData, memberCount: parseInt(e.target.value)})}
-            placeholder="30"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Requirements</label>
-        <Textarea
-          value={formData.requirements?.join('\n') || ''}
-          onChange={(e) => setFormData({...formData, requirements: e.target.value.split('\n').filter(r => r.trim())})}
-          placeholder="Enter each requirement on a new line"
-          rows={2}
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Showcase Information</label>
-        <Textarea
-          value={formData.showcaseInfo || ''}
-          onChange={(e) => setFormData({...formData, showcaseInfo: e.target.value})}
-          placeholder="Fall and Spring concerts, competition participation"
-          rows={2}
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Image URL</label>
-        <Input
-          value={formData.image || ''}
-          onChange={(e) => setFormData({...formData, image: e.target.value})}
-          placeholder="/api/placeholder/400/300"
-        />
-      </div>
-
-      <div className="flex gap-2 pt-4">
-        <Button type="submit">
-          {art ? 'Update Program' : 'Add Program'}
-        </Button>
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-      </div>
-    </form>
-  );
-}
 
 export default function AdminMongoDB() {
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
   // State for managing data
   const [products, setProducts] = useState<Product[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
@@ -1279,13 +1228,11 @@ export default function AdminMongoDB() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [studentGov, setStudentGov] = useState<StudentGovPosition[]>([]);
   const [clubs, setClubs] = useState<Club[]>([]);
-  const [athletics, setAthletics] = useState<Athletic[]>([]);
-  const [arts, setArts] = useState<Art[]>([]);
   const [formSubmissions, setFormSubmissions] = useState<FormSubmission[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
 
   // Loading and error states
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);  // State for modals
   const [showProductModal, setShowProductModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
@@ -1294,8 +1241,6 @@ export default function AdminMongoDB() {
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showStudentGovModal, setShowStudentGovModal] = useState(false);
   const [showClubModal, setShowClubModal] = useState(false);
-  const [showAthleticModal, setShowAthleticModal] = useState(false);
-  const [showArtModal, setShowArtModal] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   
   // Form submissions filtering and search
@@ -1306,11 +1251,39 @@ export default function AdminMongoDB() {
   // Rejection modal states
   const [rejectionSubmissionId, setRejectionSubmissionId] = useState<string>('');
   const [rejectionReason, setRejectionReason] = useState<string>('');
+  
+  // Submission detail modal states
+  const [showSubmissionDetailModal, setShowSubmissionDetailModal] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<FormSubmission | null>(null);
 
   const [, setLocation] = useLocation();
 
+  // Check authentication status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/admin/check-auth', {
+          credentials: 'include'
+        });
+        const data = await response.json();
+        setIsAuthenticated(data.authenticated);
+      } catch (err) {
+        console.error('Auth check failed:', err);
+        setIsAuthenticated(false);
+      } finally {
+        setCheckingAuth(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
   // Fetch all data on component mount
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
     const fetchAllData = async () => {
       try {
         setLoading(true);
@@ -1323,8 +1296,6 @@ export default function AdminMongoDB() {
           announcementsData,
           studentGovData,
           clubsData,
-          athleticsData,
-          artsData,
           formSubmissionsData,
           purchasesData
         ] = await Promise.all([
@@ -1334,8 +1305,6 @@ export default function AdminMongoDB() {
           getAnnouncements(),
           getStudentGovPositions(),
           getClubs(),
-          getAthletics(),
-          getArts(),
           getFormSubmissions(),
           getPurchases()
         ]);
@@ -1346,8 +1315,6 @@ export default function AdminMongoDB() {
         setAnnouncements(announcementsData);
         setStudentGov(studentGovData);
         setClubs(clubsData);
-        setAthletics(athleticsData);
-        setArts(artsData);
         setFormSubmissions(formSubmissionsData);
         setPurchases(purchasesData);
       } catch (err) {
@@ -1359,7 +1326,26 @@ export default function AdminMongoDB() {
     };
 
     fetchAllData();
-  }, []);
+  }, [isAuthenticated]);
+
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/logout', { 
+        method: 'POST',
+        credentials: 'include'
+      });
+      setIsAuthenticated(false);
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
+
+  // View submission details handler
+  const handleViewSubmissionDetails = (submission: FormSubmission) => {
+    setSelectedSubmission(submission);
+    setShowSubmissionDetailModal(true);
+  };
 
   // CRUD handlers
   const handleAddProduct = async (productData: Partial<Product>) => {
@@ -1613,99 +1599,6 @@ export default function AdminMongoDB() {
     }
   };
 
-  // Athletic CRUD handlers
-  const handleAddAthletic = async (athleticData: Partial<Athletic>) => {
-    try {
-      const newAthletic = await createAthletic(athleticData);
-      setAthletics([...athletics, newAthletic]);
-      setShowAthleticModal(false);
-      setEditingItem(null);
-    } catch (err) {
-      console.error('Failed to add athletic program:', err);
-      alert('Failed to add athletic program. Please try again.');
-    }
-  };
-
-  const handleUpdateAthletic = async (athleticData: Partial<Athletic>) => {
-    if (!editingItem?._id) return;
-    
-    try {
-      const updatedAthletic = await updateAthletic(editingItem._id, athleticData);
-      setAthletics(athletics.map(a => a._id === editingItem._id ? updatedAthletic : a));
-      setShowAthleticModal(false);
-      setEditingItem(null);
-    } catch (err) {
-      console.error('Failed to update athletic program:', err);
-      alert('Failed to update athletic program. Please try again.');
-    }
-  };
-
-  const handleDeleteAthletic = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this athletic program?')) {
-      try {
-        await deleteAthletic(id);
-        setAthletics(athletics.filter(a => a._id !== id));
-      } catch (err) {
-        console.error('Failed to delete athletic program:', err);
-        alert('Failed to delete athletic program. Please try again.');
-      }
-    }
-  };
-
-  const handleAthleticSubmit = async (athleticData: Partial<Athletic>) => {
-    if (editingItem) {
-      await handleUpdateAthletic(athleticData);
-    } else {
-      await handleAddAthletic(athleticData);
-    }
-  };
-
-  // Art CRUD handlers
-  const handleAddArt = async (artData: Partial<Art>) => {
-    try {
-      const newArt = await createArt(artData);
-      setArts([...arts, newArt]);
-      setShowArtModal(false);
-      setEditingItem(null);
-    } catch (err) {
-      console.error('Failed to add art program:', err);
-      alert('Failed to add art program. Please try again.');
-    }
-  };
-
-  const handleUpdateArt = async (artData: Partial<Art>) => {
-    if (!editingItem?._id) return;
-    
-    try {
-      const updatedArt = await updateArt(editingItem._id, artData);
-      setArts(arts.map(a => a._id === editingItem._id ? updatedArt : a));
-      setShowArtModal(false);
-      setEditingItem(null);
-    } catch (err) {
-      console.error('Failed to update art program:', err);
-      alert('Failed to update art program. Please try again.');
-    }
-  };
-
-  const handleDeleteArt = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this art program?')) {
-      try {
-        await deleteArt(id);
-        setArts(arts.filter(a => a._id !== id));
-      } catch (err) {
-        console.error('Failed to delete art program:', err);
-        alert('Failed to delete art program. Please try again.');
-      }
-    }
-  };
-
-  const handleArtSubmit = async (artData: Partial<Art>) => {
-    if (editingItem) {
-      await handleUpdateArt(artData);
-    } else {
-      await handleAddArt(artData);
-    }
-  };
 
   // Filter form submissions based on search and filter criteria
   const filteredFormSubmissions = formSubmissions.filter(submission => {
@@ -2023,6 +1916,20 @@ ESHS ASB Team
     );
   }
 
+  // Show loading state while checking authentication
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="text-white">Checking authentication...</div>
+      </div>
+    );
+  }
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return <AdminAuth onAuthenticated={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div className="min-h-screen relative">
       {/* Background Video */}
@@ -2044,30 +1951,41 @@ ESHS ASB Team
       {/* Main content */}
       <div className="relative z-10 min-h-screen">
         <main className="container mx-auto px-4 py-8">
-          {/* Header */}          <div className="flex items-center mb-8">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                onClick={handleBackClick}
+                className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+                <span>Back</span>
+              </Button>
+              <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">
+                Admin Dashboard
+              </h1>
+            </div>
             <Button
               variant="ghost"
-              onClick={handleBackClick}
-              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+              onClick={handleLogout}
+              className="text-white/90 hover:text-white p-2 bg-red-500/20 backdrop-blur-xl border border-red-500/30 shadow-2xl rounded-lg hover:bg-red-500/30 transition-all duration-300 flex items-center space-x-2"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              <span>Back</span>
+              <LogOut className="w-4 h-4" />
+              <span>Logout</span>
             </Button>
-            <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">
-              Admin Dashboard
-            </h1>
           </div>
           {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -2092,7 +2010,7 @@ ESHS ASB Team
                 <h3 className="text-sm font-medium text-gray-300">Activities</h3>
                 <Users className="h-4 w-4 text-purple-400" />
               </div>
-              <div className="text-2xl font-bold text-white">{clubs.length + athletics.length + arts.length}</div>
+              <div className="text-2xl font-bold text-white">{clubs.length}</div>
             </div>
 
             <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
@@ -2282,9 +2200,9 @@ ESHS ASB Team
                           <PlusCircle className="w-4 h-4 mr-1" /> Add Announcement
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
+                      <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                         <DialogHeader>
-                          <DialogTitle>{editingItem ? 'Edit Announcement' : 'Add Announcement'}</DialogTitle>
+                          <DialogTitle className="text-white">{editingItem ? 'Edit Announcement' : 'Add Announcement'}</DialogTitle>
                         </DialogHeader>
                         <AnnouncementForm 
                           announcement={editingItem}
@@ -2367,9 +2285,9 @@ ESHS ASB Team
                       Add Product
                     </PrimaryButton>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
+                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                     <DialogHeader>
-                      <DialogTitle>{editingItem ? 'Edit Product' : 'Add Product'}</DialogTitle>
+                      <DialogTitle className="text-white">{editingItem ? 'Edit Product' : 'Add Product'}</DialogTitle>
                     </DialogHeader>
                     <ProductForm 
                       product={editingItem}
@@ -2389,7 +2307,12 @@ ESHS ASB Team
                         <Button size="sm" variant="outline" onClick={() => handleEdit('product', product)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDeleteProduct(product._id)}>
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          onClick={() => handleDeleteProduct(product._id)}
+                          className="bg-red-600/20 hover:bg-red-600/40 text-red-200 border-red-600/30"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -2398,12 +2321,25 @@ ESHS ASB Team
                       <p><strong>Price:</strong> ${product.price}</p>
                       <p><strong>Category:</strong> {product.category}</p>
                       <p><strong>Organization:</strong> {product.organization}</p>
-                      <p><strong>Stock:</strong> {product.stock}</p>
-                      {product.sizes.length > 0 && (
-                        <p><strong>Sizes:</strong> {product.sizes.join(', ')}</p>
-                      )}
-                      {product.colors.length > 0 && (
-                        <p><strong>Colors:</strong> {product.colors.join(', ')}</p>
+                      
+                      {/* Display stock based on category */}
+                      {product.category === 'Apparel' ? (
+                        <div>
+                          <p><strong>Size & Stock:</strong></p>
+                          {product.sizeStock && product.sizeStock.length > 0 ? (
+                            <div className="ml-4 text-sm">
+                              {product.sizeStock.map((item, idx) => (
+                                <span key={idx} className="inline-block mr-3">
+                                  {item.size}: {item.stock}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400 ml-4">No sizes configured</span>
+                          )}
+                        </div>
+                      ) : (
+                        <p><strong>Stock:</strong> {product.stock}</p>
                       )}
                     </div>
                   </div>
@@ -2422,9 +2358,9 @@ ESHS ASB Team
                       Add Event
                     </PrimaryButton>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
+                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                     <DialogHeader>
-                      <DialogTitle>{editingItem ? 'Edit Event' : 'Add Event'}</DialogTitle>
+                      <DialogTitle className="text-white">{editingItem ? 'Edit Event' : 'Add Event'}</DialogTitle>
                     </DialogHeader>
                     <EventForm 
                       event={editingItem}
@@ -2444,7 +2380,12 @@ ESHS ASB Team
                         <Button size="sm" variant="outline" onClick={() => handleEdit('event', event)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDeleteEvent(event._id)}>
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          onClick={() => handleDeleteEvent(event._id)}
+                          className="bg-red-600/20 hover:bg-red-600/40 text-red-200 border-red-600/30"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -2678,15 +2619,35 @@ ESHS ASB Team
                               </Badge>
                             </div>
                             
+                            {/* Display uploaded forms for processed submissions */}
+                            {submission.forms && submission.forms.length > 0 && (
+                              <div className="mt-3">
+                                <p className="text-xs font-medium text-white mb-1">Uploaded Forms:</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {submission.forms.map((form, index) => (
+                                    <div key={index} className="flex items-center bg-white/10 px-2 py-1 rounded-full text-xs text-white">
+                                      <FileText className="w-3 h-3 mr-1" />
+                                      <span className="truncate max-w-[100px]">{form.fileName}</span>
+                                      <Button 
+                                        size="sm" 
+                                        variant="ghost" 
+                                        className="h-4 w-4 p-0 ml-1 text-blue-300 hover:text-blue-100"
+                                        onClick={() => window.open(form.fileUrl, '_blank')}
+                                      >
+                                        <Eye className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            
                             <div className="mt-2 flex items-center gap-2">
                               <Button 
                                 size="sm" 
                                 variant="ghost"
                                 className="text-xs text-blue-300 hover:text-blue-100 p-1 h-auto"
-                                onClick={() => {
-                                  // In a real app, this would show a modal with all form details
-                                  alert(`View details for ${submission.studentName}'s submission`);
-                                }}
+                                onClick={() => handleViewSubmissionDetails(submission)}
                               >
                                 <Eye className="w-3 h-3 mr-1" /> 
                                 View Details
@@ -2794,108 +2755,6 @@ ESHS ASB Team
                     </div>
                   </CardContent>
                 </Card>
-                  {/* Athletics */}
-                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-white">Athletics</CardTitle>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          setEditingItem(null);
-                          setShowAthleticModal(true);
-                        }}
-                      >
-                        <PlusCircle className="w-4 h-4 mr-1" /> Add
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {athletics.slice(0, 4).map((sport) => (
-                        <div key={sport._id} className="flex justify-between items-center">
-                          <div>
-                            <h4 className="text-white font-semibold">{sport.sport}</h4>
-                            <p className="text-sm text-gray-400">{sport.season} - Coach: {sport.coach}</p>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="h-8 w-8 p-0"
-                              onClick={() => {
-                                setEditingItem(sport);
-                                setShowAthleticModal(true);
-                              }}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="destructive" 
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleDeleteAthletic(sport._id)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-                  {/* Arts */}
-                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-white">Arts</CardTitle>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          setEditingItem(null);
-                          setShowArtModal(true);
-                        }}
-                      >
-                        <PlusCircle className="w-4 h-4 mr-1" /> Add
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {arts.slice(0, 4).map((art) => (
-                        <div key={art._id} className="flex justify-between items-center">
-                          <div>
-                            <h4 className="text-white font-semibold">{art.program}</h4>
-                            <p className="text-sm text-gray-400">{art.type} - Instructor: {art.instructor}</p>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="h-8 w-8 p-0"
-                              onClick={() => {
-                                setEditingItem(art);
-                                setShowArtModal(true);
-                              }}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="destructive" 
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleDeleteArt(art._id)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
                   {/* Clubs */}
                 <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                   <CardHeader>
@@ -2960,9 +2819,9 @@ ESHS ASB Team
                       Add Video
                     </PrimaryButton>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
+                  <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                     <DialogHeader>
-                      <DialogTitle>{editingItem ? 'Edit Video' : 'Add New Video'}</DialogTitle>
+                      <DialogTitle className="text-white">{editingItem ? 'Edit Video' : 'Add New Video'}</DialogTitle>
                     </DialogHeader>
                     <VideoForm
                       video={editingItem}
@@ -3101,9 +2960,9 @@ ESHS ASB Team
       </div>
         {/* Form Rejection Modal */}
       <Dialog open={showRejectionModal} onOpenChange={setShowRejectionModal}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
           <DialogHeader>
-            <DialogTitle>Reject Form Submission</DialogTitle>
+            <DialogTitle className="text-white">Reject Form Submission</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
@@ -3132,6 +2991,7 @@ ESHS ASB Team
                 variant="destructive"
                 onClick={confirmRejection}
                 disabled={!rejectionReason.trim()}
+                className="bg-red-600/20 hover:bg-red-600/40 text-red-200 border-red-600/30"
               >
                 <X className="h-4 w-4 mr-1" />
                 Reject Submission
@@ -3141,11 +3001,157 @@ ESHS ASB Team
         </DialogContent>
       </Dialog>
 
+      {/* Submission Detail Modal */}
+      <Dialog open={showSubmissionDetailModal} onOpenChange={setShowSubmissionDetailModal}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-white">Submission Details</DialogTitle>
+          </DialogHeader>
+          {selectedSubmission && (
+            <div className="space-y-6 text-white">
+              {/* Student Information */}
+              <div className="bg-white/10 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-3">Student Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-gray-300">Name:</label>
+                    <p className="text-white font-medium">{selectedSubmission.studentName}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-300">Email:</label>
+                    <p className="text-white">{selectedSubmission.email}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-300">Status:</label>
+                    <Badge className={
+                      selectedSubmission.status === 'approved' 
+                        ? "bg-green-600/20 border-green-600 text-green-200"
+                        : selectedSubmission.status === 'rejected'
+                        ? "bg-red-600/20 border-red-600 text-red-200"
+                        : "bg-yellow-600/20 border-yellow-600 text-yellow-200"
+                    }>
+                      {selectedSubmission.status}
+                    </Badge>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-300">Submission Date:</label>
+                    <p className="text-white">{new Date(selectedSubmission.submissionDate).toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Event Information */}
+              {(() => {
+                const eventIdStr = typeof selectedSubmission.eventId === 'object' && selectedSubmission.eventId ? 
+                  (selectedSubmission.eventId as any)._id : selectedSubmission.eventId;
+                const relatedEvent = events.find(e => e._id === eventIdStr) || 
+                  (typeof selectedSubmission.eventId === 'object' ? selectedSubmission.eventId as any : null);
+                
+                return relatedEvent && (
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold mb-3">Event Information</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm text-gray-300">Event:</label>
+                        <p className="text-white font-medium">{relatedEvent.title}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-300">Date:</label>
+                        <p className="text-white">{new Date(relatedEvent.date).toLocaleDateString()}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-300">Time:</label>
+                        <p className="text-white">{relatedEvent.time}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-300">Location:</label>
+                        <p className="text-white">{relatedEvent.location}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Registration Details */}
+              <div className="bg-white/10 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-3">Registration Details</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm text-gray-300">Quantity:</label>
+                    <p className="text-white font-medium">{selectedSubmission.quantity}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-300">Total Amount:</label>
+                    <p className="text-white font-medium">${selectedSubmission.totalAmount.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-300">Payment Status:</label>
+                    <p className="text-white">Pending</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Uploaded Forms */}
+              {selectedSubmission.forms && selectedSubmission.forms.length > 0 && (
+                <div className="bg-white/10 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-3">Uploaded Forms</h3>
+                  <div className="space-y-2">
+                    {selectedSubmission.forms.map((form, index) => (
+                      <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                        <div className="flex items-center">
+                          <FileText className="w-4 h-4 mr-2 text-blue-400" />
+                          <span className="text-white">{form.fileName}</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open(form.fileUrl, '_blank')}
+                          className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-200 border-blue-600/30"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Notes */}
+              {selectedSubmission.notes && (
+                <div className="bg-white/10 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-3">Additional Notes</h3>
+                  <p className="text-white">{selectedSubmission.notes}</p>
+                </div>
+              )}
+
+              {/* Rejection Reason */}
+              {selectedSubmission.status === 'rejected' && selectedSubmission.rejectionReason && (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-3 text-red-200">Rejection Reason</h3>
+                  <p className="text-red-100">{selectedSubmission.rejectionReason}</p>
+                </div>
+              )}
+
+              {/* Review Information */}
+              {selectedSubmission.reviewedAt && (
+                <div className="bg-white/5 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-3">Review Information</h3>
+                  <p className="text-gray-300">
+                    Reviewed on: {new Date(selectedSubmission.reviewedAt).toLocaleString()}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Student Government Modal */}
       <Dialog open={showStudentGovModal} onOpenChange={setShowStudentGovModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
           <DialogHeader>
-            <DialogTitle>{editingItem ? 'Edit Position' : 'Add Position'}</DialogTitle>
+            <DialogTitle className="text-white">{editingItem ? 'Edit Position' : 'Add Position'}</DialogTitle>
           </DialogHeader>
           <StudentGovForm 
             member={editingItem}
@@ -3160,9 +3166,9 @@ ESHS ASB Team
 
       {/* Club Modal */}
       <Dialog open={showClubModal} onOpenChange={setShowClubModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
           <DialogHeader>
-            <DialogTitle>{editingItem ? 'Edit Club' : 'Add Club'}</DialogTitle>
+            <DialogTitle className="text-white">{editingItem ? 'Edit Club' : 'Add Club'}</DialogTitle>
           </DialogHeader>
           <ClubForm 
             club={editingItem}
@@ -3175,39 +3181,6 @@ ESHS ASB Team
         </DialogContent>
       </Dialog>
 
-      {/* Athletic Modal */}
-      <Dialog open={showAthleticModal} onOpenChange={setShowAthleticModal}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{editingItem ? 'Edit Program' : 'Add Program'}</DialogTitle>
-          </DialogHeader>
-          <AthleticForm 
-            athletic={editingItem}
-            onSubmit={handleAthleticSubmit}
-            onCancel={() => {
-              setEditingItem(null);
-              setShowAthleticModal(false);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Art Modal */}
-      <Dialog open={showArtModal} onOpenChange={setShowArtModal}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{editingItem ? 'Edit Program' : 'Add Program'}</DialogTitle>
-          </DialogHeader>
-          <ArtForm 
-            art={editingItem}
-            onSubmit={handleArtSubmit}
-            onCancel={() => {
-              setEditingItem(null);
-              setShowArtModal(false);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

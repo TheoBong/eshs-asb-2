@@ -241,19 +241,39 @@ export default function Activities() {
 
                     {/* Price Display */}
                     <div className="border-t border-white/10 pt-4 mb-4">
-                      <div className="flex items-center justify-between">
+                      {event.ticketTypes && event.ticketTypes.length > 0 ? (
                         <div>
-                          <span className="text-2xl font-bold text-white">
-                            {event.price === 0 ? "FREE" : `$${event.price}`}
-                          </span>
-                          {event.price > 0 && <span className="text-gray-400 text-sm ml-1">per ticket</span>}
-                        </div>
-                        {event.maxTickets && (
-                          <div className="text-sm text-gray-400">
-                            Max: {event.maxTickets} tickets
+                          <h4 className="font-medium text-gray-200 mb-3">Ticket Options:</h4>
+                          <div className="space-y-2">
+                            {event.ticketTypes.map((ticket, index) => (
+                              <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                                <div className="flex-1">
+                                  <div className="font-medium text-white">{ticket.name}</div>
+                                  <div className="text-sm text-gray-300">{ticket.description}</div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-lg font-bold text-green-400">${ticket.price.toFixed(2)}</div>
+                                  <div className="text-xs text-gray-400">Max: {ticket.maxTickets}</div>
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-2xl font-bold text-white">
+                              {event.price === 0 ? "FREE" : `$${event.price}`}
+                            </span>
+                            {event.price > 0 && <span className="text-gray-400 text-sm ml-1">per ticket</span>}
+                          </div>
+                          {event.maxTickets && (
+                            <div className="text-sm text-gray-400">
+                              Max: {event.maxTickets} tickets
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Large Details Button */}

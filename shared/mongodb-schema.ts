@@ -39,14 +39,18 @@ const userSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
-  category: { type: String, required: true },
+  category: { type: String, enum: ['Apparel', 'Accessories'], required: true },
   organization: { type: String, required: true },
-  sizes: [{ type: String }],
-  colors: [{ type: String }],
+  // For Apparel: sizes with individual stock amounts
+  sizeStock: [{
+    size: { type: String, required: true },
+    stock: { type: Number, default: 0 }
+  }],
+  // For Accessories: generic stock
+  stock: { type: Number, default: 0 },
   image: { type: String, required: true }, // Keep for backward compatibility
   images: [{ type: String }], // New field for multiple images
   description: { type: String, required: true },
-  stock: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -58,15 +62,22 @@ const eventSchema = new mongoose.Schema({
   time: { type: String, required: true },
   location: { type: String, required: true },
   description: { type: String, required: true },
-  price: { type: Number, default: 0 },
-  maxTickets: { type: Number },
+  price: { type: Number, default: 0 }, // Keep for backward compatibility
+  maxTickets: { type: Number }, // Keep for backward compatibility
+  ticketTypes: [{
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true },
+    maxTickets: { type: Number, required: true }
+  }],
   features: [{ type: String }],
   requiresApproval: { type: Boolean, default: false },
   requiredForms: {
-    contractForm: { type: Boolean, default: false },
-    guestForm: { type: Boolean, default: false },
     studentIdRequired: { type: Boolean, default: false },
-    customForms: [{ type: String }]
+    customForms: [{
+      name: { type: String, required: true },
+      pdfUrl: { type: String, required: true }
+    }]
   },
   image: { type: String },
   createdAt: { type: Date, default: Date.now }
@@ -201,6 +212,17 @@ const purchaseSchema = new mongoose.Schema({
   notes: { type: String }
 });
 
+// File Upload Schema
+const fileSchema = new mongoose.Schema({
+  filename: { type: String, required: true },
+  originalName: { type: String, required: true },
+  mimeType: { type: String, required: true },
+  size: { type: Number, required: true },
+  data: { type: String, required: true }, // base64 encoded file data
+  uploadedAt: { type: Date, default: Date.now },
+  uploadedBy: { type: String, default: 'admin' }
+});
+
 // Export Models
 export const User = mongoose.model('User', userSchema);
 export const Product = mongoose.model('Product', productSchema);
@@ -213,6 +235,7 @@ export const Athletic = mongoose.model('Athletic', athleticSchema);
 export const Art = mongoose.model('Art', artSchema);
 export const FormSubmission = mongoose.model('FormSubmission', formSubmissionSchema);
 export const Purchase = mongoose.model('Purchase', purchaseSchema);
+export const File = mongoose.model('File', fileSchema);
 
 // Type exports for TypeScript
 export type UserType = mongoose.InferSchemaType<typeof userSchema>;
@@ -226,3 +249,4 @@ export type AthleticType = mongoose.InferSchemaType<typeof athleticSchema>;
 export type ArtType = mongoose.InferSchemaType<typeof artSchema>;
 export type FormSubmissionType = mongoose.InferSchemaType<typeof formSubmissionSchema>;
 export type PurchaseType = mongoose.InferSchemaType<typeof purchaseSchema>;
+export type FileType = mongoose.InferSchemaType<typeof fileSchema>;
