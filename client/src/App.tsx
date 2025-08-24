@@ -39,15 +39,20 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ 
-        duration: 0.3,
+        duration: 0.2,
         ease: "easeInOut"
       }}
       className="w-full h-full"
       style={{
-        // Safari-specific fix for transitions
+        // Safari-specific fixes for smooth transitions
         WebkitBackfaceVisibility: 'hidden',
         WebkitPerspective: 1000,
-        WebkitTransform: 'translate3d(0,0,0)'
+        WebkitTransform: 'translate3d(0,0,0)',
+        backgroundColor: 'transparent',
+        // Force hardware acceleration and prevent flickering
+        willChange: 'opacity',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale'
       }}
     >
       {children}
