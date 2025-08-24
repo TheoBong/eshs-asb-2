@@ -276,6 +276,16 @@
   }
 }
 
+/* Hide page-specific backgrounds so persistent background shows through */
+.fixed.inset-0.-z-10 video,
+.fixed.inset-0.-z-20 video {
+  display: none !important;
+}
+
+.fixed.inset-0.bg-black.bg-opacity-50.-z-10 {
+  display: none !important;
+}
+
 /* Additional Safari fixes */
 @media not all and (min-resolution:.001dpcm) {
   @supports (-webkit-appearance:none) and (stroke-color:transparent) {

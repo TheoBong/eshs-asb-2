@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Shop from "@/pages/shop";
 import NotFound from "@/pages/not-found";
 import { CartProvider } from "@/contexts/CartContext";
+import schoolVideo from "../attached_assets/school2.mp4";
 
 // Shop related pages
 import ProductPage from "@/pages/shop/product/index";
@@ -42,7 +43,7 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
         duration: 0.2,
         ease: "easeInOut"
       }}
-      className="w-full h-full"
+      className="w-full h-full relative z-10"
       style={{
         // Safari-specific fixes for smooth transitions
         WebkitBackfaceVisibility: 'hidden',
@@ -103,6 +104,21 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <TooltipProvider>
+          {/* Persistent Background Video - above page backgrounds */}
+          <div className="fixed inset-0 w-full h-full overflow-hidden z-0">
+            <video 
+              autoPlay 
+              muted 
+              loop 
+              playsInline
+              className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+            >
+              <source src={schoolVideo} type="video/mp4" />
+            </video>
+            {/* Overlay to darken the background video */}
+            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+          </div>
+          
           <Toaster />
           <Router />
         </TooltipProvider>
