@@ -104,14 +104,20 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <TooltipProvider>
-          {/* Persistent Background Video - above page backgrounds */}
+          {/* Persistent Background Video - matches home page styling */}
           <div className="fixed inset-0 w-full h-full overflow-hidden z-0">
             <video 
               autoPlay 
               muted 
               loop 
               playsInline
-              className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+              className="absolute w-full h-full object-cover"
+              style={{
+                objectFit: 'cover',
+                width: '100vw',
+                height: '100vh',
+                filter: 'brightness(0.8) contrast(1.15) saturate(1.05)'
+              }}
             >
               <source src={schoolVideo} type="video/mp4" />
             </video>

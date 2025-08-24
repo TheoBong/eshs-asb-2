@@ -291,6 +291,16 @@
   display: none !important;
 }
 
+/* Hide home page video background specifically - more targeted selector */
+.absolute.inset-0.bg-black.overflow-hidden video[autoplay][loop][muted] {
+  display: none !important;
+}
+
+/* Make home page video container transparent */
+.absolute.inset-0.bg-black.overflow-hidden {
+  background: transparent !important;
+}
+
 /* Additional Safari fixes */
 @media not all and (min-resolution:.001dpcm) {
   @supports (-webkit-appearance:none) and (stroke-color:transparent) {
