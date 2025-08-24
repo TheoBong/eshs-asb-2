@@ -223,10 +223,10 @@
     width: 256px !important;
   }
   
-  /* Top buttons - make 3/2 the size (384px) */
+  /* Top buttons - make twice the size (512px) */
   .theater-overlay img,
   .information-overlay img {
-    width: 384px !important;
+    width: 512px !important;
   }
   
   /* Mobile positioning adjustments */
@@ -235,7 +235,7 @@
   }
   
   .theater-overlay {
-    left: 2rem !important;  /* Move further left from 6rem */
+    left: -10rem !important;  /* Move far left, partially off-screen */
     bottom: 13rem !important;
   }
   
@@ -244,8 +244,20 @@
   }
   
   .information-overlay {
-    right: 2rem !important;  /* Move further right from 6rem */
+    right: -10rem !important;  /* Move far right, partially off-screen */
     bottom: 13rem !important;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+  
+  /* Ensure container doesn't overflow */
+  #root {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
   }
 }
 
