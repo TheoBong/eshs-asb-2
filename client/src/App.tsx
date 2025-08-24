@@ -40,16 +40,18 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ 
-        duration: 0.2,
+        duration: 0.15,
         ease: "easeInOut"
       }}
-      className="w-full h-full relative z-10"
+      className="w-full min-h-screen"
       style={{
         // Safari-specific fixes for smooth transitions
         WebkitBackfaceVisibility: 'hidden',
         WebkitPerspective: 1000,
-        WebkitTransform: 'translate3d(0,0,0)',
+        WebkitTransform: 'translateZ(0)',
         backgroundColor: 'transparent',
+        position: 'relative',
+        zIndex: 10,
         // Force hardware acceleration and prevent flickering
         willChange: 'opacity',
         WebkitFontSmoothing: 'antialiased',
@@ -104,29 +106,54 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <TooltipProvider>
-          {/* Persistent Background Video - matches home page styling */}
-          <div className="fixed inset-0 w-full h-full overflow-hidden z-0">
+          {/* Safari-optimized persistent background - highest z-index to stay visible */}
+          <div 
+            className="fixed inset-0 w-full h-full overflow-hidden"
+            style={{
+              zIndex: -1,
+              backgroundColor: '#000',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)',
+              willChange: 'auto'
+            }}
+          >
             <video 
               autoPlay 
               muted 
               loop 
               playsInline
+              preload="auto"
+              data-persistent="true"
               className="absolute w-full h-full object-cover"
               style={{
                 objectFit: 'cover',
                 width: '100vw',
                 height: '100vh',
-                filter: 'brightness(0.8) contrast(1.15) saturate(1.05)'
+                filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)',
+                opacity: 1,
+                visibility: 'visible'
               }}
             >
               <source src={schoolVideo} type="video/mp4" />
             </video>
             {/* Overlay to darken the background video */}
-            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+            <div 
+              className="absolute inset-0"
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)'
+              }}
+            ></div>
           </div>
           
-          <Toaster />
-          <Router />
+          {/* Content wrapper to ensure it's above background */}
+          <div className="relative" style={{ zIndex: 1 }}>
+            <Toaster />
+            <Router />
+          </div>
         </TooltipProvider>
       </CartProvider>
     </QueryClientProvider>

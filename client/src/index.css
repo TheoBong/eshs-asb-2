@@ -281,24 +281,59 @@
   }
 }
 
-/* Hide page-specific backgrounds so persistent background shows through */
-.fixed.inset-0.-z-10 video,
-.fixed.inset-0.-z-20 video {
+/* Completely hide all page-specific backgrounds */
+.fixed.inset-0.-z-10,
+.fixed.inset-0.-z-20,
+.fixed.inset-0 video,
+.absolute.inset-0.bg-black.overflow-hidden,
+.absolute.inset-0.bg-black.bg-opacity-50 {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Specifically hide video elements that might interfere */
+video:not([data-persistent="true"]) {
   display: none !important;
 }
 
-.fixed.inset-0.bg-black.bg-opacity-50.-z-10 {
-  display: none !important;
+/* Ensure persistent background always shows */
+div[style*="zIndex: -1"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
-/* Hide home page video background specifically - more targeted selector */
-.absolute.inset-0.bg-black.overflow-hidden video[autoplay][loop][muted] {
-  display: none !important;
-}
-
-/* Make home page video container transparent */
-.absolute.inset-0.bg-black.overflow-hidden {
-  background: transparent !important;
+/* Safari-specific background persistence */
+@supports (-webkit-backdrop-filter: none) {
+  /* Prevent Safari from hiding the background during transitions */
+  .fixed[style*="zIndex: -1"] {
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+    will-change: auto !important;
+    display: block !important;
+  }
+  
+  /* Hide all other background videos */
+  .fixed video:not([data-persistent="true"]),
+  .absolute video:not([data-persistent="true"]) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Force persistent video to always be visible during transitions */
+  video[data-persistent="true"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: -1 !important;
+    position: fixed !important;
+  }
+  
+  /* Prevent black background flashes */
+  body {
+    background-color: #000 !important;
+  }
 }
 
 /* Additional Safari fixes */
