@@ -32,7 +32,7 @@ import BirdsEyeView from "./pages/birds-eye-view";
 import Admin from "@/pages/admin/index";
 import CommaTest from "@/pages/admin/comma-test";
 
-// Page wrapper component for fade transitions
+// Page wrapper component for crossfade transitions
 const PageWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <motion.div
@@ -40,17 +40,20 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ 
-        duration: 0.15,
+        duration: 0.3,
         ease: "easeInOut"
       }}
-      className="w-full min-h-screen"
+      className="w-full min-h-screen absolute inset-0"
       style={{
         // Safari-specific fixes for smooth transitions
         WebkitBackfaceVisibility: 'hidden',
         WebkitPerspective: 1000,
         WebkitTransform: 'translateZ(0)',
         backgroundColor: 'transparent',
-        position: 'relative',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
         zIndex: 10,
         // Force hardware acceleration and prevent flickering
         willChange: 'opacity',
@@ -67,7 +70,7 @@ function Router() {
   const [location] = useLocation();
   
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       <Switch key={location}>
         {/* Main pages */}
         <Route path="/" component={() => <PageWrapper><Home /></PageWrapper>} />
