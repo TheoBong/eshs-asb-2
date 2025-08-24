@@ -338,8 +338,21 @@ div[style*="zIndex: -1"] {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    z-index: -1 !important;
     position: fixed !important;
+  }
+  
+  /* Ensure persistent background container is never hidden */
+  #persistent-background {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: none !important;
+  }
+  
+  #background-video {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
   
   /* Prevent black background flashes */

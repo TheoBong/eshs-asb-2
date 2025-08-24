@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 import Home from "@/pages/home";
 import Shop from "@/pages/shop";
 import NotFound from "@/pages/not-found";
@@ -104,62 +105,117 @@ function Router() {
   );
 }
 
+// Create persistent background component outside of main app
+const PersistentBackground = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  useEffect(() => {
+    // Ensure video plays and stays playing
+    const video = videoRef.current;
+    if (video) {
+      video.play().catch(() => {
+        // Retry playing after user interaction if autoplay is blocked
+        document.addEventListener('click', () => {
+          video.play();
+        }, { once: true });
+      });
+      
+      // Keep video playing during visibility changes
+      const handleVisibilityChange = () => {
+        if (!document.hidden && video.paused) {
+          video.play();
+        }
+      };
+      
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      
+      // Prevent video from being garbage collected
+      (window as any).persistentVideo = video;
+      
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }
+  }, []);
+  
+  return (
+    <div 
+      id="persistent-background"
+      className="fixed inset-0 w-full h-full overflow-hidden"
+      style={{
+        zIndex: -1000,
+        backgroundColor: '#000',
+        WebkitTransform: 'translateZ(0)',
+        transform: 'translateZ(0)',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+      }}
+    >
+      <video 
+        ref={videoRef}
+        id="background-video"
+        autoPlay 
+        muted 
+        loop 
+        playsInline
+        preload="auto"
+        data-persistent="true"
+        className="absolute w-full h-full object-cover"
+        style={{
+          objectFit: 'cover',
+          width: '100vw',
+          height: '100vh',
+          filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)',
+          opacity: 1,
+          visibility: 'visible',
+          position: 'absolute',
+          top: 0,
+          left: 0
+        }}
+      >
+        <source src={schoolVideo} type="video/mp4" />
+      </video>
+      {/* Overlay to darken the background video */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        }}
+      />
+    </div>
+  );
+};
+
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <TooltipProvider>
-          {/* Safari-optimized persistent background - highest z-index to stay visible */}
-          <div 
-            className="fixed inset-0 w-full h-full overflow-hidden"
-            style={{
-              zIndex: -1,
-              backgroundColor: '#000',
-              WebkitTransform: 'translateZ(0)',
-              transform: 'translateZ(0)',
-              willChange: 'auto'
-            }}
-          >
-            <video 
-              autoPlay 
-              muted 
-              loop 
-              playsInline
-              preload="auto"
-              data-persistent="true"
-              className="absolute w-full h-full object-cover"
-              style={{
-                objectFit: 'cover',
-                width: '100vw',
-                height: '100vh',
-                filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
-                WebkitTransform: 'translateZ(0)',
-                transform: 'translateZ(0)',
-                opacity: 1,
-                visibility: 'visible'
-              }}
-            >
-              <source src={schoolVideo} type="video/mp4" />
-            </video>
-            {/* Overlay to darken the background video */}
-            <div 
-              className="absolute inset-0"
-              style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                WebkitTransform: 'translateZ(0)',
-                transform: 'translateZ(0)'
-              }}
-            ></div>
-          </div>
-          
-          {/* Content wrapper to ensure it's above background */}
-          <div className="relative" style={{ zIndex: 1 }}>
-            <Toaster />
-            <Router />
-          </div>
-        </TooltipProvider>
-      </CartProvider>
-    </QueryClientProvider>
+    <>
+      {/* Persistent background outside of all providers */}
+      <PersistentBackground />
+      
+      {/* Main app content */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <QueryClientProvider client={queryClient}>
+          <CartProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </CartProvider>
+        </QueryClientProvider>
+      </div>
+    </>
   );
 }
 
