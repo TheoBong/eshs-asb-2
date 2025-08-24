@@ -212,36 +212,32 @@ export default function Elections() {
                       
                       {position.currentRepresentatives && position.currentRepresentatives.length > 0 && (
                         <div className="mb-4">
-                          <h4 className="font-medium text-gray-200 mb-2">Current Representative(s):</h4>
+                          <h4 className="font-medium text-gray-200 mb-3">Current Representative(s):</h4>
                           {position.currentRepresentatives.map((rep, index) => (
-                            <div key={index} className="p-3 bg-white/5 rounded-lg border border-white/10 mb-2">
-                              <p className="text-white font-semibold">{rep.name}</p>
-                              {rep.email && (
-                                <p className="text-sm text-gray-300">{rep.email}</p>
-                              )}
-                              {rep.bio && (
-                                <p className="text-sm text-gray-300 mt-1">{rep.bio}</p>
-                              )}
+                            <div key={index} className="p-4 bg-white/5 rounded-lg border border-white/10 mb-3">
+                              <div className="flex items-start space-x-4">
+                                {rep.image && (
+                                  <img 
+                                    src={rep.image} 
+                                    alt={rep.name}
+                                    className="w-20 h-20 rounded-full object-cover border-2 border-white/20"
+                                  />
+                                )}
+                                <div className="flex-1">
+                                  <p className="text-white font-semibold text-lg">{rep.name}</p>
+                                  {rep.email && (
+                                    <p className="text-sm text-gray-300">{rep.email}</p>
+                                  )}
+                                  {rep.bio && (
+                                    <p className="text-sm text-gray-200 mt-2">{rep.bio}</p>
+                                  )}
+                                </div>
+                              </div>
                             </div>
                           ))}
                         </div>
                       )}
 
-                      <div className="mb-4">
-                        <h4 className="font-medium text-gray-200 mb-2">Key Responsibilities:</h4>
-                        <ul className="list-disc list-inside space-y-1">
-                          {position.responsibilities.map((responsibility, index) => (
-                            <li key={index} className="text-gray-300 text-sm">{responsibility}</li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {position.bio && (
-                        <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
-                          <p className="text-sm font-medium text-blue-200 mb-2">Position Info:</p>
-                          <p className="text-sm text-blue-100">{position.bio}</p>
-                        </div>
-                      )}
 
                     </div>
                   </ThemedCard>
@@ -291,19 +287,11 @@ export default function Elections() {
             <div className="space-y-4">
               <div className="border-b border-white/10 pb-4">
                 <h3 className="font-semibold mb-2 text-white">How can I contact my class representative?</h3>
-                <p className="text-gray-300">You can reach out to your class representatives through the school's student portal or by visiting the student government office during lunch hours.</p>
+                <p className="text-gray-300">You can reach out to your class representatives via email or find them around campus.</p>
               </div>
               <div className="border-b border-white/10 pb-4">
-                <h3 className="font-semibold mb-2 text-white">When does the student council meet?</h3>
-                <p className="text-gray-300">The student council meets every other Wednesday during lunch in the main conference room. All meetings are open to student observers.</p>
-              </div>
-              <div className="border-b border-white/10 pb-4">
-                <h3 className="font-semibold mb-2 text-white">How can I get involved in student government?</h3>
-                <p className="text-gray-300">You can attend meetings, join committees, volunteer for events, or consider running for office during the next election cycle. Contact any representative to learn about opportunities.</p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2 text-white">How do I submit ideas or concerns to student government?</h3>
-                <p className="text-gray-300">Submit suggestions through the student portal, speak with your class representative, or attend a student council meeting to voice your ideas during the public comment period.</p>
+                <h3 className="font-semibold mb-2 text-white">When does student government meet?</h3>
+                <p className="text-gray-300">Every school day during fourth period in Mrs. Richmond's room (B101).</p>
               </div>
             </div>
           </div>

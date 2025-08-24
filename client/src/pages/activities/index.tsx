@@ -65,6 +65,7 @@ export default function Activities() {
   };
 
   const handleCartClick = () => {
+    sessionStorage.setItem('cart-referrer', '/activities');
     setLocation("/shop/cart");
   };
 

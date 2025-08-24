@@ -42,7 +42,11 @@ export default function CartPage() {
   };
 
   const handleContinueShopping = () => {
-    setLocation("/shop");
+    const referrer = sessionStorage.getItem('cart-referrer');
+    // Default to /shop if no referrer is found
+    setLocation(referrer || "/shop");
+    // Clear the referrer after using it
+    sessionStorage.removeItem('cart-referrer');
   };
 
   const handleCheckout = () => {

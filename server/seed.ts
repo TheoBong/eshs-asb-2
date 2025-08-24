@@ -5,8 +5,6 @@ import {
   Announcement,
   StudentGovPosition,
   Club,
-  Athletic,
-  Art,
   connectDB
 } from "@shared/mongodb-schema";
 import dotenv from 'dotenv';
@@ -99,7 +97,7 @@ const mockVideos = [
     thumbnailUrl: "/api/placeholder/600/400",
     date: new Date("2024-11-15"),
     author: "Drama Club",
-    category: "Arts",
+    category: "Performance",
     views: 850,
     featured: false
   }
@@ -162,7 +160,7 @@ const mockClubs = [
     advisor: "Ms. Rodriguez",
     meetingTime: "Tuesdays and Thursdays, 3:30-5:00 PM",
     location: "Theater",
-    category: "Arts",
+    category: "Performance",
     contactEmail: "drama@eshs.edu",
     image: "/api/placeholder/400/300",
     memberCount: 35,
@@ -186,74 +184,7 @@ const mockClubs = [
   }
 ];
 
-const mockAthletics = [
-  {
-    sport: "Basketball",
-    season: "Winter",
-    coach: "Coach Martinez",
-    assistantCoach: "Coach Davis",
-    practiceSchedule: "Monday-Friday, 3:30-5:30 PM",
-    homeVenue: "ESHS Gymnasium",
-    description: "Competitive basketball program focusing on teamwork and excellence.",
-    image: "/api/placeholder/400/300",
-    rosterCount: 15,
-    achievements: ["League Champions 2024", "Regional Finalists"],
-    schedule: [
-      {
-        opponent: "Riverside High",
-        date: new Date("2025-01-15"),
-        location: "ESHS Gymnasium",
-        isHome: true
-      },
-      {
-        opponent: "Mountain View High",
-        date: new Date("2025-01-22"),
-        location: "Mountain View High",
-        isHome: false
-      }
-    ]
-  },
-  {
-    sport: "Soccer",
-    season: "Fall",
-    coach: "Coach Thompson",
-    assistantCoach: "Coach Lee",
-    practiceSchedule: "Monday-Friday, 3:30-5:30 PM",
-    homeVenue: "ESHS Soccer Field",
-    description: "Dynamic soccer program building character and skill.",
-    image: "/api/placeholder/400/300",
-    rosterCount: 22,
-    achievements: ["District Champions 2023", "State Qualifier"],
-    schedule: []
-  }
-];
 
-const mockArts = [
-  {
-    program: "Theater Arts",
-    type: "Performance",
-    instructor: "Ms. Rodriguez",
-    description: "Comprehensive theater program covering acting, directing, and technical theater.",
-    meetingTime: "Daily, Period 5",
-    location: "Theater",
-    image: "/api/placeholder/400/300",
-    requirements: ["Audition for advanced classes", "Participation in productions"],
-    showcaseInfo: "Fall play and spring musical performances",
-    memberCount: 45
-  },
-  {
-    program: "Visual Arts",
-    type: "Studio Art",
-    instructor: "Mr. Anderson",
-    description: "Explore various art mediums including painting, drawing, and sculpture.",
-    meetingTime: "Daily, Period 3",
-    location: "Art Studio",
-    image: "/api/placeholder/400/300",
-    requirements: ["Basic art supplies", "Portfolio development"],
-    showcaseInfo: "Annual art show in spring",
-    memberCount: 32
-  }
-];
 
 async function seedDatabase() {
   try {
@@ -269,9 +200,7 @@ async function seedDatabase() {
       VideoPost.deleteMany({}),
       Announcement.deleteMany({}),
       StudentGovPosition.deleteMany({}),
-      Club.deleteMany({}),
-      Athletic.deleteMany({}),
-      Art.deleteMany({})
+      Club.deleteMany({})
     ]);
 
     console.log("🗑️ Cleared existing data");
@@ -283,9 +212,7 @@ async function seedDatabase() {
       VideoPost.insertMany(mockVideos),
       Announcement.insertMany(mockAnnouncements),
       StudentGovPosition.insertMany(mockStudentGovPositions),
-      Club.insertMany(mockClubs),
-      Athletic.insertMany(mockAthletics),
-      Art.insertMany(mockArts)
+      Club.insertMany(mockClubs)
     ]);
 
     console.log("✅ Database seeded successfully!");
@@ -295,9 +222,7 @@ async function seedDatabase() {
     - ${mockVideos.length} videos
     - ${mockAnnouncements.length} announcements
     - ${mockStudentGovPositions.length} student government positions
-    - ${mockClubs.length} clubs
-    - ${mockAthletics.length} athletic programs
-    - ${mockArts.length} arts programs`);
+    - ${mockClubs.length} clubs`);
 
     process.exit(0);
   } catch (error) {

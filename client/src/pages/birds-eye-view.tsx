@@ -11,7 +11,6 @@ import schoolVideo from "../../../attached_assets/school2.mp4";
 
 const BirdsEyeView = () => {
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState("all");
   const [videos, setVideos] = useState<VideoPost[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<VideoPost | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,15 +38,6 @@ const BirdsEyeView = () => {
 
     loadVideos();
   }, []);
-  
-  // Filter videos based on active tab
-  const filteredVideos = videos.filter(video => {
-    if (activeTab === "all") return true;
-    return video.category.toLowerCase() === activeTab.toLowerCase();
-  });
-  
-  // Get unique categories
-  const categories = ["all", ...Array.from(new Set(videos.map(video => video.category.toLowerCase())))];
   
   const handleBackClick = () => {
     sessionStorage.setItem('internal-navigation', 'true');
@@ -202,16 +192,13 @@ const BirdsEyeView = () => {
                               <span>•</span>
                               <span>{formatDate(selectedVideo.date)}</span>
                             </div>
-                            <div className="flex items-center space-x-2 mb-4">
-                              <Badge variant="secondary" className="bg-blue-600/20 text-blue-300 border-blue-500/30">
-                                {selectedVideo.category}
-                              </Badge>
-                              {selectedVideo.featured && (
+                            {selectedVideo.featured && (
+                              <div className="flex items-center space-x-2 mb-4">
                                 <Badge variant="secondary" className="bg-yellow-600/20 text-yellow-300 border-yellow-500/30">
                                   Featured
                                 </Badge>
-                              )}
-                            </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                         <p className="text-gray-200 leading-relaxed">
@@ -230,25 +217,12 @@ const BirdsEyeView = () => {
 
                 {/* Video List Sidebar */}
                 <div className="space-y-4">
-                  <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl">
-                    <div className="p-4">
-                      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <TabsList className="grid w-full bg-white/5 backdrop-blur-xl border border-white/10" style={{gridTemplateColumns: `repeat(${categories.length}, minmax(0, 1fr))`}}>
-                          {categories.map(category => (                            <TabsTrigger 
-                              key={category}
-                              value={category}
-                              className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white text-xs px-2"
-                            >
-                              {category.charAt(0).toUpperCase() + category.slice(1)}
-                            </TabsTrigger>
-                          ))}
-                        </TabsList>
-                      </Tabs>
-                    </div>
+                  <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-4">
+                    <h3 className="text-white font-semibold mb-2">All Videos</h3>
                   </div>
 
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {filteredVideos.map((video) => (
+                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                    {videos.map((video) => (
                       <Card 
                         key={video._id}
                         className={`cursor-pointer transition-all bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:bg-white/10 hover:border-blue-500/50 ${

@@ -129,6 +129,7 @@ export default function ProductPage() {
     
     // Navigate to cart page after short delay
     setTimeout(() => {
+      sessionStorage.setItem('cart-referrer', `/shop/product/${productId}`);
       setLocation("/shop/cart");
     }, 1500);
   };

@@ -79,6 +79,7 @@ export default function Shop() {
   const { cartCount } = useCart();
 
   const handleCartClick = () => {
+    sessionStorage.setItem('cart-referrer', '/shop');
     setLocation("/shop/cart");
   };
     const handleBackClick = () => {

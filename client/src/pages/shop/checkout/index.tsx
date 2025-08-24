@@ -76,6 +76,7 @@ export default function CheckoutPage() {
   };
 
   const handleBackToCart = () => {
+    sessionStorage.setItem('cart-referrer', '/shop/checkout');
     setLocation("/shop/cart");
   };
 

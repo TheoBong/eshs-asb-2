@@ -6,8 +6,6 @@ import {
   Announcement,
   StudentGovPosition,
   Club,
-  Athletic,
-  Art,
   FormSubmission,
   Purchase,
   type UserType,
@@ -17,8 +15,6 @@ import {
   type AnnouncementType,
   type StudentGovPositionType,
   type ClubType,
-  type AthleticType,
-  type ArtType,
   type FormSubmissionType,
   type PurchaseType,
   connectDB
@@ -73,19 +69,6 @@ export interface IStorage {
   updateClub(id: string, club: Partial<ClubType>): Promise<ClubType | null>;
   deleteClub(id: string): Promise<boolean>;
   
-  // Athletic methods
-  getAthletics(): Promise<AthleticType[]>;
-  getAthletic(id: string): Promise<AthleticType | null>;
-  createAthletic(athletic: Partial<AthleticType>): Promise<AthleticType>;
-  updateAthletic(id: string, athletic: Partial<AthleticType>): Promise<AthleticType | null>;
-  deleteAthletic(id: string): Promise<boolean>;
-  
-  // Arts methods
-  getArts(): Promise<ArtType[]>;
-  getArt(id: string): Promise<ArtType | null>;
-  createArt(art: Partial<ArtType>): Promise<ArtType>;
-  updateArt(id: string, art: Partial<ArtType>): Promise<ArtType | null>;
-  deleteArt(id: string): Promise<boolean>;
   
   // Form Submission methods
   getFormSubmissions(): Promise<FormSubmissionType[]>;
@@ -260,51 +243,6 @@ export class MongoStorage implements IStorage {
     return result !== null;
   }
 
-  // Athletic methods
-  async getAthletics(): Promise<AthleticType[]> {
-    return await Athletic.find();
-  }
-
-  async getAthletic(id: string): Promise<AthleticType | null> {
-    return await Athletic.findById(id);
-  }
-
-  async createAthletic(athletic: Partial<AthleticType>): Promise<AthleticType> {
-    const newAthletic = new Athletic(athletic);
-    return await newAthletic.save();
-  }
-
-  async updateAthletic(id: string, athletic: Partial<AthleticType>): Promise<AthleticType | null> {
-    return await Athletic.findByIdAndUpdate(id, athletic, { new: true });
-  }
-
-  async deleteAthletic(id: string): Promise<boolean> {
-    const result = await Athletic.findByIdAndDelete(id);
-    return result !== null;
-  }
-
-  // Arts methods
-  async getArts(): Promise<ArtType[]> {
-    return await Art.find();
-  }
-
-  async getArt(id: string): Promise<ArtType | null> {
-    return await Art.findById(id);
-  }
-
-  async createArt(art: Partial<ArtType>): Promise<ArtType> {
-    const newArt = new Art(art);
-    return await newArt.save();
-  }
-
-  async updateArt(id: string, art: Partial<ArtType>): Promise<ArtType | null> {
-    return await Art.findByIdAndUpdate(id, art, { new: true });
-  }
-
-  async deleteArt(id: string): Promise<boolean> {
-    const result = await Art.findByIdAndDelete(id);
-    return result !== null;
-  }
 
   // Form Submission methods
   async getFormSubmissions(): Promise<FormSubmissionType[]> {

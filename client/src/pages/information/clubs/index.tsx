@@ -270,19 +270,15 @@ export default function Clubs() {
             <div className="space-y-4">
               <div className="border-b border-white/10 pb-4">
                 <h3 className="font-semibold mb-2 text-white">How do I join a club?</h3>
-                <p className="text-gray-300">Contact the club advisor or attend one of their meetings. Most clubs welcome new members throughout the year, though some may have specific enrollment periods.</p>
+                <p className="text-gray-300">Attend one of their meetings, most clubs welcome new members throughout the year.</p>
               </div>
               <div className="border-b border-white/10 pb-4">
                 <h3 className="font-semibold mb-2 text-white">Can I start a new club?</h3>
-                <p className="text-gray-300">To start a new club, you need at least 10 interested students, a faculty advisor, and approval from student activities. Submit a proposal with your club's purpose and planned activities.</p>
+                <p className="text-gray-300">To start a new club, you need a faculty advisor and approval from student government. Club registration forms are sent out at the start of each school year.</p>
               </div>
               <div className="border-b border-white/10 pb-4">
                 <h3 className="font-semibold mb-2 text-white">Are there leadership opportunities in clubs?</h3>
-                <p className="text-gray-300">Yes! Most clubs elect officers annually, including president, vice president, secretary, and treasurer. These positions provide valuable leadership experience.</p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2 text-white">Do clubs have membership fees?</h3>
-                <p className="text-gray-300">Some clubs may have small dues to cover activities and materials. Check with individual clubs about their fee structure and any available financial assistance.</p>
+                <p className="text-gray-300">Yes, most clubs elect officers annually, including president, vice president, secretary, and treasurer.</p>
               </div>
             </div>
           </div>

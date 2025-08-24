@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import express from 'express';
 import {
   User, Product, Event, VideoPost, Announcement,
-  StudentGovPosition, Club, Athletic, Art, FormSubmission, Purchase, File
+  StudentGovPosition, Club, FormSubmission, Purchase, File
 } from '../shared/mongodb-schema';
 import { connectWithRetry as connectDB } from './mongo-utils';
 import { requireAdminAuth, handleAdminLogin, handleAdminLogout, checkAdminAuth } from './auth';
@@ -429,115 +429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Athletic routes
-  app.get("/api/athletics", async (req, res) => {
-    try {
-      const athletics = await storage.getAthletics();
-      res.json(athletics);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching athletics", error });
-    }
-  });
 
-  app.get("/api/athletics/:id", async (req, res) => {
-    try {
-      const athletic = await storage.getAthletic(req.params.id);
-      if (!athletic) {
-        return res.status(404).json({ message: "Athletic program not found" });
-      }
-      res.json(athletic);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching athletic program", error });
-    }
-  });
-
-  app.post("/api/athletics", requireAdminAuth, async (req, res) => {
-    try {
-      const athletic = await storage.createAthletic(req.body);
-      res.status(201).json(athletic);
-    } catch (error) {
-      res.status(400).json({ message: "Error creating athletic program", error });
-    }
-  });
-
-  app.put("/api/athletics/:id", requireAdminAuth, async (req, res) => {
-    try {
-      const athletic = await storage.updateAthletic(req.params.id, req.body);
-      if (!athletic) {
-        return res.status(404).json({ message: "Athletic program not found" });
-      }
-      res.json(athletic);
-    } catch (error) {
-      res.status(400).json({ message: "Error updating athletic program", error });
-    }
-  });
-
-  app.delete("/api/athletics/:id", requireAdminAuth, async (req, res) => {
-    try {
-      const success = await storage.deleteAthletic(req.params.id);
-      if (!success) {
-        return res.status(404).json({ message: "Athletic program not found" });
-      }
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ message: "Error deleting athletic program", error });
-    }
-  });
-
-  // Arts routes
-  app.get("/api/arts", async (req, res) => {
-    try {
-      const arts = await storage.getArts();
-      res.json(arts);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching arts programs", error });
-    }
-  });
-
-  app.get("/api/arts/:id", async (req, res) => {
-    try {
-      const art = await storage.getArt(req.params.id);
-      if (!art) {
-        return res.status(404).json({ message: "Arts program not found" });
-      }
-      res.json(art);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching arts program", error });
-    }
-  });
-
-  app.post("/api/arts", requireAdminAuth, async (req, res) => {
-    try {
-      const art = await storage.createArt(req.body);
-      res.status(201).json(art);
-    } catch (error) {
-      res.status(400).json({ message: "Error creating arts program", error });
-    }
-  });
-
-  app.put("/api/arts/:id", requireAdminAuth, async (req, res) => {
-    try {
-      const art = await storage.updateArt(req.params.id, req.body);
-      if (!art) {
-        return res.status(404).json({ message: "Arts program not found" });
-      }
-      res.json(art);
-    } catch (error) {
-      res.status(400).json({ message: "Error updating arts program", error });
-    }
-  });
-
-  app.delete("/api/arts/:id", requireAdminAuth, async (req, res) => {
-    try {
-      const success = await storage.deleteArt(req.params.id);
-      if (!success) {
-        return res.status(404).json({ message: "Arts program not found" });
-      }
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ message: "Error deleting arts program", error });
-    }
-  });
 
   // Form Submission routes
   app.get("/api/form-submissions", async (req, res) => {

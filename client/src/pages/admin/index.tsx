@@ -40,7 +40,7 @@ function VideoForm({ video, onSubmit, onCancel }: {
       thumbnailUrl: '',
       date: new Date(),
       author: 'Admin',
-      category: '',
+      category: 'General',
       views: 0,
       featured: false
     }
@@ -49,16 +49,6 @@ function VideoForm({ video, onSubmit, onCancel }: {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
-  };
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({...formData, date: new Date(e.target.value)});
-  };
-
-  const formatDateForInput = (date: Date | undefined) => {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toISOString().split('T')[0];
   };
 
   return (
@@ -105,26 +95,6 @@ function VideoForm({ video, onSubmit, onCancel }: {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Category</label>
-          <Input
-            value={formData.category || ''}
-            onChange={(e) => setFormData({...formData, category: e.target.value})}
-            placeholder="e.g., Sports, Arts, News"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Date</label>
-          <Input
-            type="date"
-            value={formatDateForInput(formData.date)}
-            onChange={handleDateChange}
-            required
-          />
-        </div>
-      </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -436,10 +406,7 @@ function EventForm({ event, onSubmit, onCancel }: {
       time: '',
       location: '',
       description: '',
-      price: 0,
-      maxTickets: 0,
       ticketTypes: [],
-      features: [],
       requiresApproval: false,
       requiredForms: {
         studentIdRequired: false,
@@ -589,30 +556,6 @@ function EventForm({ event, onSubmit, onCancel }: {
         />
       </div>
 
-      {/* Legacy Price & Max Tickets - Keep for backward compatibility */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Legacy Price ($)</label>
-          <Input
-            type="number"
-            value={formData.price || ''}
-            onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
-            placeholder="0.00"
-            step="0.01"
-          />
-          <p className="text-xs text-gray-400 mt-1">Only used if no ticket types are defined</p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Legacy Max Tickets</label>
-          <Input
-            type="number"
-            value={formData.maxTickets || ''}
-            onChange={(e) => setFormData({...formData, maxTickets: parseInt(e.target.value)})}
-            placeholder="0"
-          />
-          <p className="text-xs text-gray-400 mt-1">Only used if no ticket types are defined</p>
-        </div>
-      </div>
 
       {/* Ticket Types Section */}
       <div>
@@ -694,15 +637,7 @@ function EventForm({ event, onSubmit, onCancel }: {
             <p className="text-sm text-gray-400 italic">No ticket types added yet. Add ticket types above for multiple pricing options.</p>
           )}
         </div>
-      </div>      <div>
-        <label className="block text-sm font-medium text-white mb-2">Features</label>
-        <CommaSeparatedInput
-          value={formData.features || []}
-          onChange={(features) => setFormData({...formData, features})}
-          placeholder="DJ, Refreshments, Photo Booth"
-        />
       </div>
-
       <div className="flex items-center space-x-2">
         <input
           type="checkbox"
@@ -892,8 +827,6 @@ function StudentGovForm({ member, onSubmit, onCancel }: {
     member || {
       position: '',
       gradeLevel: '',
-      bio: '',
-      responsibilities: [],
       description: '',
       currentRepresentatives: []
     }
@@ -909,7 +842,7 @@ function StudentGovForm({ member, onSubmit, onCancel }: {
       ...formData,
       currentRepresentatives: [
         ...(formData.currentRepresentatives || []),
-        { name: '', email: '' }
+        { name: '', email: '', bio: '', image: '' }
       ]
     });
   };
@@ -921,7 +854,7 @@ function StudentGovForm({ member, onSubmit, onCancel }: {
     });
   };
 
-  const updateRepresentative = (index: number, field: 'name' | 'email', value: string) => {
+  const updateRepresentative = (index: number, field: 'name' | 'email' | 'bio' | 'image', value: string) => {
     const updated = [...(formData.currentRepresentatives || [])];
     updated[index] = { ...updated[index], [field]: value };
     setFormData({ ...formData, currentRepresentatives: updated });
@@ -964,25 +897,6 @@ function StudentGovForm({ member, onSubmit, onCancel }: {
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Bio</label>
-        <Textarea
-          value={formData.bio || ''}
-          onChange={(e) => setFormData({...formData, bio: e.target.value})}
-          placeholder="Position bio"
-          rows={2}
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Responsibilities</label>
-        <Textarea
-          value={formData.responsibilities?.join('\n') || ''}
-          onChange={(e) => setFormData({...formData, responsibilities: e.target.value.split('\n').filter(r => r.trim())})}
-          placeholder="Enter each responsibility on a new line"
-          rows={3}
-        />
-      </div>
 
       <div>
         <div className="flex justify-between items-center mb-2">
@@ -1010,11 +924,30 @@ function StudentGovForm({ member, onSubmit, onCancel }: {
                     <label className="block text-xs font-medium text-gray-300 mb-1">Email</label>
                     <Input
                       type="email"
-                      value={rep.email}
+                      value={rep.email || ''}
                       onChange={(e) => updateRepresentative(index, 'email', e.target.value)}
                       placeholder="contact@eshs.edu"
                     />
                   </div>
+                </div>
+                <div className="mb-2">
+                  <label className="block text-xs font-medium text-gray-300 mb-1">Bio</label>
+                  <Textarea
+                    value={rep.bio || ''}
+                    onChange={(e) => updateRepresentative(index, 'bio', e.target.value)}
+                    placeholder="Representative bio"
+                    rows={2}
+                  />
+                </div>
+                <div className="mb-2">
+                  <FileUpload
+                    value={rep.image || ''}
+                    onChange={(url) => updateRepresentative(index, 'image', url)}
+                    label="Representative Image"
+                    fileType="image"
+                    placeholder="Upload image or paste URL"
+                    maxSizeMB={5}
+                  />
                 </div>
                 <Button 
                   type="button" 
@@ -1091,7 +1024,7 @@ function ClubForm({ club, onSubmit, onCancel }: {
           <Input
             value={formData.category || ''}
             onChange={(e) => setFormData({...formData, category: e.target.value})}
-            placeholder="Arts & Performance"
+            placeholder="Academic & Social"
             required
           />
         </div>
@@ -1109,52 +1042,12 @@ function ClubForm({ club, onSubmit, onCancel }: {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Advisor</label>
-          <Input
-            value={formData.advisor || ''}
-            onChange={(e) => setFormData({...formData, advisor: e.target.value})}
-            placeholder="Ms. Rodriguez"
-            required
-          />
-        </div>
-        <div>
           <label className="block text-sm font-medium text-white mb-2">Contact Email</label>
           <Input
             type="email"
             value={formData.contactEmail || ''}
             onChange={(e) => setFormData({...formData, contactEmail: e.target.value})}
             placeholder="drama@eshs.edu"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Meeting Time</label>
-          <Input
-            value={formData.meetingTime || ''}
-            onChange={(e) => setFormData({...formData, meetingTime: e.target.value})}
-            placeholder="Tuesdays & Thursdays 3:30-5:00 PM"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Location</label>
-          <Input
-            value={formData.location || ''}
-            onChange={(e) => setFormData({...formData, location: e.target.value})}
-            placeholder="Theater Arts Room"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Member Count</label>
-          <Input
-            type="number"
-            value={formData.memberCount || ''}
-            onChange={(e) => setFormData({...formData, memberCount: parseInt(e.target.value)})}
-            placeholder="25"
           />
         </div>
         <div>
@@ -1167,26 +1060,6 @@ function ClubForm({ club, onSubmit, onCancel }: {
             maxSizeMB={5}
           />
         </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Requirements</label>
-        <Textarea
-          value={formData.requirements?.join('\n') || ''}
-          onChange={(e) => setFormData({...formData, requirements: e.target.value.split('\n').filter(r => r.trim())})}
-          placeholder="Enter each requirement on a new line"
-          rows={2}
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">Activities</label>
-        <Textarea
-          value={formData.activities?.join('\n') || ''}
-          onChange={(e) => setFormData({...formData, activities: e.target.value.split('\n').filter(a => a.trim())})}
-          placeholder="Enter each activity on a new line"
-          rows={2}
-        />
       </div>
 
       <div className="flex items-center space-x-2">
@@ -2021,259 +1894,15 @@ ESHS ASB Team
               <div className="text-2xl font-bold text-white">{formSubmissions.length}</div>
             </div>
           </div>          {/* Main Tabs */}
-          <Tabs defaultValue="dashboard" className="w-full">
-            <TabsList className="grid w-full grid-cols-6 bg-white/5 backdrop-blur-xl border border-white/10">
-              <TabsTrigger value="dashboard" className="text-white">Dashboard</TabsTrigger>
+          <Tabs defaultValue="products" className="w-full">
+            <TabsList className="grid w-full grid-cols-5 bg-white/5 backdrop-blur-xl border border-white/10">
               <TabsTrigger value="products" className="text-white">Merch</TabsTrigger>
               <TabsTrigger value="events" className="text-white">Activities</TabsTrigger>
               <TabsTrigger value="submissions" className="text-white">Form Submissions</TabsTrigger>
               <TabsTrigger value="information" className="text-white">Information</TabsTrigger>
               <TabsTrigger value="birds-eye-view" className="text-white">Birds Eye View</TabsTrigger>
-            </TabsList>{/* Dashboard Tab - Combined Home & Analytics */}
-            <TabsContent value="dashboard" className="space-y-6">
-              {/* Revenue Analytics Section */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center">
-                      <DollarSign className="h-5 w-5 mr-2 text-green-400" />
-                      Total Revenue
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-green-400">
-                      ${purchases.reduce((sum, p) => sum + p.amount, 0).toFixed(2)}
-                    </div>
-                    <p className="text-gray-300">From all sales</p>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center">
-                      <TrendingUp className="h-5 w-5 mr-2 text-blue-400" />
-                      Total Orders
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-blue-400">{purchases.length}</div>
-                    <p className="text-gray-300">Completed purchases</p>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center">
-                      <BarChart3 className="h-5 w-5 mr-2 text-purple-400" />
-                      Average Order
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-purple-400">
-                      ${purchases.length > 0 ? (purchases.reduce((sum, p) => sum + p.amount, 0) / purchases.length).toFixed(2) : '0.00'}
-                    </div>
-                    <p className="text-gray-300">Per transaction</p>
-                  </CardContent>
-                </Card>
-              </div>
+            </TabsList>
 
-              {/* Most Selling Products */}
-              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                <CardHeader>
-                  <CardTitle className="text-white">Top Selling Products</CardTitle>
-                </CardHeader>
-                <CardContent>                  <div className="space-y-4">
-                    {(() => {
-                      // Calculate product sales from purchases
-                      type ProductSales = {
-                        productName: string;
-                        totalSold: number;
-                        revenue: number;
-                      };
-                      
-                      const productSales: ProductSales[] = purchases.reduce((acc: ProductSales[], purchase) => {
-                        const existing = acc.find(p => p.productName === purchase.productName);
-                        if (existing) {
-                          existing.totalSold += purchase.quantity;
-                          existing.revenue += purchase.amount;
-                        } else {
-                          acc.push({
-                            productName: purchase.productName,
-                            totalSold: purchase.quantity,
-                            revenue: purchase.amount
-                          });
-                        }
-                        return acc;
-                      }, []).sort((a, b) => b.totalSold - a.totalSold).slice(0, 5);
-
-                      return productSales.map((product, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-blue-500/20 border border-blue-400/30 rounded-full flex items-center justify-center text-blue-400 font-semibold text-sm">
-                              {index + 1}
-                            </div>
-                            <div>
-                              <p className="font-medium text-white">{product.productName}</p>
-                              <p className="text-sm text-gray-400">{product.totalSold} sold</p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-green-400">${product.revenue.toFixed(2)}</p>
-                          </div>
-                        </div>
-                      ));
-                    })()}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Revenue Trends & Recent Activity */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                  <CardHeader>
-                    <CardTitle className="text-white">Recent Sales Activity</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {purchases.slice(0, 5).map((purchase) => (
-                      <div key={purchase._id} className="flex items-center justify-between border-b border-white/10 pb-2">
-                        <div>
-                          <p className="text-white">{purchase.studentName}</p>
-                          <p className="text-sm text-gray-400">{purchase.productName}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-green-400 font-semibold">${purchase.amount}</p>
-                          <p className="text-sm text-gray-400">{new Date(purchase.date).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                  <CardHeader>
-                    <CardTitle className="text-white">Sales Trends</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">This Month</span>
-                        <span className="text-green-400 font-semibold">
-                          ${purchases.filter(p => {
-                            const purchaseDate = new Date(p.date);
-                            const now = new Date();
-                            return purchaseDate.getMonth() === now.getMonth() && 
-                                   purchaseDate.getFullYear() === now.getFullYear();
-                          }).reduce((sum, p) => sum + p.amount, 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Last Month</span>
-                        <span className="text-blue-400 font-semibold">
-                          ${purchases.filter(p => {
-                            const purchaseDate = new Date(p.date);
-                            const lastMonth = new Date();
-                            lastMonth.setMonth(lastMonth.getMonth() - 1);
-                            return purchaseDate.getMonth() === lastMonth.getMonth() && 
-                                   purchaseDate.getFullYear() === lastMonth.getFullYear();
-                          }).reduce((sum, p) => sum + p.amount, 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="pt-4 border-t border-white/10">
-                        <p className="text-sm text-gray-400">
-                          {purchases.length > 0 ? 
-                            `${Math.round((purchases.reduce((sum, p) => sum + p.amount, 0) / purchases.length) * 100) / 100} average per sale` :
-                            'No sales data available'
-                          }
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>              {/* Announcements Management */}
-              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-white">Announcements</CardTitle>
-                    <Dialog open={showAnnouncementModal} onOpenChange={setShowAnnouncementModal}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" onClick={() => setEditingItem(null)}>
-                          <PlusCircle className="w-4 h-4 mr-1" /> Add Announcement
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-                        <DialogHeader>
-                          <DialogTitle className="text-white">{editingItem ? 'Edit Announcement' : 'Add Announcement'}</DialogTitle>
-                        </DialogHeader>
-                        <AnnouncementForm 
-                          announcement={editingItem}
-                          onSubmit={handleAnnouncementSubmit}
-                          onCancel={() => {
-                            setEditingItem(null);
-                            setShowAnnouncementModal(false);
-                          }}
-                        />
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4 max-h-64 overflow-y-auto">
-                    {announcements.map((announcement) => (
-                      <div key={announcement._id} className="flex justify-between items-start p-3 bg-white/5 rounded-lg border border-white/10">
-                        <div className="flex-1">
-                          <h4 className="text-white font-semibold text-sm">{announcement.title}</h4>
-                          <p className="text-gray-400 text-xs mt-1">
-                            {announcement.content.length > 80 
-                              ? `${announcement.content.substring(0, 80)}...` 
-                              : announcement.content}
-                          </p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="outline" className={`text-xs px-2 py-1 ${
-                              announcement.priority === 'high' ? 'bg-red-600/20 border-red-600/30 text-red-200' :
-                              announcement.priority === 'medium' ? 'bg-yellow-600/20 border-yellow-600/30 text-yellow-200' :
-                              'bg-green-600/20 border-green-600/30 text-green-200'
-                            }`}>
-                              {announcement.priority}
-                            </Badge>
-                            <span className="text-xs text-gray-400">
-                              {new Date(announcement.date).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex gap-1 ml-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="h-8 w-8 p-0"
-                            onClick={() => {
-                              setEditingItem(announcement);
-                              setShowAnnouncementModal(true);
-                            }}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="destructive" 
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleDeleteAnnouncement(announcement._id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    {announcements.length === 0 && (
-                      <div className="text-center py-8 text-gray-400">
-                        <Info className="w-12 h-12 mx-auto mb-2 text-gray-500 opacity-30" />
-                        <p className="text-sm">No announcements yet</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
             {/* Products Tab */}
             <TabsContent value="products" className="space-y-6">
               <div className="flex justify-between items-center">
@@ -2778,7 +2407,7 @@ ESHS ASB Team
                         <div key={club._id} className="flex justify-between items-center">
                           <div>
                             <h4 className="text-white font-semibold">{club.name}</h4>
-                            <p className="text-sm text-gray-400">Advisor: {club.advisor} - {club.memberCount} members</p>
+                            <p className="text-sm text-gray-400">{club.category}</p>
                           </div>
                           <div className="flex gap-2">
                             <Button 
@@ -2807,6 +2436,91 @@ ESHS ASB Team
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Announcements Management */}
+              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-white">Announcements</CardTitle>
+                    <Dialog open={showAnnouncementModal} onOpenChange={setShowAnnouncementModal}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" onClick={() => setEditingItem(null)}>
+                          <PlusCircle className="w-4 h-4 mr-1" /> Add Announcement
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                        <DialogHeader>
+                          <DialogTitle className="text-white">{editingItem ? 'Edit Announcement' : 'Add Announcement'}</DialogTitle>
+                        </DialogHeader>
+                        <AnnouncementForm 
+                          announcement={editingItem}
+                          onSubmit={handleAnnouncementSubmit}
+                          onCancel={() => {
+                            setEditingItem(null);
+                            setShowAnnouncementModal(false);
+                          }}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 max-h-64 overflow-y-auto">
+                    {announcements.map((announcement) => (
+                      <div key={announcement._id} className="flex justify-between items-start p-3 bg-white/5 rounded-lg border border-white/10">
+                        <div className="flex-1">
+                          <h4 className="text-white font-semibold text-sm">{announcement.title}</h4>
+                          <p className="text-gray-400 text-xs mt-1">
+                            {announcement.content.length > 80 
+                              ? `${announcement.content.substring(0, 80)}...` 
+                              : announcement.content}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className={`text-xs px-2 py-1 ${
+                              announcement.priority === 'high' ? 'bg-red-600/20 border-red-600/30 text-red-200' :
+                              announcement.priority === 'medium' ? 'bg-yellow-600/20 border-yellow-600/30 text-yellow-200' :
+                              'bg-green-600/20 border-green-600/30 text-green-200'
+                            }`}>
+                              {announcement.priority}
+                            </Badge>
+                            <span className="text-xs text-gray-400">
+                              {new Date(announcement.date).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex gap-1 ml-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="h-8 w-8 p-0"
+                            onClick={() => {
+                              setEditingItem(announcement);
+                              setShowAnnouncementModal(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="destructive" 
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleDeleteAnnouncement(announcement._id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {announcements.length === 0 && (
+                      <div className="text-center py-8 text-gray-400">
+                        <Info className="w-12 h-12 mx-auto mb-2 text-gray-500 opacity-30" />
+                        <p className="text-sm">No announcements yet</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
               {/* Birds Eye View Tab */}
             <TabsContent value="birds-eye-view" className="space-y-6">
@@ -3149,7 +2863,7 @@ ESHS ASB Team
 
       {/* Student Government Modal */}
       <Dialog open={showStudentGovModal} onOpenChange={setShowStudentGovModal}>
-        <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-white">{editingItem ? 'Edit Position' : 'Add Position'}</DialogTitle>
           </DialogHeader>
@@ -3166,7 +2880,7 @@ ESHS ASB Team
 
       {/* Club Modal */}
       <Dialog open={showClubModal} onOpenChange={setShowClubModal}>
-        <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-white">{editingItem ? 'Edit Club' : 'Add Club'}</DialogTitle>
           </DialogHeader>

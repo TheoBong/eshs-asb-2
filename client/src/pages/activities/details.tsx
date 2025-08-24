@@ -352,6 +352,7 @@ export default function EventDetails() {
     };
 
     addToCart(cartItem);
+    sessionStorage.setItem('cart-referrer', `/activities/details/${event._id}`);
     setLocation("/shop/cart");
   };
 

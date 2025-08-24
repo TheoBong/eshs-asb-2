@@ -211,63 +211,6 @@ export async function deleteClub(id: string) {
   });
 }
 
-// Athletic API functions
-export async function getAthletics() {
-  return fetchAPI<Athletic[]>('/athletics');
-}
-
-export async function getAthletic(id: string) {
-  return fetchAPI<Athletic>(`/athletics/${id}`);
-}
-
-export async function createAthletic(athletic: Partial<Athletic>) {
-  return fetchAPI<Athletic>('/athletics', {
-    method: 'POST',
-    body: JSON.stringify(athletic),
-  });
-}
-
-export async function updateAthletic(id: string, athletic: Partial<Athletic>) {
-  return fetchAPI<Athletic>(`/athletics/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(athletic),
-  });
-}
-
-export async function deleteAthletic(id: string) {
-  return fetchAPI<void>(`/athletics/${id}`, {
-    method: 'DELETE',
-  });
-}
-
-// Arts API functions
-export async function getArts() {
-  return fetchAPI<Art[]>('/arts');
-}
-
-export async function getArt(id: string) {
-  return fetchAPI<Art>(`/arts/${id}`);
-}
-
-export async function createArt(art: Partial<Art>) {
-  return fetchAPI<Art>('/arts', {
-    method: 'POST',
-    body: JSON.stringify(art),
-  });
-}
-
-export async function updateArt(id: string, art: Partial<Art>) {
-  return fetchAPI<Art>(`/arts/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(art),
-  });
-}
-
-export async function deleteArt(id: string) {
-  return fetchAPI<void>(`/arts/${id}`, {
-    method: 'DELETE',
-  });
-}
 
 // Form Submission API functions
 export async function getFormSubmissions() {
@@ -433,41 +376,6 @@ export interface Club {
   createdAt: Date;
 }
 
-export interface Athletic {
-  _id: string;
-  sport: string;
-  season: string;
-  coach: string;
-  assistantCoach?: string;
-  practiceSchedule: string;
-  homeVenue: string;
-  description: string;
-  image: string;
-  rosterCount: number;
-  achievements: string[];
-  schedule: {
-    opponent?: string;
-    date?: Date;
-    location?: string;
-    isHome: boolean;
-  }[];
-  createdAt: Date;
-}
-
-export interface Art {
-  _id: string;
-  program: string;
-  type: string;
-  instructor: string;
-  description: string;
-  meetingTime: string;
-  location: string;
-  image: string;
-  requirements: string[];
-  showcaseInfo?: string;
-  memberCount: number;
-  createdAt: Date;
-}
 
 export interface FormSubmission {
   _id: string;

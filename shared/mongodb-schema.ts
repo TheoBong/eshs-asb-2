@@ -140,41 +140,6 @@ const clubSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-// Athletic Program Schema
-const athleticSchema = new mongoose.Schema({
-  sport: { type: String, required: true },
-  season: { type: String, required: true },
-  coach: { type: String, required: true },
-  assistantCoach: { type: String },
-  practiceSchedule: { type: String, required: true },
-  homeVenue: { type: String, required: true },
-  description: { type: String, required: true },
-  image: { type: String, required: true },
-  rosterCount: { type: Number, default: 0 },
-  achievements: [{ type: String }],
-  schedule: [{
-    opponent: { type: String },
-    date: { type: Date },
-    location: { type: String },
-    isHome: { type: Boolean, default: true }
-  }],
-  createdAt: { type: Date, default: Date.now }
-});
-
-// Arts Program Schema
-const artSchema = new mongoose.Schema({
-  program: { type: String, required: true },
-  type: { type: String, required: true },
-  instructor: { type: String, required: true },
-  description: { type: String, required: true },
-  meetingTime: { type: String, required: true },
-  location: { type: String, required: true },
-  image: { type: String, required: true },
-  requirements: [{ type: String }],
-  showcaseInfo: { type: String },
-  memberCount: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now }
-});
 
 // Form Submission Schema
 const formSubmissionSchema = new mongoose.Schema({
@@ -231,8 +196,6 @@ export const VideoPost = mongoose.model('VideoPost', videoPostSchema);
 export const Announcement = mongoose.model('Announcement', announcementSchema);
 export const StudentGovPosition = mongoose.model('StudentGovPosition', studentGovPositionSchema);
 export const Club = mongoose.model('Club', clubSchema);
-export const Athletic = mongoose.model('Athletic', athleticSchema);
-export const Art = mongoose.model('Art', artSchema);
 export const FormSubmission = mongoose.model('FormSubmission', formSubmissionSchema);
 export const Purchase = mongoose.model('Purchase', purchaseSchema);
 export const File = mongoose.model('File', fileSchema);
@@ -245,8 +208,6 @@ export type VideoPostType = mongoose.InferSchemaType<typeof videoPostSchema>;
 export type AnnouncementType = mongoose.InferSchemaType<typeof announcementSchema>;
 export type StudentGovPositionType = mongoose.InferSchemaType<typeof studentGovPositionSchema>;
 export type ClubType = mongoose.InferSchemaType<typeof clubSchema>;
-export type AthleticType = mongoose.InferSchemaType<typeof athleticSchema>;
-export type ArtType = mongoose.InferSchemaType<typeof artSchema>;
 export type FormSubmissionType = mongoose.InferSchemaType<typeof formSubmissionSchema>;
 export type PurchaseType = mongoose.InferSchemaType<typeof purchaseSchema>;
 export type FileType = mongoose.InferSchemaType<typeof fileSchema>;
