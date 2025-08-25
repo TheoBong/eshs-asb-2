@@ -385,58 +385,48 @@ const PersistentBackground = () => {
       id="persistent-background"
       className="fixed inset-0 w-full h-full overflow-hidden"
       style={{
-        zIndex: -1,
-        backgroundColor: '#000',
-        WebkitTransform: 'translateZ(0)',
-        transform: 'translateZ(0)',
+        zIndex: -10,
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0,
-        willChange: 'transform',
-        backfaceVisibility: 'hidden',
-        WebkitBackfaceVisibility: 'hidden'
+        bottom: 0
       }}
     >
-      <video 
-        ref={videoRef}
-        id="background-video"
-        autoPlay 
-        muted 
-        loop 
-        playsInline
-        preload="auto"
-        data-persistent="true"
-        src={schoolVideo}
-        className="absolute w-full h-full object-cover"
-        style={{
-          objectFit: 'cover',
-          width: '100%',
-          height: '100%',
-          filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          zIndex: 1,
-          opacity: 1
-        }}
-      />
-      
-      {/* Overlay to darken the background video */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 2,
-          pointerEvents: 'none'
-        }}
-      />
+      {/* Video background container that fills the whole screen */}
+      <div className="absolute inset-0 bg-black overflow-hidden">
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          data-persistent="true"
+          className="absolute w-full h-full object-cover"
+          style={{
+            objectFit: 'cover',
+            width: '100vw',
+            height: '100vh',
+            filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
+            minWidth: '100%',
+            minHeight: '100%',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <source src={schoolVideo} type="video/mp4" />
+        </video>
+        
+        {/* Overlay to darken the background video */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            pointerEvents: 'none'
+          }}
+        />
+      </div>
     </div>
   );
 };
