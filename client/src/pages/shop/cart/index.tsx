@@ -227,11 +227,10 @@ export default function CartPage() {
                     </div>
                     
                     <PrimaryButton
-                      className="w-full mt-4"
-                      disabled={cartItems.length === 0}
-                      onClick={handleCheckout}
+                      className="w-full mt-4 bg-gray-600 hover:bg-gray-700 cursor-not-allowed"
+                      disabled={true}
                     >
-                      Proceed to Checkout
+                      Coming Soon
                     </PrimaryButton>
                     
                     <div className="mt-4 text-center">

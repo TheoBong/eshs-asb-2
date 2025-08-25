@@ -122,24 +122,17 @@ export default function Shop() {
             <div className="space-y-4">
               <div className="p-4 rounded-lg border border-blue-400/50 bg-blue-500/20">
                 <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-white">Free Shipping on Orders Over $50</h3>
-                  <span className="text-sm text-gray-300">Offer</span>
+                  <h3 className="font-semibold text-white">Student In-Class Delivery Available</h3>
+                  <span className="text-sm text-gray-300">Delivery</span>
                 </div>
-                <p className="text-sm mt-2 text-gray-200">Get free standard shipping on all orders over $50. No promo code needed!</p>
+                <p className="text-sm mt-2 text-gray-200">We will deliver items to students during their fourth period!</p>
               </div>
-              <div className="p-4 rounded-lg border border-green-400/50 bg-green-500/20">
+              <div className="p-4 rounded-lg border border-amber-400/50 bg-green-500/20">
                 <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-white">Student Discounts Available</h3>
-                  <span className="text-sm text-gray-300">Discount</span>
-                </div>
-                <p className="text-sm mt-2 text-gray-200">Current students get 15% off with valid student ID at pickup.</p>
-              </div>
-              <div className="p-4 rounded-lg border border-amber-400/50 bg-amber-500/20">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-white">Pickup Available at School Office</h3>
+                  <h3 className="font-semibold text-white">Pickup Available at Activities Office</h3>
                   <span className="text-sm text-gray-300">Pickup</span>
                 </div>
-                <p className="text-sm mt-2 text-gray-200">Order online and pick up your items during school hours at the main office.</p>
+                <p className="text-sm mt-2 text-gray-200">Order online and pick up your items during school hours at the Activities Office.</p>
               </div>
             </div>
           </div>
