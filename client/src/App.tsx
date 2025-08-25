@@ -385,7 +385,7 @@ const PersistentBackground = () => {
       id="persistent-background"
       className="fixed inset-0 w-full h-full overflow-hidden"
       style={{
-        zIndex: -10,
+        zIndex: -1,
         position: 'fixed',
         top: 0,
         left: 0,
@@ -570,7 +570,7 @@ function App() {
       <PersistentBackground />
       
       {/* Main app content */}
-      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
+      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', backgroundColor: 'transparent' }}>
         <QueryClientProvider client={queryClient}>
           <CartProvider>
             <NavigationProvider>
