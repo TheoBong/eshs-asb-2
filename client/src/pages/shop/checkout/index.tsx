@@ -63,7 +63,7 @@ export default function CheckoutPage() {
   return (
     <ThemedPageWrapper pageType="shop">
       {/* Glassmorphism overlay with backdrop blur */}
-      <div className="fixed inset-0 bg-white/10 backdrop-blur-sm -z-10"></div>
+      <div className="fixed inset-0 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6 -z-10"></div>
 
       {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">
