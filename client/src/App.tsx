@@ -240,7 +240,7 @@ const SPAPage = ({
         duration: 0.3,
         ease: "easeInOut"
       }}
-      className="fixed inset-0 w-full h-full"
+      className="absolute inset-0 w-full min-h-screen overflow-y-auto"
       style={{
         // Safari-specific fixes for smooth transitions
         WebkitBackfaceVisibility: 'hidden',
@@ -253,7 +253,7 @@ const SPAPage = ({
         willChange: 'opacity',
         WebkitFontSmoothing: 'antialiased',
         MozOsxFontSmoothing: 'grayscale',
-        visibility: isActive ? 'visible' : 'hidden'
+        display: isActive ? 'block' : 'none'
       }}
     >
       {children}
@@ -266,7 +266,7 @@ const SPARouter = () => {
   const { currentPage, currentParams } = useNavigation();
   
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full min-h-screen">
       {/* Home Page */}
       <SPAPage isActive={currentPage === 'home'} pageKey="home">
         <Home />
@@ -362,6 +362,12 @@ const PersistentBackground = () => {
         // Get cached video URL (or cache it if not already cached)
         const videoUrl = await videoCache.getCachedVideoUrl(schoolVideo);
         setCachedVideoUrl(videoUrl);
+        
+        // Update video source immediately
+        const source = video.querySelector('source');
+        if (source) {
+          source.src = videoUrl;
+        }
         
         // Force load the video
         video.load();
@@ -544,8 +550,20 @@ const PersistentBackground = () => {
 
 // Navigation Provider Component
 const NavigationProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentPage, setCurrentPage] = useState<string>('home');
-  const [currentParams, setCurrentParams] = useState<Record<string, string>>({});
+  // Initialize state from current URL
+  const getInitialState = () => {
+    if (typeof window !== 'undefined') {
+      const initialPageData = getPageFromPath(window.location.pathname);
+      return {
+        page: initialPageData.page,
+        params: initialPageData.params
+      };
+    }
+    return { page: 'home', params: {} };
+  };
+  
+  const [currentPage, setCurrentPage] = useState<string>(() => getInitialState().page);
+  const [currentParams, setCurrentParams] = useState<Record<string, string>>(() => getInitialState().params);
   
   // Update browser URL without page reload
   useEffect(() => {
@@ -567,13 +585,17 @@ const NavigationProvider = ({ children }: { children: React.ReactNode }) => {
       };
       
       const url = routes[currentPage] || '/';
-      window.history.replaceState({}, '', url);
+      
+      // Only update URL if it's different from current
+      if (window.location.pathname !== url) {
+        window.history.replaceState({}, '', url);
+      }
     };
     
     updateURL();
   }, [currentPage, currentParams]);
   
-  // Handle browser back/forward buttons
+  // Handle browser back/forward buttons and initial load
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
@@ -583,11 +605,6 @@ const NavigationProvider = ({ children }: { children: React.ReactNode }) => {
     };
     
     window.addEventListener('popstate', handlePopState);
-    
-    // Set initial page from URL
-    const initialPageData = getPageFromPath(window.location.pathname);
-    setCurrentPage(initialPageData.page);
-    setCurrentParams(initialPageData.params);
     
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
@@ -670,7 +687,7 @@ function App() {
       <PersistentBackground />
       
       {/* Main app content */}
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
         <QueryClientProvider client={queryClient}>
           <CartProvider>
             <NavigationProvider>
