@@ -67,8 +67,8 @@ export default function Clubs() {
   if (loading) {
     return (
       <ThemedPageWrapper pageType="information">
-        {/* Overlay to darken the background video */}
-        <div className="fixed inset-0 bg-black bg-opacity-60 -z-10"></div>
+        {/* Light overlay for better text contrast without darkening UI */}
+        <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
         
         {/* Loading content */}
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
@@ -81,8 +81,8 @@ export default function Clubs() {
   if (error) {
     return (
       <ThemedPageWrapper pageType="information">
-        {/* Overlay to darken the background video */}
-        <div className="fixed inset-0 bg-black bg-opacity-60 -z-10"></div>
+        {/* Light overlay for better text contrast without darkening UI */}
+        <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
         
         {/* Error content */}
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
