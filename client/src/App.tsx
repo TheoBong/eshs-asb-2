@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Shop from "@/pages/shop";
 import NotFound from "@/pages/not-found";
 import { CartProvider } from "@/contexts/CartContext";
+import schoolVideo from "../../../attached_assets/school2.mp4";
 
 // Shop related pages
 import ProductPage from "@/pages/shop/product/index";
@@ -103,6 +104,32 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <TooltipProvider>
+          {/* Persistent Video Background - stays mounted across all routes */}
+          <div className="fixed inset-0 -z-50 overflow-hidden">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              webkit-playsinline="true"
+              x5-playsinline="true"
+              className="absolute w-full h-full object-cover"
+              style={{
+                objectFit: 'cover',
+                width: '100vw',
+                height: '100vh',
+                filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
+                minWidth: '100%',
+                minHeight: '100%',
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
+              <source src={schoolVideo} type="video/mp4" />
+            </video>
+          </div>
           <Toaster />
           <Router />
         </TooltipProvider>
