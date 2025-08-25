@@ -78,7 +78,7 @@ export default function Activities() {
           <div className="flex items-center mb-8">
             <OutlineButton
               onClick={handleBackClick}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
+              className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -89,7 +89,7 @@ export default function Activities() {
           </div>
 
           {/* Activities Banner */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6 mb-8 text-white">
+          <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6 mb-8 text-white">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold mb-2">Upcoming Events & Ticket Sales</h2>
@@ -104,7 +104,7 @@ export default function Activities() {
           </div>          {/* Category Filter Tabs with Cart Button */}
           <div className="mb-8 flex items-center justify-center">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 max-w-3xl">
-              <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg grid w-full h-10" 
+              <TabsList className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-lg grid w-full h-10" 
                         style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
                 {categories.map(category => (
                   <TabsTrigger 
@@ -171,7 +171,7 @@ export default function Activities() {
           {!loading && !error && events.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {filteredEvents.map((event) => (
-                <ThemedCard key={event._id} className="hover:shadow-md transition-all bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                <ThemedCard key={event._id} className="hover:shadow-md transition-all bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">

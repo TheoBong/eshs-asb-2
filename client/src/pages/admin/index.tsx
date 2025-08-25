@@ -1823,7 +1823,7 @@ ESHS ASB Team
               <Button
                 variant="ghost"
                 onClick={handleBackClick}
-                className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+                className="text-white/90 hover:text-white p-2 mr-4 bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -1855,7 +1855,7 @@ ESHS ASB Team
           </div>
           {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+            <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
               <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 className="text-sm font-medium text-gray-300">Products</h3>
                 <Package className="h-4 w-4 text-blue-400" />
@@ -1863,7 +1863,7 @@ ESHS ASB Team
               <div className="text-2xl font-bold text-white">{products.length}</div>
             </div>
             
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+            <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
               <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 className="text-sm font-medium text-gray-300">Events</h3>
                 <Calendar className="h-4 w-4 text-green-400" />
@@ -1871,7 +1871,7 @@ ESHS ASB Team
               <div className="text-2xl font-bold text-white">{events.length}</div>
             </div>
 
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+            <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
               <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 className="text-sm font-medium text-gray-300">Activities</h3>
                 <Users className="h-4 w-4 text-purple-400" />
@@ -1879,7 +1879,7 @@ ESHS ASB Team
               <div className="text-2xl font-bold text-white">{clubs.length}</div>
             </div>
 
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+            <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
               <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 className="text-sm font-medium text-gray-300">Submissions</h3>
                 <FileText className="h-4 w-4 text-yellow-400" />
@@ -1888,7 +1888,7 @@ ESHS ASB Team
             </div>
           </div>          {/* Main Tabs */}
           <Tabs defaultValue="products" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-white/5 backdrop-blur-xl border border-white/10">
+            <TabsList className="grid w-full grid-cols-5 bg-white/3 backdrop-blur-2xl border border-white/10">
               <TabsTrigger value="products" className="text-white">Merch</TabsTrigger>
               <TabsTrigger value="events" className="text-white">Activities</TabsTrigger>
               <TabsTrigger value="submissions" className="text-white">Form Submissions</TabsTrigger>
@@ -1907,7 +1907,7 @@ ESHS ASB Team
                       Add Product
                     </PrimaryButton>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                     <DialogHeader>
                       <DialogTitle className="text-white">{editingItem ? 'Edit Product' : 'Add Product'}</DialogTitle>
                     </DialogHeader>
@@ -1922,7 +1922,7 @@ ESHS ASB Team
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
-                  <div key={product._id} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+                  <div key={product._id} className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
                     <div className="flex justify-between items-start mb-4">
                       <h3 className="text-white text-lg font-semibold">{product.name}</h3>
                       <div className="flex gap-2">
@@ -1980,7 +1980,7 @@ ESHS ASB Team
                       Add Event
                     </PrimaryButton>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                     <DialogHeader>
                       <DialogTitle className="text-white">{editingItem ? 'Edit Event' : 'Add Event'}</DialogTitle>
                     </DialogHeader>
@@ -1995,7 +1995,7 @@ ESHS ASB Team
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {events.map((event) => (
-                  <div key={event._id} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+                  <div key={event._id} className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
                     <div className="flex justify-between items-start mb-4">
                       <h3 className="text-white text-lg font-semibold">{event.title}</h3>
                       <div className="flex gap-2">
@@ -2044,11 +2044,11 @@ ESHS ASB Team
               </div>
 
               {/* Filter and Search Controls */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Filter by Event</label>
                   <Select value={submissionEventFilter} onValueChange={setSubmissionEventFilter}>
-                    <SelectTrigger className="bg-white/5 backdrop-blur-xl border border-white/10 text-white shadow-lg">
+                    <SelectTrigger className="bg-white/3 backdrop-blur-2xl border border-white/10 text-white shadow-lg">
                       <SelectValue placeholder="All Events" />
                     </SelectTrigger>
                     <SelectContent>
@@ -2064,7 +2064,7 @@ ESHS ASB Team
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Filter by Status</label>
                   <Select value={submissionStatusFilter} onValueChange={(value: 'all' | 'pending' | 'approved' | 'rejected') => setSubmissionStatusFilter(value)}>
-                    <SelectTrigger className="bg-white/5 backdrop-blur-xl border border-white/10 text-white shadow-lg">
+                    <SelectTrigger className="bg-white/3 backdrop-blur-2xl border border-white/10 text-white shadow-lg">
                       <SelectValue placeholder="All Statuses" />
                     </SelectTrigger>
                     <SelectContent>
@@ -2082,13 +2082,13 @@ ESHS ASB Team
                     placeholder="Search by student name..."
                     value={submissionSearch}
                     onChange={(e) => setSubmissionSearch(e.target.value)}
-                    className="bg-white/5 backdrop-blur-xl border border-white/10 text-white placeholder-gray-400 shadow-lg"
+                    className="bg-white/3 backdrop-blur-2xl border border-white/10 text-white placeholder-gray-400 shadow-lg"
                   />
                 </div>
               </div>
               
               {/* Pending Approvals */}
-              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <Card className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center">
                     <Calendar className="w-5 h-5 mr-2 text-yellow-400" /> 
@@ -2104,7 +2104,7 @@ ESHS ASB Team
                         (typeof submission.eventId === 'object' ? submission.eventId as any : null);
                       
                       return (
-                        <div key={submission._id} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg rounded-lg p-4">
+                        <div key={submission._id} className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-lg rounded-lg p-4">
                           <div className="flex justify-between items-start mb-2">
                             <div>
                               <h4 className="text-white font-semibold text-lg">{submission.studentName}</h4>
@@ -2198,7 +2198,7 @@ ESHS ASB Team
               </Card>
               
               {/* Processed Submissions */}
-              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <Card className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center">
                     <FileText className="w-5 h-5 mr-2 text-blue-400" /> 
@@ -2218,7 +2218,7 @@ ESHS ASB Team
                           : "bg-red-600/20 border-red-600 text-red-200";
                         
                         return (
-                          <div key={submission._id} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg rounded-lg p-4">
+                          <div key={submission._id} className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-lg rounded-lg p-4">
                             <div className="flex justify-between items-start">
                               <div>
                                 <h4 className="text-white font-semibold">{submission.studentName}</h4>
@@ -2327,7 +2327,7 @@ ESHS ASB Team
             {/* Information Tab */}
             <TabsContent value="information" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">                {/* Student Government */}
-                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                <Card className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                   <CardHeader>
                     <div className="flex justify-between items-center">
                       <CardTitle className="text-white">Student Government</CardTitle>
@@ -2378,7 +2378,7 @@ ESHS ASB Team
                   </CardContent>
                 </Card>
                   {/* Clubs */}
-                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                <Card className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                   <CardHeader>
                     <div className="flex justify-between items-center">
                       <CardTitle className="text-white">Clubs</CardTitle>
@@ -2431,7 +2431,7 @@ ESHS ASB Team
               </div>
 
               {/* Announcements Management */}
-              <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <Card className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-white">Announcements</CardTitle>
@@ -2441,7 +2441,7 @@ ESHS ASB Team
                           <PlusCircle className="w-4 h-4 mr-1" /> Add Announcement
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                      <DialogContent className="max-w-2xl bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                         <DialogHeader>
                           <DialogTitle className="text-white">{editingItem ? 'Edit Announcement' : 'Add Announcement'}</DialogTitle>
                         </DialogHeader>
@@ -2526,7 +2526,7 @@ ESHS ASB Team
                       Add Video
                     </PrimaryButton>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+                  <DialogContent className="max-w-2xl bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                     <DialogHeader>
                       <DialogTitle className="text-white">{editingItem ? 'Edit Video' : 'Add New Video'}</DialogTitle>
                     </DialogHeader>
@@ -2544,7 +2544,7 @@ ESHS ASB Team
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {videos.map((video) => (
-                  <div key={video._id} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl overflow-hidden">
+                  <div key={video._id} className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl overflow-hidden">
                     <div className="aspect-video relative">
                       <img 
                         src={video.thumbnailUrl} 
@@ -2640,7 +2640,7 @@ ESHS ASB Team
             {/* Content Tab */}
             <TabsContent value="content" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+                <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
                   <h3 className="text-white text-lg font-semibold mb-4">Videos ({videos.length})</h3>
                   <div className="space-y-2">
                     {videos.slice(0, 3).map((video) => (
@@ -2651,7 +2651,7 @@ ESHS ASB Team
                   </div>
                 </div>
 
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+                <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
                   <h3 className="text-white text-lg font-semibold mb-4">Announcements ({announcements.length})</h3>
                   <div className="space-y-2">
                     {announcements.slice(0, 3).map((announcement) => (
@@ -2667,7 +2667,7 @@ ESHS ASB Team
       </div>
         {/* Form Rejection Modal */}
       <Dialog open={showRejectionModal} onOpenChange={setShowRejectionModal}>
-        <DialogContent className="max-w-md bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+        <DialogContent className="max-w-md bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-white">Reject Form Submission</DialogTitle>
           </DialogHeader>
@@ -2710,7 +2710,7 @@ ESHS ASB Team
 
       {/* Submission Detail Modal */}
       <Dialog open={showSubmissionDetailModal} onOpenChange={setShowSubmissionDetailModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-white">Submission Details</DialogTitle>
           </DialogHeader>
@@ -2856,7 +2856,7 @@ ESHS ASB Team
 
       {/* Student Government Modal */}
       <Dialog open={showStudentGovModal} onOpenChange={setShowStudentGovModal}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-white">{editingItem ? 'Edit Position' : 'Add Position'}</DialogTitle>
           </DialogHeader>
@@ -2873,7 +2873,7 @@ ESHS ASB Team
 
       {/* Club Modal */}
       <Dialog open={showClubModal} onOpenChange={setShowClubModal}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-white">{editingItem ? 'Edit Club' : 'Add Club'}</DialogTitle>
           </DialogHeader>

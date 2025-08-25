@@ -69,7 +69,7 @@ export default function CheckoutPage() {
           <div className="flex items-center mb-8">
             <OutlineButton
               onClick={handleBackToCart}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
+              className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -84,7 +84,7 @@ export default function CheckoutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Order Form */}
             <div className="lg:col-span-2">
-              <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <ThemedCard className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl">
                 <div className="p-6">
                   <h2 className="text-xl font-semibold text-white mb-6">Contact Information</h2>
                   
@@ -200,7 +200,7 @@ export default function CheckoutPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl sticky top-8">
+              <ThemedCard className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl sticky top-8">
                 <div className="p-6">
                   <h2 className="text-xl font-semibold text-white mb-4">Order Summary</h2>
                   

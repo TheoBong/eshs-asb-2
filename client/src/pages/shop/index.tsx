@@ -94,7 +94,7 @@ export default function Shop() {
             <Button
               variant="ghost"
               onClick={handleBackClick}
-              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+              className="text-white/90 hover:text-white p-2 mr-4 bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
             >
               <svg
                 className="w-5 h-5"
@@ -117,7 +117,7 @@ export default function Shop() {
           </div>
 
           {/* Important Shopping Information */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
+          <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
             <div className="space-y-4">
               <div className="p-4 rounded-lg border border-blue-400/50 bg-blue-500/20">
                 <div className="flex justify-between items-start">
@@ -168,7 +168,7 @@ export default function Shop() {
                 <div className="flex items-center mt-6">
                   {/* Tab Navigation */}
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-                    <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl h-10">
+                    <TabsList className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl h-10">
                       <TabsTrigger value="all" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white h-8">All Products</TabsTrigger>
                       <TabsTrigger value="apparel" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white h-8">Apparel</TabsTrigger>
                       <TabsTrigger value="accessories" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white h-8">Accessories</TabsTrigger>
@@ -193,7 +193,7 @@ export default function Shop() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">              {filteredItems.map(item => (
                   <ThemedCard 
                     key={item._id} 
-                    className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:shadow-2xl transition-transform hover:scale-[1.01] cursor-pointer"
+                    className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl hover:shadow-2xl transition-transform hover:scale-[1.01] cursor-pointer"
                     onClick={() => handleProductClick(item._id)}
                   >{/* Product Image */}
                     <div className="h-48 bg-gray-900 overflow-hidden">

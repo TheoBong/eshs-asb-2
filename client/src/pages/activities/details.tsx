@@ -370,12 +370,12 @@ export default function EventDetails() {
         </div>
           
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
-          <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl p-8 text-center">
+          <ThemedCard className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl p-8 text-center">
             <h1 className="text-2xl font-bold text-white mb-4">Event Not Found</h1>
             <p className="text-gray-300 mb-6">The event you're looking for doesn't exist.</p>
             <OutlineButton 
               onClick={handleBackClick}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10"
+              className="bg-white/3 backdrop-blur-2xl border border-white/10 text-white hover:bg-white/10"
             >
               Back to Activities
             </OutlineButton>
@@ -407,7 +407,7 @@ export default function EventDetails() {
           <div className="flex items-center mb-8">
             <OutlineButton
               onClick={handleBackClick}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
+              className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -418,7 +418,7 @@ export default function EventDetails() {
           </div>
 
           {/* Event Details */}
-          <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl mb-8">
+          <ThemedCard className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl mb-8">
             <div className="p-8">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
@@ -532,7 +532,7 @@ export default function EventDetails() {
                 )}
 
                 {!uploadStatus.success && (
-                  <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl p-6">
+                  <ThemedCard className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl p-6">
                     <form className="space-y-6">
                       {/* Student Information */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -711,7 +711,7 @@ export default function EventDetails() {
               </div>
             ) : (
               // Price/Quantity section for non-approval events
-              <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl p-6">
+              <ThemedCard className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl p-6">
                 <div className="flex flex-col md:flex-row gap-6">
                   <div className="flex-1 space-y-4">
                     {/* Price and Availability */}

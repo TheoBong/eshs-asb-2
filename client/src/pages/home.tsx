@@ -880,77 +880,8 @@ export default function Home() {
           backgroundImage: "none", // Ensure no background image is applied
         }}
       >
-        {/* Vignette effects overlay - video is now persistent in App.tsx */}
-        <div className="absolute inset-0 overflow-hidden">
-          
-          {/* Main vignette effect overlay - darker in the corners, smoother transition */}
-          <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 65%, rgba(0,0,0,1) 100%)',
-            mixBlendMode: 'multiply',
-            pointerEvents: 'none',
-          }}></div>
-          
-          {/* Enhanced corner vignette overlays - extremely dark corners with very sharp fade */}
-          <div className="absolute top-0 left-0 w-2/3 h-2/3" style={{
-            background: 'radial-gradient(circle at top left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.99) 5%, rgba(0,0,0,0.98) 10%, rgba(0,0,0,0.95) 15%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0) 80%)',
-            pointerEvents: 'none',
-          }}></div>
-          <div className="absolute top-0 right-0 w-2/3 h-2/3" style={{
-            background: 'radial-gradient(circle at top right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.99) 5%, rgba(0,0,0,0.98) 10%, rgba(0,0,0,0.95) 15%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0) 80%)',
-            pointerEvents: 'none',
-          }}></div>
-          <div className="absolute bottom-0 left-0 w-2/3 h-2/3" style={{
-            background: 'radial-gradient(circle at bottom left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.99) 5%, rgba(0,0,0,0.98) 10%, rgba(0,0,0,0.95) 15%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0) 80%)',
-            pointerEvents: 'none',
-          }}></div>
-          <div className="absolute bottom-0 right-0 w-2/3 h-2/3" style={{
-            background: 'radial-gradient(circle at bottom right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.99) 5%, rgba(0,0,0,0.98) 10%, rgba(0,0,0,0.95) 15%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0) 80%)',
-            pointerEvents: 'none',
-          }}></div>
-          
-          {/* Diagonal cross-corner gradients for seamless blending - made much darker */}
-          <div className="absolute top-0 left-0 w-full h-full" style={{
-            background: 'linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.5) 25%, rgba(0,0,0,0) 50%)',
-            pointerEvents: 'none',
-          }}></div>
-          <div className="absolute top-0 right-0 w-full h-full" style={{
-            background: 'linear-gradient(225deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.5) 25%, rgba(0,0,0,0) 50%)',
-            pointerEvents: 'none',
-          }}></div>
-          <div className="absolute bottom-0 left-0 w-full h-full" style={{
-            background: 'linear-gradient(45deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.5) 25%, rgba(0,0,0,0) 50%)',
-            pointerEvents: 'none',
-          }}></div>
-          <div className="absolute bottom-0 right-0 w-full h-full" style={{
-            background: 'linear-gradient(315deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.5) 25%, rgba(0,0,0,0) 50%)',
-            pointerEvents: 'none',
-          }}></div>
-          
-          {/* Additional edge gradients for extremely dark edges */}
-          <div className="absolute top-0 inset-x-0 h-2/5" style={{
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%)',
-            pointerEvents: 'none',
-          }}></div>
-          <div className="absolute bottom-0 inset-x-0 h-2/5" style={{
-            background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%)',
-            pointerEvents: 'none',
-          }}></div>
-          <div className="absolute left-0 inset-y-0 w-2/5" style={{
-            background: 'linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%)',
-            pointerEvents: 'none',
-          }}></div>
-          <div className="absolute right-0 inset-y-0 w-2/5" style={{
-            background: 'linear-gradient(to left, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%)',
-            pointerEvents: 'none',
-          }}></div>
-          
-          {/* Additional dark overlay for better contrast and deeper corner shadows */}
-          <div className="absolute inset-0 bg-black/35" style={{ 
-            pointerEvents: 'none',
-          }}></div>
-
-          {/* Interactive elements layout */}
-          <div className="absolute bottom-0 w-full h-4/5 flex items-end justify-center pb-4 md:pb-6 lg:pb-8 z-50">
+        {/* Interactive elements layout */}
+        <div className="absolute bottom-0 w-full h-4/5 flex items-end justify-center pb-4 md:pb-6 lg:pb-8 z-50">
             <div className="relative w-full max-w-[100rem] flex flex-row justify-between px-4 md:px-8 lg:px-0">
               
               {/* LEFT SIDE ELEMENTS - using absolute positioning for more control */}
@@ -1067,7 +998,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>        </div>
+          </div>
       </div>
     </>
   );

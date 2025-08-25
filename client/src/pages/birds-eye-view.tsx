@@ -77,7 +77,7 @@ const BirdsEyeView = () => {
             <Button
               variant="ghost"
               onClick={handleBackClick}
-              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+              className="text-white/90 hover:text-white p-2 mr-4 bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
             >
               <svg
                 className="w-5 h-5"
@@ -98,7 +98,7 @@ const BirdsEyeView = () => {
           </div>
 
           {error && (
-            <div className="mb-8 p-4 bg-white/5 backdrop-blur-xl border border-red-400/50 shadow-2xl rounded-xl">
+            <div className="mb-8 p-4 bg-white/3 backdrop-blur-2xl border border-red-400/50 shadow-2xl rounded-xl">
               <div className="border-red-400/50 bg-red-500/20 p-4 rounded-lg">
                 <div className="flex items-center text-red-400 text-sm mb-2">
                   <svg className="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,7 +121,7 @@ const BirdsEyeView = () => {
 
           {loading ? (
             <div className="text-center py-16">
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-8">
+              <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-8">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
                 <p className="text-white/90">Loading videos...</p>
               </div>
@@ -131,7 +131,7 @@ const BirdsEyeView = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {/* Main Video Player */}
                 <div className="lg:col-span-2 space-y-4">                  {selectedVideo ? (
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl overflow-hidden">
+                    <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl overflow-hidden">
                       <div className="aspect-video bg-black rounded-t-xl overflow-hidden">
                         {(() => {
                           // Convert YouTube watch URL to embed URL if needed
@@ -191,7 +191,7 @@ const BirdsEyeView = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl overflow-hidden">
+                    <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl overflow-hidden">
                       <div className="aspect-video bg-gray-800/50 rounded-t-xl flex items-center justify-center">
                         <p className="text-gray-300">Select a video to watch</p>
                       </div>
@@ -201,7 +201,7 @@ const BirdsEyeView = () => {
 
                 {/* Video List Sidebar */}
                 <div className="space-y-4">
-                  <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-4">
+                  <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-4">
                     <h3 className="text-white font-semibold mb-2">All Videos</h3>
                   </div>
 
@@ -209,7 +209,7 @@ const BirdsEyeView = () => {
                     {videos.map((video) => (
                       <Card 
                         key={video._id}
-                        className={`cursor-pointer transition-all bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:bg-white/10 hover:border-blue-500/50 ${
+                        className={`cursor-pointer transition-all bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl hover:bg-white/10 hover:border-blue-500/50 ${
                           selectedVideo?._id === video._id ? 'ring-2 ring-blue-500 bg-white/10' : ''
                         }`}
                         onClick={() => handleVideoSelect(video)}
