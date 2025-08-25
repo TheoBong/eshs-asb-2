@@ -67,7 +67,7 @@ export default function CartPage() {
   const total = subtotal + tax;  return (
     <ThemedPageWrapper pageType="shop">
       {/* Light overlay for better text contrast without darkening UI */}
-      <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
 
       {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">

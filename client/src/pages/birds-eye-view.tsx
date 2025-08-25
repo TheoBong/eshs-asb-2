@@ -72,7 +72,7 @@ const BirdsEyeView = () => {
   return (
     <ThemedPageWrapper pageType="information">
       {/* Light overlay for better text contrast without darkening UI */}
-      <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
 
       <div className="relative z-10 min-h-screen">
         <main className="container mx-auto px-4 py-8">          <div className="flex items-center mb-8">

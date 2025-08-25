@@ -369,7 +369,7 @@ export default function EventDetails() {
             <source src={schoolVideo} type="video/mp4" />
           </video>
         </div>
-        <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
         
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
           <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl p-8 text-center">
@@ -403,7 +403,7 @@ export default function EventDetails() {
           <source src={schoolVideo} type="video/mp4" />
         </video>
       </div>
-      <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
       
       <div className="relative z-10 min-h-screen py-12">
         <div className="container mx-auto px-4 max-w-4xl">

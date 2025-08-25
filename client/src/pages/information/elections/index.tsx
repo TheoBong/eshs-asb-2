@@ -71,7 +71,7 @@ export default function Elections() {
     return (
       <ThemedPageWrapper pageType="information">
         {/* Light overlay for better text contrast without darkening UI */}
-        <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
         
         {/* Loading content */}
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
@@ -85,7 +85,7 @@ export default function Elections() {
     return (
       <ThemedPageWrapper pageType="information">
         {/* Light overlay for better text contrast without darkening UI */}
-        <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
         
         {/* Error content */}
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">

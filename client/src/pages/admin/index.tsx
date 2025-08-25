@@ -1749,7 +1749,7 @@ ESHS ASB Team
             <source src={schoolVideo} type="video/mp4" />
           </video>
         </div>
-        <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
         <div className="relative z-10 min-h-screen flex items-center justify-center">
           <div className="text-white text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
@@ -1775,7 +1775,7 @@ ESHS ASB Team
             <source src={schoolVideo} type="video/mp4" />
           </video>
         </div>
-        <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
         <div className="relative z-10 min-h-screen flex items-center justify-center">
           <div className="text-white text-center">
             <p className="text-xl text-red-400 mb-4">{error}</p>
@@ -1818,7 +1818,7 @@ ESHS ASB Team
       </div>
 
       {/* Overlay to darken the background video */}
-      <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
 
       {/* Main content */}
       <div className="relative z-10 min-h-screen">

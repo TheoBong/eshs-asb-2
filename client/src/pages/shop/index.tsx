@@ -88,7 +88,7 @@ export default function Shop() {
   return (
     <ThemedPageWrapper pageType="shop">
       {/* Light overlay for better text contrast without darkening UI */}
-      <div className="fixed inset-0 bg-black bg-opacity-20 -z-10" style={{ pointerEvents: 'none' }}></div>    {/* Main content */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>    {/* Main content */}
       <div className="relative z-10 min-h-screen">
         <div className="container mx-auto px-4 py-8">
           {/* Transparent back button with title */}          <div className="flex items-center mb-8">
