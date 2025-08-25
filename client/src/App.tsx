@@ -105,13 +105,13 @@ function App() {
       <CartProvider>
         <TooltipProvider>
           {/* Persistent Video Background - stays mounted across all routes */}
-          <div className="fixed inset-0 -z-50 overflow-hidden">
+          <div className="fixed inset-0 -z-50 overflow-hidden bg-black">
             <video
               autoPlay
               loop
               muted
               playsInline
-              preload="metadata"
+              preload="auto"
               webkit-playsinline="true"
               x5-playsinline="true"
               className="absolute w-full h-full object-cover"
@@ -126,8 +126,15 @@ function App() {
                 top: '50%',
                 transform: 'translate(-50%, -50%)',
               }}
+              onError={(e) => {
+                console.error('Video failed to load:', e);
+                console.log('Video src:', schoolVideo);
+              }}
+              onLoadStart={() => console.log('Video loading started')}
+              onCanPlay={() => console.log('Video can play')}
             >
               <source src={schoolVideo} type="video/mp4" />
+              Your browser does not support the video tag.
             </video>
           </div>
           <Toaster />

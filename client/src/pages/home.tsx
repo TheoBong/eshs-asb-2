@@ -881,7 +881,7 @@ export default function Home() {
         }}
       >
         {/* Vignette effects overlay - video is now persistent in App.tsx */}
-        <div className="absolute inset-0 bg-black overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden">
           
           {/* Main vignette effect overlay - darker in the corners, smoother transition */}
           <div className="absolute inset-0" style={{
