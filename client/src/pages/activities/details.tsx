@@ -366,7 +366,6 @@ export default function EventDetails() {
             playsInline
             className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
           >
-            <source src={schoolVideo} type="video/mp4" />
           </video>
         </div>
         <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
@@ -400,7 +399,6 @@ export default function EventDetails() {
           playsInline
           className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
         >
-          <source src={schoolVideo} type="video/mp4" />
         </video>
       </div>
       <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
