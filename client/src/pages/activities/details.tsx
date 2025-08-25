@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
 import { getEvents, createFormSubmission, type Event } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
-import schoolVideo from "../../../../attached_assets/school2.mp4";
 
 // Types for form data
 interface FormData {
@@ -370,7 +369,7 @@ export default function EventDetails() {
             <source src={schoolVideo} type="video/mp4" />
           </video>
         </div>
-        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-60 -z-10"></div>
         
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
           <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl p-8 text-center">
@@ -404,7 +403,7 @@ export default function EventDetails() {
           <source src={schoolVideo} type="video/mp4" />
         </video>
       </div>
-      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
+      <div className="fixed inset-0 bg-black bg-opacity-60 -z-10"></div>
       
       <div className="relative z-10 min-h-screen py-12">
         <div className="container mx-auto px-4 max-w-4xl">

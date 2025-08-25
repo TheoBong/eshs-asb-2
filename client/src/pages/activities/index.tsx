@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
 import { getEvents, type Event } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
-import schoolVideo from "../../../../attached_assets/school2.mp4";
 
 // Mock data for school events (fallback)
 const mockEvents: Event[] = [];
@@ -71,21 +70,8 @@ export default function Activities() {
 
   return (
     <ThemedPageWrapper pageType="information">
-      {/* Background Video */}
-      <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline
-          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
-        >
-          <source src={schoolVideo} type="video/mp4" />
-        </video>
-      </div>
-
       {/* Overlay to darken the background video */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
+      <div className="fixed inset-0 bg-black bg-opacity-60 -z-10"></div>
       
       {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">
