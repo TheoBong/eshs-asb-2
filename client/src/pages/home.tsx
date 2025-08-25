@@ -361,7 +361,7 @@ export default function Home() {
                               scale: textFadingOut ? 0.9 : 1
                             }}
                             transition={{ 
-                              delay: textFadingOut ? 0 : 5.7, 
+                              delay: textFadingOut ? 0 : 6.7, 
                               duration: textFadingOut ? 0.4 : 0.3,
                               ease: textFadingOut ? "easeIn" : "easeOut"
                             }}
@@ -535,119 +535,103 @@ export default function Home() {
                       opacity: textFadingOut ? 0 : 1,
                       y: textFadingOut ? -10 : 0,
                       scale: textFadingOut ? 0.95 : 1
-                    }}                    transition={{ 
-                      delay: textFadingOut ? 0 : (showClouds ? 3.0 : 0.5), 
+                    }}
+                    transition={{ 
+                      delay: textFadingOut ? 0 : 3.0, 
                       duration: textFadingOut ? 0.4 : 0.8,
                       ease: textFadingOut ? "easeIn" : "easeOut"
-                    }}>
-                    {showClouds ? (
-                      // Drawing animation for cloud animation (first load/refresh)
-                      <div className="relative">
-                        {/* Invisible text to maintain layout */}
-                        <span className="invisible whitespace-nowrap">ASB</span>
-                        
-                        {/* SVG Text Drawing Animation */}
-                        <motion.div 
-                          className="absolute inset-0 flex items-center justify-center"
-                          initial={{ opacity: 0 }}
-                          animate={{ 
-                            opacity: textFadingOut ? 0 : 1,
-                            scale: textFadingOut ? 0.95 : 1,
-                            y: textFadingOut ? -10 : 0
-                          }}
-                          transition={{ 
-                            delay: textFadingOut ? 0 : 3.3, 
-                            duration: textFadingOut ? 0.4 : 0.3,
-                            ease: textFadingOut ? "easeIn" : "easeOut"
-                          }}
-                        >
-                          <svg width="100%" height="100%" viewBox="0 0 250 140" className="absolute inset-0">
-                            <motion.text
-                              x="50%"
-                              y="50%"
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              fill="none"
-                              stroke="white"
-                              strokeWidth="2.5"
-                              fontFamily="'Great Vibes', cursive"
-                              fontSize="100"
-                              fontWeight="bold"
-                              className="text-shadow-sm"
-                              initial={{ strokeDasharray: 400, strokeDashoffset: 400 }}
-                              animate={{ 
-                                strokeDashoffset: textFadingOut ? 400 : 0,
-                                opacity: textFadingOut ? 0 : 1
-                              }}
-                              transition={{ 
-                                delay: textFadingOut ? 0 : 4.5, 
-                                duration: textFadingOut ? 0.4 : 2.0,
-                                ease: textFadingOut ? "easeIn" : "easeOut"
-                              }}
-                            >
-                              ASB
-                            </motion.text>
-                            <motion.text
-                              x="50%"
-                              y="50%"
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              fill="white"
-                              fontFamily="'Great Vibes', cursive"
-                              fontSize="100"
-                              fontWeight="bold"
-                              initial={{ opacity: 0 }}
-                              animate={{ 
-                                opacity: textFadingOut ? 0 : 1,
-                                scale: textFadingOut ? 0.9 : 1
-                              }}
-                              transition={{ 
-                                delay: textFadingOut ? 0 : 6.5, 
-                                duration: textFadingOut ? 0.4 : 0.3,
-                                ease: textFadingOut ? "easeIn" : "easeOut"
-                              }}
-                            >
-                              ASB
-                            </motion.text>
-                          </svg>
-                        </motion.div>
-                      </div>                    ) : (
-                      // Direct fade-in for internal navigation - matching finished SVG text
-                      <div className="relative">
-                        {/* Invisible text to maintain layout */}
-                        <span className="invisible whitespace-nowrap">ASB</span>
-                        
-                        {/* Finished SVG Text - Direct fade-in */}
-                        <motion.div 
-                          className="absolute inset-0 flex items-center justify-center"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.9, duration: 0.6 }}
-                        >
-                          <svg width="100%" height="100%" viewBox="0 0 250 140" className="absolute inset-0">
-                            <text
-                              x="50%"
-                              y="50%"
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              fill="white"
-                              fontFamily="'Great Vibes', cursive"
-                              fontSize="100"
-                              fontWeight="bold"
-                            >
-                              ASB
-                            </text>
-                          </svg>
-                        </motion.div>
-                      </div>
-                    )}
+                    }}
+                  >
+                    <div className="relative">
+                      {/* Invisible text to maintain layout */}
+                      <span className="invisible whitespace-nowrap">ASB</span>
+                      
+                      {/* SVG Text Drawing Animation */}
+                      <motion.div 
+                        className="absolute inset-0 flex items-center justify-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ 
+                          opacity: textFadingOut ? 0 : 1,
+                          scale: textFadingOut ? 0.95 : 1,
+                          y: textFadingOut ? -10 : 0
+                        }}
+                        transition={{ 
+                          delay: textFadingOut ? 0 : 3.3, 
+                          duration: textFadingOut ? 0.4 : 0.3,
+                          ease: textFadingOut ? "easeIn" : "easeOut"
+                        }}
+                      >
+                        <svg width="100%" height="100%" viewBox="0 0 250 140" className="absolute inset-0">
+                          <motion.text
+                            x="50%"
+                            y="50%"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="none"
+                            stroke="white"
+                            strokeWidth="2.5"
+                            fontFamily="'Great Vibes', cursive"
+                            fontSize="100"
+                            fontWeight="bold"
+                            className="text-shadow-sm"
+                            initial={{ strokeDasharray: 400, strokeDashoffset: 400 }}
+                            animate={{ 
+                              strokeDashoffset: textFadingOut ? 400 : 0,
+                              opacity: textFadingOut ? 0 : 1
+                            }}
+                            transition={{ 
+                              delay: textFadingOut ? 0 : 4.5, 
+                              duration: textFadingOut ? 0.4 : 2.0,
+                              ease: textFadingOut ? "easeIn" : "easeOut"
+                            }}
+                          >
+                            ASB
+                          </motion.text>
+                          <motion.text
+                            x="50%"
+                            y="50%"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="white"
+                            fontFamily="'Great Vibes', cursive"
+                            fontSize="100" // Match the increased font size
+                            fontWeight="bold"
+                            initial={{ opacity: 0 }}
+                            animate={{ 
+                              opacity: textFadingOut ? 0 : 1,
+                              scale: textFadingOut ? 0.9 : 1
+                            }}
+                            transition={{ 
+                              delay: textFadingOut ? 0 : 6.5, 
+                              duration: textFadingOut ? 0.4 : 0.3,
+                              ease: textFadingOut ? "easeIn" : "easeOut"
+                            }}
+                          >
+                            ASB
+                          </motion.text>
+                        </svg>
+                      </motion.div>
+                    </div>
                   </motion.h1>
                 </motion.div>
               </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>      <div 
+          </motion.div>        )}
+      </AnimatePresence>      {/* Background video (always present, behind overlays) */}
+      {/* This must be the first element in the returned JSX */}
+      {/* Uses /school2.mp4 from public/ */}
+      <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+        >
+          <source src="/school2.mp4" type="video/mp4" />
+        </video>
+      </div>
+      <div 
         className="min-h-screen w-screen relative flex items-center justify-center overflow-hidden"
         style={{
           zIndex: 20, // Increased z-index to ensure background comes above animation after it completes
