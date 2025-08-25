@@ -10,6 +10,180 @@ import NotFound from "@/pages/not-found";
 import { CartProvider } from "@/contexts/CartContext";
 import schoolVideo from "../attached_assets/school2.mp4";
 
+// Video caching utility
+class VideoCache {
+  private cacheName = 'eshs-video-cache-v1';
+  private dbName = 'eshs-video-db';
+  private storeName = 'videos';
+  private maxCacheAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+  async getCachedVideoUrl(originalUrl: string): Promise<string> {
+    try {
+      // Try Cache API first (most efficient)
+      if ('caches' in window) {
+        const cache = await caches.open(this.cacheName);
+        const cachedResponse = await cache.match(originalUrl);
+        
+        if (cachedResponse) {
+          console.log('Video loaded from Cache API');
+          return URL.createObjectURL(await cachedResponse.blob());
+        }
+        
+        // Cache the video for future use
+        await this.cacheVideo(originalUrl);
+        return originalUrl;
+      }
+      
+      // Fallback to IndexedDB for older browsers
+      return await this.getFromIndexedDB(originalUrl) || originalUrl;
+    } catch (error) {
+      console.warn('Video caching failed, using original URL:', error);
+      return originalUrl;
+    }
+  }
+
+  private async cacheVideo(url: string): Promise<void> {
+    try {
+      if ('caches' in window) {
+        const cache = await caches.open(this.cacheName);
+        
+        // Check if already cached
+        const existing = await cache.match(url);
+        if (existing) return;
+        
+        console.log('Caching video...');
+        await cache.add(url);
+        console.log('Video cached successfully');
+        
+        // Clean up old cache entries
+        await this.cleanupCache();
+      } else {
+        // Fallback: cache in IndexedDB
+        await this.cacheInIndexedDB(url);
+      }
+    } catch (error) {
+      console.warn('Failed to cache video:', error);
+    }
+  }
+
+  private async cleanupCache(): Promise<void> {
+    try {
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        const oldCaches = cacheNames.filter(name => 
+          name.startsWith('eshs-video-cache') && name !== this.cacheName
+        );
+        
+        await Promise.all(oldCaches.map(name => caches.delete(name)));
+      }
+    } catch (error) {
+      console.warn('Cache cleanup failed:', error);
+    }
+  }
+
+  private async getFromIndexedDB(url: string): Promise<string | null> {
+    return new Promise((resolve) => {
+      const request = indexedDB.open(this.dbName, 1);
+      
+      request.onerror = () => resolve(null);
+      
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        if (!db.objectStoreNames.contains(this.storeName)) {
+          const store = db.createObjectStore(this.storeName, { keyPath: 'url' });
+          store.createIndex('timestamp', 'timestamp', { unique: false });
+        }
+      };
+      
+      request.onsuccess = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        const transaction = db.transaction([this.storeName], 'readonly');
+        const store = transaction.objectStore(this.storeName);
+        const getRequest = store.get(url);
+        
+        getRequest.onsuccess = () => {
+          const result = getRequest.result;
+          if (result && (Date.now() - result.timestamp < this.maxCacheAge)) {
+            const blob = new Blob([result.data], { type: 'video/mp4' });
+            resolve(URL.createObjectURL(blob));
+          } else {
+            resolve(null);
+          }
+        };
+        
+        getRequest.onerror = () => resolve(null);
+      };
+    });
+  }
+
+  private async cacheInIndexedDB(url: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Fetch the video
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        
+        const request = indexedDB.open(this.dbName, 1);
+        
+        request.onerror = () => reject(request.error);
+        
+        request.onupgradeneeded = (event) => {
+          const db = (event.target as IDBOpenDBRequest).result;
+          if (!db.objectStoreNames.contains(this.storeName)) {
+            const store = db.createObjectStore(this.storeName, { keyPath: 'url' });
+            store.createIndex('timestamp', 'timestamp', { unique: false });
+          }
+        };
+        
+        request.onsuccess = (event) => {
+          const db = (event.target as IDBOpenDBRequest).result;
+          const transaction = db.transaction([this.storeName], 'readwrite');
+          const store = transaction.objectStore(this.storeName);
+          
+          store.put({
+            url,
+            data: arrayBuffer,
+            timestamp: Date.now()
+          });
+          
+          transaction.oncomplete = () => {
+            console.log('Video cached in IndexedDB');
+            resolve();
+          };
+          
+          transaction.onerror = () => reject(transaction.error);
+        };
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  async preloadVideo(url: string): Promise<void> {
+    // Preload video in background
+    await this.cacheVideo(url);
+  }
+
+  async clearCache(): Promise<void> {
+    try {
+      if ('caches' in window) {
+        await caches.delete(this.cacheName);
+      }
+      
+      // Clear IndexedDB
+      return new Promise((resolve, reject) => {
+        const deleteReq = indexedDB.deleteDatabase(this.dbName);
+        deleteReq.onsuccess = () => resolve();
+        deleteReq.onerror = () => reject(deleteReq.error);
+      });
+    } catch (error) {
+      console.warn('Failed to clear cache:', error);
+    }
+  }
+}
+
+const videoCache = new VideoCache();
+
 // Shop related pages
 import ProductPage from "@/pages/shop/product/index";
 import CartPage from "@/pages/shop/cart/index";
@@ -164,6 +338,7 @@ const SPARouter = () => {
 const PersistentBackground = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [cachedVideoUrl, setCachedVideoUrl] = useState<string>(schoolVideo);
   
   useEffect(() => {
     const video = videoRef.current;
@@ -181,9 +356,13 @@ const PersistentBackground = () => {
       video.style.WebkitPerspective = '1000px';
     }
 
-    // Preload and setup video
+    // Get cached video URL and setup video
     const setupVideo = async () => {
       try {
+        // Get cached video URL (or cache it if not already cached)
+        const videoUrl = await videoCache.getCachedVideoUrl(schoolVideo);
+        setCachedVideoUrl(videoUrl);
+        
         // Force load the video
         video.load();
         
@@ -193,7 +372,7 @@ const PersistentBackground = () => {
           video.onerror = reject;
           
           // Fallback timeout
-          setTimeout(reject, 10000);
+          setTimeout(reject, 15000); // Increased timeout for cached video
         });
         
         setIsLoaded(true);
@@ -340,7 +519,7 @@ const PersistentBackground = () => {
           perspective: '1000px'
         }}
       >
-        <source src={schoolVideo} type="video/mp4" />
+        <source src={cachedVideoUrl} type="video/mp4" />
       </video>
       
       {/* Overlay to darken the background video */}
@@ -468,6 +647,23 @@ const getPageFromPath = (path: string): { page: string; params: Record<string, s
 };
 
 function App() {
+  // Preload video in background on app start
+  useEffect(() => {
+    const preloadVideo = async () => {
+      try {
+        await videoCache.preloadVideo(schoolVideo);
+        console.log('Background video preloaded and cached');
+      } catch (error) {
+        console.warn('Video preload failed:', error);
+      }
+    };
+    
+    // Start preloading after a short delay to not block initial render
+    const timeoutId = setTimeout(preloadVideo, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, []);
+  
   return (
     <>
       {/* Persistent background - never leaves DOM */}
