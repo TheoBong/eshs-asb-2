@@ -29,3 +29,7 @@ jobs:
           npm run build
           pm2 restart eshs-asb-2
         EOF
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "Production deployment failed! Check the logs."
