@@ -215,33 +215,22 @@
   filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.25)) !important;
 }
 
-/* Mobile-only button sizing */
-@media screen and (max-width: 639px) {
-  /* Bottom buttons - keep at 256px */
+/* Mobile-only button sizing - consistent 256px (w-64) for all buttons */
+@media (max-width: 639px) {
   .shop-overlay img,
-  .activities-overlay img {
-    width: 256px !important;
-    max-width: 256px !important;
-    min-width: 256px !important;
-    -webkit-transform: scale(1) !important;
-  }
-  
-  /* Top buttons - make twice the size (512px) */
   .theater-overlay img,
+  .activities-overlay img,
   .information-overlay img {
-    width: 512px !important;
-    max-width: 512px !important;
-    min-width: 512px !important;
-    -webkit-transform: scale(1) !important;
+    width: 256px !important;
   }
   
-  /* Mobile positioning adjustments with increased spacing */
+  /* Mobile positioning adjustments */
   .shop-overlay {
     left: 0.5rem !important;
   }
   
   .theater-overlay {
-    left: -15rem !important;  /* Move further left for more spacing */
+    left: 6rem !important;
     bottom: 13rem !important;
   }
   
@@ -250,114 +239,8 @@
   }
   
   .information-overlay {
-    right: -15rem !important;  /* Move further right for more spacing */
+    right: 6rem !important;
     bottom: 13rem !important;
-  }
-  
-  /* Move text up on mobile only - multiple selectors for text containers */
-  .fixed.inset-0.z-50.flex.items-center.justify-center,
-  .fixed.inset-0.z-40.flex.items-center.justify-center,
-  .relative.z-10.mb-32 {
-    align-items: flex-start !important;
-    padding-top: 15vh !important;
-    margin-top: -10vh !important;
-  }
-  
-  /* Prevent horizontal scroll on mobile */
-  html, body {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-  
-  /* Ensure container doesn't overflow */
-  #root {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-  }
-}
-
-/* iPhone size specific adjustments (393x852) */
-@media screen and (max-width: 393px) and (min-height: 852px) {
-  /* Top buttons - ensure they're twice as large and properly spaced */
-  .theater-overlay img,
-  .information-overlay img {
-    width: 512px !important;
-    max-width: 512px !important;
-    min-width: 512px !important;
-    -webkit-transform: scale(1) !important;
-  }
-  
-  /* Increase spacing further for iPhone size */
-  .theater-overlay {
-    left: -18rem !important;  /* Even further left */
-    bottom: 13rem !important;
-  }
-  
-  .information-overlay {
-    right: -18rem !important;  /* Even further right */
-    bottom: 13rem !important;
-  }
-  
-  /* Move text higher on iPhone specifically */
-  .fixed.inset-0.z-50.flex.items-center.justify-center,
-  .fixed.inset-0.z-40.flex.items-center.justify-center,
-  .relative.z-10.mb-32 {
-    align-items: flex-start !important;
-    padding-top: 12vh !important;
-    margin-top: -12vh !important;
-  }
-}
-
-/* Safari-specific mobile overrides with more specific selectors */
-@supports (-webkit-touch-callout: none) {
-  @media screen and (max-width: 639px) {
-    /* Force Safari to respect image sizes with ultra-specific selectors */
-    .theater-overlay img,
-    .theater-overlay-img,
-    .information-overlay img,
-    .information-overlay-img {
-      width: 512px !important;
-      max-width: none !important;
-      min-width: 512px !important;
-      height: auto !important;
-      -webkit-transform: translateZ(0) scale(1) !important;
-      transform: translateZ(0) scale(1) !important;
-    }
-    
-    .shop-overlay img,
-    .activities-overlay img {
-      width: 256px !important;
-      max-width: none !important;
-      min-width: 256px !important;
-      height: auto !important;
-      -webkit-transform: translateZ(0) scale(1) !important;
-      transform: translateZ(0) scale(1) !important;
-    }
-    
-    /* Safari-specific text positioning for mobile */
-    .fixed.inset-0.z-50.flex.items-center.justify-center,
-    .fixed.inset-0.z-40.flex.items-center.justify-center,
-    .relative.z-10.mb-32 {
-      align-items: flex-start !important;
-      padding-top: 15vh !important;
-      margin-top: -10vh !important;
-    }
-  }
-}
-
-/* Force Safari mobile with ultra-high specificity */
-@media screen and (max-width: 639px) and (-webkit-min-device-pixel-ratio: 0) {
-  .theater-overlay-img,
-  img.theater-overlay-img,
-  .information-overlay-img,
-  img.information-overlay-img {
-    width: 512px !important;
-    max-width: 512px !important;
-    min-width: 512px !important;
-    flex-basis: 512px !important;
-    flex-shrink: 0 !important;
-    flex-grow: 0 !important;
   }
 }
 
@@ -393,101 +276,6 @@
   }
 }
 
-/* Completely hide all page-specific backgrounds */
-.fixed.inset-0.-z-10,
-.fixed.inset-0.-z-20,
-.fixed.inset-0 video,
-.absolute.inset-0.bg-black.overflow-hidden,
-.absolute.inset-0.bg-black.bg-opacity-50 {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-}
-
-/* Specifically hide video elements that might interfere */
-video:not([data-persistent="true"]) {
-  display: none !important;
-}
-
-/* Ensure persistent background always shows */
-div[style*="zIndex: -1"] {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Safari-specific background persistence */
-@supports (-webkit-backdrop-filter: none) {
-  /* Prevent Safari from hiding the background during transitions */
-  .fixed[style*="zIndex: -1"] {
-    -webkit-transform: translateZ(0) !important;
-    transform: translateZ(0) !important;
-    will-change: auto !important;
-    display: block !important;
-  }
-  
-  /* Hide all other background videos */
-  .fixed video:not([data-persistent="true"]),
-  .absolute video:not([data-persistent="true"]) {
-    display: none !important;
-    visibility: hidden !important;
-  }
-  
-  /* Force persistent video to always be visible during transitions */
-  video[data-persistent="true"] {
-    display: block !important;
-    visibility: visible !important;
-    position: fixed !important;
-    -webkit-transform: translateZ(0) !important;
-    transform: translateZ(0) !important;
-    will-change: transform !important;
-    -webkit-backface-visibility: hidden !important;
-    backface-visibility: hidden !important;
-    -webkit-perspective: 1000px !important;
-    perspective: 1000px !important;
-  }
-  
-  /* Ensure persistent background container is never hidden */
-  #persistent-background {
-    display: block !important;
-    visibility: visible !important;
-    pointer-events: none !important;
-    -webkit-transform: translateZ(0) !important;
-    transform: translateZ(0) !important;
-    will-change: transform !important;
-    position: fixed !important;
-    z-index: -1000 !important;
-  }
-  
-  #background-video {
-    display: block !important;
-    visibility: visible !important;
-    -webkit-transform: translateZ(0) !important;
-    transform: translateZ(0) !important;
-    will-change: transform !important;
-    -webkit-backface-visibility: hidden !important;
-    backface-visibility: hidden !important;
-  }
-  
-  /* Prevent black background flashes */
-  body {
-    background-color: #000 !important;
-  }
-  
-  /* Additional Safari-specific video persistence fixes */
-  video[data-persistent="true"]::-webkit-media-controls {
-    display: none !important;
-  }
-  
-  /* Prevent Safari from suspending video during page changes */
-  video[data-persistent="true"] {
-    -webkit-transform: translateZ(0) !important;
-    -webkit-backface-visibility: hidden !important;
-    -webkit-perspective: 1000px !important;
-    will-change: transform !important;
-  }
-}
-
 /* Additional Safari fixes */
 @media not all and (min-resolution:.001dpcm) {
   @supports (-webkit-appearance:none) and (stroke-color:transparent) {
@@ -508,45 +296,5 @@ div[style*="zIndex: -1"] {
       z-index: -100;
       background: #000;
     }
-    
-    /* Safari-specific video optimization */
-    video[data-persistent="true"] {
-      -webkit-transform: translate3d(0, 0, 0) !important;
-      transform: translate3d(0, 0, 0) !important;
-      -webkit-backface-visibility: hidden !important;
-      -webkit-perspective: 1000 !important;
-      will-change: transform !important;
-      /* Force GPU layer */
-      -webkit-transform-style: preserve-3d !important;
-      transform-style: preserve-3d !important;
-    }
-    
-    /* Prevent Safari from suspending videos */
-    video[data-persistent="true"]:not(:hover) {
-      -webkit-transform: translateZ(0) !important;
-    }
-  }
-}
-
-/* Safari Mobile specific fixes */
-@supports (-webkit-touch-callout: none) {
-  video[data-persistent="true"] {
-    /* Prevent Safari iOS from pausing video */
-    -webkit-playsinline: true !important;
-    /* Force hardware acceleration */
-    -webkit-transform: translate3d(0, 0, 0) !important;
-    transform: translate3d(0, 0, 0) !important;
-    /* Prevent video from being optimized away */
-    will-change: transform !important;
-    /* Ensure video stays in GPU memory */
-    -webkit-backface-visibility: hidden !important;
-    backface-visibility: hidden !important;
-  }
-  
-  /* Force persistent background to stay in composite layer */
-  #persistent-background {
-    -webkit-transform: translate3d(0, 0, 0) !important;
-    transform: translate3d(0, 0, 0) !important;
-    will-change: transform !important;
   }
 }

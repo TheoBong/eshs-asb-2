@@ -1,9 +1,9 @@
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState, createContext, useContext } from "react";
 import Home from "@/pages/home";
 import Shop from "@/pages/shop";
 import NotFound from "@/pages/not-found";
@@ -13,6 +13,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import ProductPage from "@/pages/shop/product/index";
 import CartPage from "@/pages/shop/cart/index";
 import CheckoutPage from "@/pages/shop/checkout/index";
+
 
 // Information related pages
 import Information from "@/pages/information/index";
@@ -30,55 +31,28 @@ import BirdsEyeView from "./pages/birds-eye-view";
 import Admin from "@/pages/admin/index";
 import CommaTest from "@/pages/admin/comma-test";
 
-// Navigation Context for SPA
-interface NavigationContextType {
-  currentPage: string;
-  currentParams: Record<string, string>;
-  navigateTo: (page: string, params?: Record<string, string>) => void;
-}
-
-const NavigationContext = createContext<NavigationContextType | null>(null);
-
-export const useNavigation = () => {
-  const context = useContext(NavigationContext);
-  if (!context) {
-    throw new Error('useNavigation must be used within NavigationProvider');
-  }
-  return context;
-};
-
-// SPA Page Component with show/hide logic
-const SPAPage = ({ 
-  isActive, 
-  children, 
-  pageKey 
-}: { 
-  isActive: boolean; 
-  children: React.ReactNode; 
-  pageKey: string;
-}) => {
+// Page wrapper component for fade transitions
+const PageWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: isActive ? 1 : 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ 
-        duration: 0.3,
+        duration: 0.2,
         ease: "easeInOut"
       }}
-      className="absolute inset-0 w-full min-h-screen overflow-y-auto"
+      className="w-full h-full"
       style={{
         // Safari-specific fixes for smooth transitions
         WebkitBackfaceVisibility: 'hidden',
         WebkitPerspective: 1000,
-        WebkitTransform: 'translateZ(0)',
+        WebkitTransform: 'translate3d(0,0,0)',
         backgroundColor: 'transparent',
-        zIndex: isActive ? 10 : 1,
-        pointerEvents: isActive ? 'auto' : 'none',
         // Force hardware acceleration and prevent flickering
         willChange: 'opacity',
         WebkitFontSmoothing: 'antialiased',
-        MozOsxFontSmoothing: 'grayscale',
-        display: isActive ? 'block' : 'none'
+        MozOsxFontSmoothing: 'grayscale'
       }}
     >
       {children}
@@ -86,212 +60,54 @@ const SPAPage = ({
   );
 };
 
-// SPA Router Component
-const SPARouter = () => {
-  const { currentPage, currentParams } = useNavigation();
+function Router() {
+  const [location] = useLocation();
   
   return (
-    <div className="relative w-full min-h-screen">
-      {/* Home Page */}
-      <SPAPage isActive={currentPage === 'home'} pageKey="home">
-        <Home />
-      </SPAPage>
-      
-      {/* Shop Pages */}
-      <SPAPage isActive={currentPage === 'shop'} pageKey="shop">
-        <Shop />
-      </SPAPage>
-      
-      <SPAPage isActive={currentPage === 'product'} pageKey="product">
-        <ProductPage />
-      </SPAPage>
-      
-      <SPAPage isActive={currentPage === 'cart'} pageKey="cart">
-        <CartPage />
-      </SPAPage>
-      
-      <SPAPage isActive={currentPage === 'checkout'} pageKey="checkout">
-        <CheckoutPage />
-      </SPAPage>
-      
-      {/* Information Pages */}
-      <SPAPage isActive={currentPage === 'information'} pageKey="information">
-        <Information />
-      </SPAPage>
-      
-      <SPAPage isActive={currentPage === 'elections'} pageKey="elections">
-        <Elections />
-      </SPAPage>
-      
-      <SPAPage isActive={currentPage === 'clubs'} pageKey="clubs">
-        <Clubs />
-      </SPAPage>
-      
-      {/* Activities Pages */}
-      <SPAPage isActive={currentPage === 'activities'} pageKey="activities">
-        <Activities />
-      </SPAPage>
-      
-      <SPAPage isActive={currentPage === 'event-details'} pageKey="event-details">
-        <EventDetails />
-      </SPAPage>
-      
-      {/* Birds Eye View */}
-      <SPAPage isActive={currentPage === 'birds-eye-view'} pageKey="birds-eye-view">
-        <BirdsEyeView />
-      </SPAPage>
-      
-      {/* Admin */}
-      <SPAPage isActive={currentPage === 'admin'} pageKey="admin">
-        <Admin />
-      </SPAPage>
-      
-      {/* Test Pages */}
-      <SPAPage isActive={currentPage === 'comma-test'} pageKey="comma-test">
-        <CommaTest />
-      </SPAPage>
-      
-      {/* 404 */}
-      <SPAPage isActive={currentPage === '404'} pageKey="404">
-        <NotFound />
-      </SPAPage>
-    </div>
+    <AnimatePresence mode="wait">
+      <Switch key={location}>
+        {/* Main pages */}
+        <Route path="/" component={() => <PageWrapper><Home /></PageWrapper>} />
+        
+        {/* Shop pages */}
+        <Route path="/shop" component={() => <PageWrapper><Shop /></PageWrapper>} />
+        <Route path="/shop/product/:id" component={() => <PageWrapper><ProductPage /></PageWrapper>} />
+        <Route path="/shop/cart" component={() => <PageWrapper><CartPage /></PageWrapper>} />
+        <Route path="/shop/checkout" component={() => <PageWrapper><CheckoutPage /></PageWrapper>} />
+        
+        {/* Information pages */}
+        <Route path="/information" component={() => <PageWrapper><Information /></PageWrapper>} />
+        <Route path="/information/student-government" component={() => <PageWrapper><Elections /></PageWrapper>} />
+        <Route path="/information/elections" component={() => <PageWrapper><Elections /></PageWrapper>} />
+        <Route path="/information/clubs" component={() => <PageWrapper><Clubs /></PageWrapper>} />
+        
+        {/* Activities page */}        <Route path="/activities" component={() => <PageWrapper><Activities /></PageWrapper>} />
+        <Route path="/activities/details/:id" component={() => <PageWrapper><EventDetails /></PageWrapper>} />
+        
+        {/* Birds Eye View */}
+        <Route path="/birds-eye-view" component={() => <PageWrapper><BirdsEyeView /></PageWrapper>} />
+          {/* Admin page */}
+        <Route path="/admin" component={() => <PageWrapper><Admin /></PageWrapper>} />
+        {/* Testing and debugging routes */}
+        <Route path="/comma-test" component={() => <PageWrapper><CommaTest /></PageWrapper>} />
+        
+        {/* 404 page */}
+        <Route component={() => <PageWrapper><NotFound /></PageWrapper>} />
+      </Switch>
+    </AnimatePresence>
   );
-};
-
-
-// Navigation Provider Component
-const NavigationProvider = ({ children }: { children: React.ReactNode }) => {
-  // Initialize state from current URL
-  const getInitialState = () => {
-    if (typeof window !== 'undefined') {
-      const initialPageData = getPageFromPath(window.location.pathname);
-      return {
-        page: initialPageData.page,
-        params: initialPageData.params
-      };
-    }
-    return { page: 'home', params: {} };
-  };
-  
-  const [currentPage, setCurrentPage] = useState<string>(() => getInitialState().page);
-  const [currentParams, setCurrentParams] = useState<Record<string, string>>(() => getInitialState().params);
-  
-  // Update browser URL without page reload
-  useEffect(() => {
-    const updateURL = () => {
-      const routes: Record<string, string> = {
-        'home': '/',
-        'shop': '/shop',
-        'product': `/shop/product/${currentParams.id || ''}`,
-        'cart': '/shop/cart',
-        'checkout': '/shop/checkout',
-        'information': '/information',
-        'elections': '/information/elections',
-        'clubs': '/information/clubs',
-        'activities': '/activities',
-        'event-details': `/activities/details/${currentParams.id || ''}`,
-        'birds-eye-view': '/birds-eye-view',
-        'admin': '/admin',
-        'comma-test': '/comma-test'
-      };
-      
-      const url = routes[currentPage] || '/';
-      
-      // Only update URL if it's different from current
-      if (window.location.pathname !== url) {
-        window.history.replaceState({}, '', url);
-      }
-    };
-    
-    updateURL();
-  }, [currentPage, currentParams]);
-  
-  // Handle browser back/forward buttons and initial load
-  useEffect(() => {
-    const handlePopState = () => {
-      const path = window.location.pathname;
-      const pageFromPath = getPageFromPath(path);
-      setCurrentPage(pageFromPath.page);
-      setCurrentParams(pageFromPath.params);
-    };
-    
-    window.addEventListener('popstate', handlePopState);
-    
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-  
-  const navigateTo = (page: string, params: Record<string, string> = {}) => {
-    setCurrentPage(page);
-    setCurrentParams(params);
-  };
-  
-  return (
-    <NavigationContext.Provider value={{ currentPage, currentParams, navigateTo }}>
-      {children}
-    </NavigationContext.Provider>
-  );
-};
-
-// Helper function to determine page from URL path
-const getPageFromPath = (path: string): { page: string; params: Record<string, string> } => {
-  const segments = path.split('/').filter(Boolean);
-  
-  if (!segments.length) return { page: 'home', params: {} };
-  
-  switch (segments[0]) {
-    case 'shop':
-      if (segments[1] === 'product' && segments[2]) {
-        return { page: 'product', params: { id: segments[2] } };
-      }
-      if (segments[1] === 'cart') return { page: 'cart', params: {} };
-      if (segments[1] === 'checkout') return { page: 'checkout', params: {} };
-      return { page: 'shop', params: {} };
-      
-    case 'information':
-      if (segments[1] === 'elections' || segments[1] === 'student-government') {
-        return { page: 'elections', params: {} };
-      }
-      if (segments[1] === 'clubs') return { page: 'clubs', params: {} };
-      return { page: 'information', params: {} };
-      
-    case 'activities':
-      if (segments[1] === 'details' && segments[2]) {
-        return { page: 'event-details', params: { id: segments[2] } };
-      }
-      return { page: 'activities', params: {} };
-      
-    case 'birds-eye-view':
-      return { page: 'birds-eye-view', params: {} };
-      
-    case 'admin':
-      return { page: 'admin', params: {} };
-      
-    case 'comma-test':
-      return { page: 'comma-test', params: {} };
-      
-    default:
-      return { page: '404', params: {} };
-  }
-};
+}
 
 function App() {
   return (
-    <>
-      {/* Main app content */}
-      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
-        <QueryClientProvider client={queryClient}>
-          <CartProvider>
-            <NavigationProvider>
-              <TooltipProvider>
-                <Toaster />
-                <SPARouter />
-              </TooltipProvider>
-            </NavigationProvider>
-          </CartProvider>
-        </QueryClientProvider>
-      </div>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <CartProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </CartProvider>
+    </QueryClientProvider>
   );
 }
 

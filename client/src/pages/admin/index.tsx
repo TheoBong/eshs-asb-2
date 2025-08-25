@@ -13,6 +13,7 @@ import { ThemedCard, PrimaryButton, SecondaryButton, OutlineButton } from '@/com
 import { CommaSeparatedInput } from '@/components/ui/comma-separated-input';
 import { AdminAuth } from '@/components/AdminAuth';
 import { FileUpload } from '@/components/FileUpload';
+import schoolVideo from "../../../../attached_assets/school2.mp4";
 import {
   getProducts, createProduct, updateProduct, deleteProduct,
   getEvents, createEvent, updateEvent, deleteEvent,
@@ -1738,6 +1739,18 @@ ESHS ASB Team
   if (loading) {
     return (
       <div className="min-h-screen relative">
+        <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+          >
+            <source src={schoolVideo} type="video/mp4" />
+          </video>
+        </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
         <div className="relative z-10 min-h-screen flex items-center justify-center">
           <div className="text-white text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
@@ -1752,6 +1765,18 @@ ESHS ASB Team
   if (error) {
     return (
       <div className="min-h-screen relative">
+        <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+          >
+            <source src={schoolVideo} type="video/mp4" />
+          </video>
+        </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
         <div className="relative z-10 min-h-screen flex items-center justify-center">
           <div className="text-white text-center">
             <p className="text-xl text-red-400 mb-4">{error}</p>
@@ -1780,6 +1805,21 @@ ESHS ASB Team
 
   return (
     <div className="min-h-screen relative">
+      {/* Background Video */}
+      <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+        >
+          <source src={schoolVideo} type="video/mp4" />
+        </video>
+      </div>
+
+      {/* Overlay to darken the background video */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
 
       {/* Main content */}
       <div className="relative z-10 min-h-screen">

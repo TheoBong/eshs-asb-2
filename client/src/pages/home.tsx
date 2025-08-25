@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigation } from "../App";
+import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import schoolVideo from "../../../attached_assets/school2.mp4";
 import shopImg from "../../../attached_assets/shop.png";
@@ -143,7 +143,7 @@ const Cloud = ({
 };
 
 export default function Home() {
-  const { navigateTo } = useNavigation();
+  const [, setLocation] = useLocation();
   // More reliable internal navigation detection
   const isInternalNavigation = () => {
     // Check if we have an internal navigation flag in sessionStorage
@@ -225,7 +225,7 @@ export default function Home() {
     
     // Navigate with fade transition
     setTimeout(() => {
-      navigateTo("shop");
+      setLocation("/shop");
     }, 400);
   };
   // Handlers for the other icons
@@ -240,7 +240,7 @@ export default function Home() {
     
     // Navigate to birds eye view page (now under theater)
     setTimeout(() => {
-      navigateTo("birds-eye-view");
+      setLocation("/birds-eye-view");
     }, 400);
   };
 
@@ -255,7 +255,7 @@ export default function Home() {
     
     // Navigate to activities page
     setTimeout(() => {
-      navigateTo("activities");
+      setLocation("/activities");
     }, 400);
   };
 
@@ -270,7 +270,7 @@ export default function Home() {
     
     // Navigate to information page
     setTimeout(() => {
-      navigateTo("information");
+      setLocation("/information");
     }, 400);
   };
 
@@ -893,7 +893,7 @@ export default function Home() {
               objectFit: 'cover',
               width: '100vw',
               height: '100vh',
-              filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
+              filter: 'brightness(0.8) contrast(1.15) saturate(1.05)', // Enhanced contrast and slightly increased saturation
               minWidth: '100%',
               minHeight: '100%',
               left: '50%',
@@ -903,6 +903,7 @@ export default function Home() {
           >
             <source src={schoolVideo} type="video/mp4" />
           </video>
+          
           {/* Main vignette effect overlay - darker in the corners, smoother transition */}
           <div className="absolute inset-0" style={{
             background: 'radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 65%, rgba(0,0,0,1) 100%)',
@@ -1022,7 +1023,7 @@ export default function Home() {
                   <img 
                     src={theaterImg}
                     alt="School Theater" 
-                    className="w-64 sm:w-48 md:w-52 lg:w-60 h-auto relative theater-overlay-img"
+                    className="w-64 sm:w-48 md:w-52 lg:w-60 h-auto relative"
                     style={{ filter: 'drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35))' }}
                   />
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-amber-100/50 rounded-full blur-md
@@ -1079,7 +1080,7 @@ export default function Home() {
                   <img 
                     src={informationImg}
                     alt="School Information" 
-                    className="w-64 sm:w-48 md:w-52 lg:w-60 h-auto relative information-overlay-img"
+                    className="w-64 sm:w-48 md:w-52 lg:w-60 h-auto relative"
                     style={{ filter: 'drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35))' }}
                   />
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-amber-100/50 rounded-full blur-md

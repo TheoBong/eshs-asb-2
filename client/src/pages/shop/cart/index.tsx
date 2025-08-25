@@ -1,12 +1,12 @@
-import { useNavigation } from "@/App";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton } from "@/components/ThemedComponents";
+import schoolVideo from "../../../../../attached_assets/school2.mp4";
 import { useCart } from "@/contexts/CartContext";
-import schoolVideo from "../../../../attached_assets/school2.mp4";
 
 // Cart items interface - supports both shop items and event tickets
 interface CartItem {
@@ -22,7 +22,7 @@ interface CartItem {
 }
 
 export default function CartPage() {
-  const { navigateTo } = useNavigation();
+  const [, setLocation] = useLocation();
   const { cartItems, updateQuantity, removeFromCart } = useCart();
 
   const handleQuantityChange = (id: number | string, change: number, size?: string, color?: string) => {
@@ -42,7 +42,11 @@ export default function CartPage() {
   };
 
   const handleContinueShopping = () => {
-    navigateTo("shop");
+    const referrer = sessionStorage.getItem('cart-referrer');
+    // Default to /shop if no referrer is found
+    setLocation(referrer || "/shop");
+    // Clear the referrer after using it
+    sessionStorage.removeItem('cart-referrer');
   };
 
   const handleCheckout = () => {
@@ -56,39 +60,28 @@ export default function CartPage() {
     }
     
     // Navigate to checkout page
-    navigateTo("checkout");
+    setLocation("/shop/checkout");
   };
 
   const subtotal = calculateSubtotal();
   const tax = subtotal * 0.0875; // 8.75% tax
   const total = subtotal + tax;  return (
     <ThemedPageWrapper pageType="shop">
-      {/* Video background container */}
+      {/* Background Video */}
       <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
-        <video
-          autoPlay
-          loop
-          muted
+        <video 
+          autoPlay 
+          muted 
+          loop 
           playsInline
-          className="absolute w-full h-full object-cover"
-          style={{
-            objectFit: 'cover',
-            width: '100vw',
-            height: '100vh',
-            filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
-            minWidth: '100%',
-            minHeight: '100%',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
         >
           <source src={schoolVideo} type="video/mp4" />
         </video>
-        
-        {/* Overlay to darken the background video */}
-        <div className="absolute inset-0 bg-black bg-opacity-50" />
       </div>
+
+      {/* Overlay to darken the background video */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
 
       {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">

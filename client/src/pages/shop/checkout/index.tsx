@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigation } from "@/App";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,8 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton, ThemedInput, ThemedSelect, ThemedSelectTrigger, ThemedSelectContent, ThemedSelectItem, ThemedSelectValue } from "@/components/ThemedComponents";
+import schoolVideo from "../../../../../attached_assets/school2.mp4";
 import { createPurchase } from "@/lib/api";
-import schoolVideo from "../../../../attached_assets/school2.mp4";
 
 // Cart item interface
 interface CartItem {
@@ -28,7 +28,7 @@ interface CartItem {
 }
 
 export default function CheckoutPage() {
-  const { navigateTo } = useNavigation();
+  const [, setLocation] = useLocation();
   const [paymentMethod, setPaymentMethod] = useState("credit");
   const [billingIsSameAsShipping, setBillingIsSameAsShipping] = useState(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -76,7 +76,8 @@ export default function CheckoutPage() {
   };
 
   const handleBackToCart = () => {
-    navigateTo("cart");
+    sessionStorage.setItem('cart-referrer', '/shop/checkout');
+    setLocation("/shop/cart");
   };
 
   const validateForm = () => {
@@ -152,7 +153,7 @@ export default function CheckoutPage() {
       
       // Redirect to shop page
       setTimeout(() => {
-        navigateTo("shop");
+        setLocation("/shop");
       }, 1500);
     } catch (err) {
       console.error('Failed to process order:', err);
@@ -171,33 +172,21 @@ export default function CheckoutPage() {
   const total = subtotal + tax;
   return (
     <ThemedPageWrapper pageType="shop">
-      {/* Video background container */}
+      {/* Background Video */}
       <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
-        <video
-          autoPlay
-          loop
-          muted
+        <video 
+          autoPlay 
+          muted 
+          loop 
           playsInline
-          className="absolute w-full h-full object-cover"
-          style={{
-            objectFit: 'cover',
-            width: '100vw',
-            height: '100vh',
-            filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
-            minWidth: '100%',
-            minHeight: '100%',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
         >
           <source src={schoolVideo} type="video/mp4" />
         </video>
-        
-        {/* Overlay to darken the background video */}
-        <div className="absolute inset-0 bg-black bg-opacity-50" />
       </div>
-      {/* Main content */}
+
+      {/* Overlay to darken the background video */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>      {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">
         <div className="container mx-auto px-4">
           {/* Glassmorphism back button with title */}
@@ -499,7 +488,7 @@ export default function CheckoutPage() {
                       ) : (
                         <div className="text-center py-4">
                           <p className="text-gray-300">Your cart is empty</p>
-                          <OutlineButton className="mt-2" onClick={() => navigateTo('shop')}>
+                          <OutlineButton className="mt-2" onClick={() => setLocation('/shop')}>
                             Return to Shop
                           </OutlineButton>
                         </div>

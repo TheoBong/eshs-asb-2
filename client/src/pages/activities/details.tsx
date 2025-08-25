@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigation } from "@/App";
+import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
 import { getEvents, createFormSubmission, type Event } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
-import schoolVideo from "../../../attached_assets/school2.mp4";
+import schoolVideo from "../../../../attached_assets/school2.mp4";
 
 // Types for form data
 interface FormData {
@@ -43,7 +43,7 @@ interface CartItem {
 }
 
 export default function EventDetails() {
-  const { navigateTo, currentParams } = useNavigation();
+  const [, setLocation] = useLocation();
   const [eventId, setEventId] = useState<string>("");
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
@@ -84,10 +84,12 @@ export default function EventDetails() {
         setLoading(true);
         setError(null);
 
-        // Get event ID from navigation params
-        const id = currentParams.id;
+        // Extract event ID from the URL
+        const currentPath = window.location.pathname;
+        const matches = currentPath.match(/\/activities\/details\/(.+)$/);
         
-        if (id) {
+        if (matches) {
+          const id = matches[1];
           setEventId(id);
           
           // Fetch all events and find the specific one
@@ -99,7 +101,7 @@ export default function EventDetails() {
             setError('Event not found');
           }
         } else {
-          setError('Event ID not provided');
+          setError('Invalid event URL');
         }
       } catch (err) {
         console.error('Failed to load event:', err);
@@ -113,7 +115,8 @@ export default function EventDetails() {
   }, []);
 
   const handleBackClick = () => {
-    navigateTo("activities");
+    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
+    setLocation("/activities");
   };
   const formatDate = (date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -320,7 +323,7 @@ export default function EventDetails() {
 
       // After success, redirect back to activities after 3 seconds
       setTimeout(() => {
-        navigateTo("activities");
+        setLocation("/activities");
       }, 3000);
     } catch (error) {
       console.error('Form submission failed:', error);
@@ -349,12 +352,25 @@ export default function EventDetails() {
     };
 
     addToCart(cartItem);
-    navigateTo("cart");
+    sessionStorage.setItem('cart-referrer', `/activities/details/${event._id}`);
+    setLocation("/shop/cart");
   };
 
   if (!event) {
     return (
       <ThemedPageWrapper pageType="information">
+        <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+          >
+            <source src={schoolVideo} type="video/mp4" />
+          </video>
+        </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
         
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
           <ThemedCard className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl p-8 text-center">
@@ -376,32 +392,19 @@ export default function EventDetails() {
 
   return (
     <ThemedPageWrapper pageType="information">
-      {/* Video background container */}
+      {/* Background Video */}
       <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
-        <video
-          autoPlay
-          loop
-          muted
+        <video 
+          autoPlay 
+          muted 
+          loop 
           playsInline
-          className="absolute w-full h-full object-cover"
-          style={{
-            objectFit: 'cover',
-            width: '100vw',
-            height: '100vh',
-            filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
-            minWidth: '100%',
-            minHeight: '100%',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
         >
           <source src={schoolVideo} type="video/mp4" />
         </video>
-        
-        {/* Overlay to darken the background video */}
-        <div className="absolute inset-0 bg-black bg-opacity-50" />
       </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
       
       <div className="relative z-10 min-h-screen py-12">
         <div className="container mx-auto px-4 max-w-4xl">
