@@ -356,21 +356,28 @@ const PersistentBackground = () => {
       video.style.WebkitPerspective = '1000px';
     }
 
-    // Get cached video URL and setup video
+    // Simplified video setup - skip caching for now to debug
     const setupVideo = async () => {
       try {
-        // Get cached video URL (or cache it if not already cached)
-        const videoUrl = await videoCache.getCachedVideoUrl(schoolVideo);
-        setCachedVideoUrl(videoUrl);
+        console.log('Setting up video with URL:', schoolVideo);
         
-        // Update video source immediately
-        const source = video.querySelector('source');
-        if (source) {
-          source.src = videoUrl;
-        }
+        // Set video source directly first
+        video.src = schoolVideo;
+        setCachedVideoUrl(schoolVideo);
         
         // Force load the video
         video.load();
+        
+        // Add error handling
+        video.onerror = (error) => {
+          console.error('Video error:', error);
+          console.error('Video error details:', video.error);
+        };
+        
+        video.onloadstart = () => console.log('Video load started');
+        video.onloadedmetadata = () => console.log('Video metadata loaded');
+        video.onloadeddata = () => console.log('Video data loaded');
+        video.oncanplay = () => console.log('Video can play');
         
         // Wait for video to be ready
         await new Promise((resolve, reject) => {
@@ -378,13 +385,16 @@ const PersistentBackground = () => {
           video.onerror = reject;
           
           // Fallback timeout
-          setTimeout(reject, 15000); // Increased timeout for cached video
+          setTimeout(() => reject(new Error('Video load timeout')), 10000);
         });
         
+        console.log('Video loaded successfully, setting isLoaded to true');
         setIsLoaded(true);
         
         // Start playing
+        console.log('Attempting to play video...');
         await video.play();
+        console.log('Video playing successfully');
         
         // Safari-specific: Keep a global reference to prevent GC
         (window as any).safariPersistentVideo = video;
@@ -503,6 +513,7 @@ const PersistentBackground = () => {
         playsInline
         preload="auto"
         data-persistent="true"
+        src={schoolVideo}
         className="absolute w-full h-full object-cover"
         style={{
           objectFit: 'cover',
@@ -524,9 +535,7 @@ const PersistentBackground = () => {
           WebkitPerspective: '1000px',
           perspective: '1000px'
         }}
-      >
-        <source src={cachedVideoUrl} type="video/mp4" />
-      </video>
+      />
       
       {/* Overlay to darken the background video */}
       <div 
