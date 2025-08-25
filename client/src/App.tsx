@@ -385,7 +385,7 @@ const PersistentBackground = () => {
       id="persistent-background"
       className="fixed inset-0 w-full h-full overflow-hidden"
       style={{
-        zIndex: -1000,
+        zIndex: -1,
         backgroundColor: '#000',
         WebkitTransform: 'translateZ(0)',
         transform: 'translateZ(0)',
@@ -412,22 +412,14 @@ const PersistentBackground = () => {
         className="absolute w-full h-full object-cover"
         style={{
           objectFit: 'cover',
-          width: '100vw',
-          height: '100vh',
+          width: '100%',
+          height: '100%',
           filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
-          WebkitTransform: 'translateZ(0)',
-          transform: 'translateZ(0)',
-          opacity: 1,
-          visibility: 'visible',
           position: 'absolute',
           top: 0,
           left: 0,
-          zIndex: 2,
-          willChange: 'transform',
-          backfaceVisibility: 'hidden',
-          WebkitBackfaceVisibility: 'hidden',
-          WebkitPerspective: '1000px',
-          perspective: '1000px'
+          zIndex: 1,
+          opacity: 1
         }}
       />
       
@@ -436,14 +428,12 @@ const PersistentBackground = () => {
         className="absolute inset-0"
         style={{
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          WebkitTransform: 'translateZ(0)',
-          transform: 'translateZ(0)',
           position: 'absolute',
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: 3,
+          zIndex: 2,
           pointerEvents: 'none'
         }}
       />
