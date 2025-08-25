@@ -337,61 +337,16 @@ const SPARouter = () => {
 // Create persistent background component outside of main app
 const PersistentBackground = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [cachedVideoUrl, setCachedVideoUrl] = useState<string>(schoolVideo);
   
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Safari-specific fixes to prevent video unloading
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    console.log('Video element found, URL:', schoolVideo);
     
-    // Force hardware acceleration on Safari
-    if (isSafari) {
-      video.style.willChange = 'transform';
-      video.style.backfaceVisibility = 'hidden';
-      video.style.perspective = '1000px';
-      video.style.WebkitBackfaceVisibility = 'hidden';
-      video.style.WebkitPerspective = '1000px';
-    }
-
-    // Simplified video setup - skip caching for now to debug
-    const setupVideo = async () => {
+    // Simple play attempt
+    const playVideo = async () => {
       try {
-        console.log('Setting up video with URL:', schoolVideo);
-        
-        // Set video source directly first
-        video.src = schoolVideo;
-        setCachedVideoUrl(schoolVideo);
-        
-        // Force load the video
-        video.load();
-        
-        // Add error handling
-        video.onerror = (error) => {
-          console.error('Video error:', error);
-          console.error('Video error details:', video.error);
-        };
-        
-        video.onloadstart = () => console.log('Video load started');
-        video.onloadedmetadata = () => console.log('Video metadata loaded');
-        video.onloadeddata = () => console.log('Video data loaded');
-        video.oncanplay = () => console.log('Video can play');
-        
-        // Wait for video to be ready
-        await new Promise((resolve, reject) => {
-          video.onloadeddata = resolve;
-          video.onerror = reject;
-          
-          // Fallback timeout
-          setTimeout(() => reject(new Error('Video load timeout')), 10000);
-        });
-        
-        console.log('Video loaded successfully, setting isLoaded to true');
-        setIsLoaded(true);
-        
-        // Start playing
         console.log('Attempting to play video...');
         await video.play();
         console.log('Video playing successfully');
@@ -406,7 +361,7 @@ const PersistentBackground = () => {
         const playOnInteraction = async () => {
           try {
             await video.play();
-            setIsLoaded(true);
+            console.log('Video playing after user interaction');
             document.removeEventListener('click', playOnInteraction);
             document.removeEventListener('touchstart', playOnInteraction);
           } catch (e) {
@@ -419,60 +374,10 @@ const PersistentBackground = () => {
       }
     };
 
-    setupVideo();
-
-    // Visibility change handler - more aggressive for Safari
-    const handleVisibilityChange = () => {
-      if (!document.hidden && video.paused) {
-        video.play().catch(() => {
-          // Silent fail
-        });
-      }
-    };
-
-    // Page focus handler - Safari sometimes pauses on blur
-    const handlePageFocus = () => {
-      if (video.paused) {
-        video.play().catch(() => {
-          // Silent fail
-        });
-      }
-    };
-
-    // Safari-specific: prevent video from being paused during page transitions
-    const preventPause = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    };
-
-    if (isSafari) {
-      video.addEventListener('pause', preventPause);
-      video.addEventListener('suspend', preventPause);
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handlePageFocus);
+    // Wait a bit for the video to load then try to play
+    const timeoutId = setTimeout(playVideo, 500);
     
-    // Safari-specific: force video to stay active during page transitions
-    const maintainVideoState = () => {
-      if (video.paused) {
-        video.play().catch(() => {});
-      }
-    };
-    
-    const intervalId = setInterval(maintainVideoState, 100);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handlePageFocus);
-      clearInterval(intervalId);
-      
-      if (isSafari) {
-        video.removeEventListener('pause', preventPause);
-        video.removeEventListener('suspend', preventPause);
-      }
-    };
+    return () => clearTimeout(timeoutId);
   }, []);
   
   return (
@@ -494,16 +399,6 @@ const PersistentBackground = () => {
         WebkitBackfaceVisibility: 'hidden'
       }}
     >
-      {/* Fallback black background for when video is loading */}
-      <div 
-        className="absolute inset-0 bg-black"
-        style={{
-          opacity: isLoaded ? 0 : 1,
-          transition: 'opacity 0.5s ease-in-out',
-          zIndex: 1
-        }}
-      />
-      
       <video 
         ref={videoRef}
         id="background-video"
@@ -522,13 +417,12 @@ const PersistentBackground = () => {
           filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
           WebkitTransform: 'translateZ(0)',
           transform: 'translateZ(0)',
-          opacity: isLoaded ? 1 : 0,
+          opacity: 1,
           visibility: 'visible',
           position: 'absolute',
           top: 0,
           left: 0,
           zIndex: 2,
-          transition: 'opacity 0.5s ease-in-out',
           willChange: 'transform',
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
