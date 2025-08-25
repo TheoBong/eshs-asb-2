@@ -8,7 +8,7 @@ import Home from "@/pages/home";
 import Shop from "@/pages/shop";
 import NotFound from "@/pages/not-found";
 import { CartProvider } from "@/contexts/CartContext";
-import schoolVideo from "../../../attached_assets/school2.mp4";
+import schoolVideo from "../../attached_assets/school2.mp4";
 
 // Shop related pages
 import ProductPage from "@/pages/shop/product/index";
