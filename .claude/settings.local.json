@@ -5,7 +5,8 @@
       "Bash(npm uninstall:*)",
       "Bash(npm run dev:*)",
       "Bash(npm run build:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Read(/c:\\Users\\theob\\OneDrive\\Documents\\ShareX\\Screenshots\\2025-08/**)"
     ],
     "deny": [],
     "ask": []

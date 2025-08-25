@@ -140,7 +140,7 @@ export default function ProductPage() {
   return (
     <ThemedPageWrapper pageType="shop">
       {/* Overlay to darken the background video */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
+      <div className="fixed inset-0 bg-black bg-opacity-20 -z-10"></div>
 
       {/* Main content */}
       <div className="relative z-10 min-h-screen pt-8 pb-16">

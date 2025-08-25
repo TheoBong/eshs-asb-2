@@ -72,7 +72,7 @@ const BirdsEyeView = () => {
   return (
     <ThemedPageWrapper pageType="information">
       {/* Overlay to darken the background video */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
+      <div className="fixed inset-0 bg-black bg-opacity-20 -z-10"></div>
 
       <div className="relative z-10 min-h-screen">
         <main className="container mx-auto px-4 py-8">          <div className="flex items-center mb-8">
