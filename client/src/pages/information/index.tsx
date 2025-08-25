@@ -116,7 +116,7 @@ export default function Information() {
 						<Button
 							variant="ghost"
 							onClick={handleBackClick}
-							className="text-white/90 hover:text-white p-2 mr-4 bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+							className="text-white/90 hover:text-white p-2 mr-4 bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
 						>
 							<svg
 								className="w-5 h-5"
@@ -140,7 +140,7 @@ export default function Information() {
 
 					{/* Important Announcements */}
 					<h2 className="text-2xl font-bold text-white mb-6">Recent Announcements</h2>
-          <div className="bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-xl p-6">
+          <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6">
             {loading ? (
               <div className="text-center py-8 text-gray-400">
                 <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -192,12 +192,12 @@ export default function Information() {
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">							{infoSections.map((section) => (
 								<ThemedCard
 									key={section.id}
-									className={`bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl hover:shadow-2xl transition-transform hover:scale-[1.01] cursor-pointer`}
+									className={`bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl hover:shadow-2xl transition-transform hover:scale-[1.01] cursor-pointer`}
 									onClick={() => handleNavigate(section.path)}
 								>
 									<CardHeader className="relative pb-2">
 										<div
-											className={`absolute top-4 right-4 ${section.iconColor} bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-full p-2`}
+											className={`absolute top-4 right-4 ${section.iconColor} bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-full p-2`}
 										>
 											{getIcon(section.id)}
 										</div>
