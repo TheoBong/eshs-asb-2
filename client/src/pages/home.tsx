@@ -1023,7 +1023,7 @@ export default function Home() {
                   <img 
                     src={theaterImg}
                     alt="School Theater" 
-                    className="w-64 sm:w-48 md:w-52 lg:w-60 h-auto relative"
+                    className="w-64 sm:w-48 md:w-52 lg:w-60 h-auto relative theater-overlay-img"
                     style={{ filter: 'drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35))' }}
                   />
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-amber-100/50 rounded-full blur-md
@@ -1080,7 +1080,7 @@ export default function Home() {
                   <img 
                     src={informationImg}
                     alt="School Information" 
-                    className="w-64 sm:w-48 md:w-52 lg:w-60 h-auto relative"
+                    className="w-64 sm:w-48 md:w-52 lg:w-60 h-auto relative information-overlay-img"
                     style={{ filter: 'drop-shadow(0 8px 15px rgba(0, 0, 0, 0.35))' }}
                   />
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -z-10 w-40 h-10 bg-amber-100/50 rounded-full blur-md
