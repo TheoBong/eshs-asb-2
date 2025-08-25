@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigation } from "../App";
 import { motion, AnimatePresence } from "framer-motion";
 import schoolVideo from "../../../attached_assets/school2.mp4";
 import shopImg from "../../../attached_assets/shop.png";
@@ -143,7 +143,7 @@ const Cloud = ({
 };
 
 export default function Home() {
-  const [, setLocation] = useLocation();
+  const { navigateTo } = useNavigation();
   // More reliable internal navigation detection
   const isInternalNavigation = () => {
     // Check if we have an internal navigation flag in sessionStorage
@@ -225,7 +225,7 @@ export default function Home() {
     
     // Navigate with fade transition
     setTimeout(() => {
-      setLocation("/shop");
+      navigateTo("shop");
     }, 400);
   };
   // Handlers for the other icons
@@ -240,7 +240,7 @@ export default function Home() {
     
     // Navigate to birds eye view page (now under theater)
     setTimeout(() => {
-      setLocation("/birds-eye-view");
+      navigateTo("birds-eye-view");
     }, 400);
   };
 
@@ -255,7 +255,7 @@ export default function Home() {
     
     // Navigate to activities page
     setTimeout(() => {
-      setLocation("/activities");
+      navigateTo("activities");
     }, 400);
   };
 
@@ -270,7 +270,7 @@ export default function Home() {
     
     // Navigate to information page
     setTimeout(() => {
-      setLocation("/information");
+      navigateTo("information");
     }, 400);
   };
 
