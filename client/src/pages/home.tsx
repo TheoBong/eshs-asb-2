@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigation } from "../App";
 import { motion, AnimatePresence } from "framer-motion";
+import schoolVideo from "../../../attached_assets/school2.mp4";
 import shopImg from "../../../attached_assets/shop.png";
 import activitiesImg from "../../../attached_assets/activities.png";
 import informationImg from "../../../attached_assets/information.png";
@@ -880,8 +881,28 @@ export default function Home() {
           backgroundImage: "none", // Ensure no background image is applied
         }}
       >
-        {/* Vignette overlay - video background now handled by PersistentBackground */}
-        <div className="absolute inset-0 overflow-hidden">
+        {/* Video background container that fills the whole screen with vignette effect */}
+        <div className="absolute inset-0 bg-black overflow-hidden">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute w-full h-full object-cover"
+            style={{
+              objectFit: 'cover',
+              width: '100vw',
+              height: '100vh',
+              filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
+              minWidth: '100%',
+              minHeight: '100%',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <source src={schoolVideo} type="video/mp4" />
+          </video>
           {/* Main vignette effect overlay - darker in the corners, smoother transition */}
           <div className="absolute inset-0" style={{
             background: 'radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 65%, rgba(0,0,0,1) 100%)',

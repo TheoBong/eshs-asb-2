@@ -8,7 +8,6 @@ import Home from "@/pages/home";
 import Shop from "@/pages/shop";
 import NotFound from "@/pages/not-found";
 import { CartProvider } from "@/contexts/CartContext";
-import schoolVideo from "../../attached_assets/school2.mp4";
 
 // Shop related pages
 import ProductPage from "@/pages/shop/product/index";
@@ -160,102 +159,6 @@ const SPARouter = () => {
   );
 };
 
-// Create persistent background component outside of main app
-const PersistentBackground = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    console.log('Video element found, URL:', schoolVideo);
-    
-    // Simple play attempt
-    const playVideo = async () => {
-      try {
-        console.log('Attempting to play video...');
-        await video.play();
-        console.log('Video playing successfully');
-        
-        // Safari-specific: Keep a global reference to prevent GC
-        (window as any).safariPersistentVideo = video;
-        
-      } catch (error) {
-        console.warn('Video autoplay failed, will retry on user interaction:', error);
-        
-        // Retry on first user interaction
-        const playOnInteraction = async () => {
-          try {
-            await video.play();
-            console.log('Video playing after user interaction');
-            document.removeEventListener('click', playOnInteraction);
-            document.removeEventListener('touchstart', playOnInteraction);
-          } catch (e) {
-            console.warn('Failed to play video on interaction:', e);
-          }
-        };
-        
-        document.addEventListener('click', playOnInteraction);
-        document.addEventListener('touchstart', playOnInteraction);
-      }
-    };
-
-    // Wait a bit for the video to load then try to play
-    const timeoutId = setTimeout(playVideo, 500);
-    
-    return () => clearTimeout(timeoutId);
-  }, []);
-  
-  return (
-    <div 
-      id="persistent-background"
-      className="fixed inset-0 w-full h-full overflow-hidden"
-      style={{
-        zIndex: -1,
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-      }}
-    >
-      {/* Video background container that fills the whole screen */}
-      <div className="absolute inset-0 bg-black overflow-hidden">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          data-persistent="true"
-          className="absolute w-full h-full object-cover"
-          style={{
-            objectFit: 'cover',
-            width: '100vw',
-            height: '100vh',
-            filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
-            minWidth: '100%',
-            minHeight: '100%',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
-          <source src={schoolVideo} type="video/mp4" />
-        </video>
-        
-        {/* Overlay to darken the background video */}
-        <div 
-          className="absolute inset-0"
-          style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            pointerEvents: 'none'
-          }}
-        />
-      </div>
-    </div>
-  );
-};
 
 // Navigation Provider Component
 const NavigationProvider = ({ children }: { children: React.ReactNode }) => {
@@ -375,11 +278,8 @@ const getPageFromPath = (path: string): { page: string; params: Record<string, s
 function App() {
   return (
     <>
-      {/* Persistent background - never leaves DOM */}
-      <PersistentBackground />
-      
       {/* Main app content */}
-      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', backgroundColor: 'transparent' }}>
+      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
         <QueryClientProvider client={queryClient}>
           <CartProvider>
             <NavigationProvider>

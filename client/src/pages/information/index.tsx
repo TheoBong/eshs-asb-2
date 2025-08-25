@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { ThemedPageWrapper, PrimaryButton, OutlineButton, ThemedCard } from "@/components/ThemedComponents";
 import { getAnnouncements, Announcement } from "@/lib/api";
+import schoolVideo from "../../../attached_assets/school2.mp4";
 
 // Mock data for information sections
 const infoSections = [
@@ -112,6 +113,32 @@ export default function Information() {
 	};
 	return (
 		<ThemedPageWrapper pageType="information">
+			{/* Video background container */}
+			<div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
+				<video
+					autoPlay
+					loop
+					muted
+					playsInline
+					className="absolute w-full h-full object-cover"
+					style={{
+						objectFit: 'cover',
+						width: '100vw',
+						height: '100vh',
+						filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
+						minWidth: '100%',
+						minHeight: '100%',
+						left: '50%',
+						top: '50%',
+						transform: 'translate(-50%, -50%)',
+					}}
+				>
+					<source src={schoolVideo} type="video/mp4" />
+				</video>
+				
+				{/* Overlay to darken the background video */}
+				<div className="absolute inset-0 bg-black bg-opacity-50" />
+			</div>
 			{/* Main content */}
 			<div className="relative z-10 min-h-screen">
 				<main className="container mx-auto px-4 py-8">
