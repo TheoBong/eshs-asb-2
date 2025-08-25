@@ -163,34 +163,121 @@ const SPARouter = () => {
 // Create persistent background component outside of main app
 const PersistentBackground = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
-    // Ensure video plays and stays playing
     const video = videoRef.current;
-    if (video) {
-      video.play().catch(() => {
-        // Retry playing after user interaction if autoplay is blocked
-        document.addEventListener('click', () => {
-          video.play();
-        }, { once: true });
-      });
-      
-      // Keep video playing during visibility changes
-      const handleVisibilityChange = () => {
-        if (!document.hidden && video.paused) {
-          video.play();
-        }
-      };
-      
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-      
-      // Prevent video from being garbage collected
-      (window as any).persistentVideo = video;
-      
-      return () => {
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-      };
+    if (!video) return;
+
+    // Safari-specific fixes to prevent video unloading
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
+    // Force hardware acceleration on Safari
+    if (isSafari) {
+      video.style.willChange = 'transform';
+      video.style.backfaceVisibility = 'hidden';
+      video.style.perspective = '1000px';
+      video.style.WebkitBackfaceVisibility = 'hidden';
+      video.style.WebkitPerspective = '1000px';
     }
+
+    // Preload and setup video
+    const setupVideo = async () => {
+      try {
+        // Force load the video
+        video.load();
+        
+        // Wait for video to be ready
+        await new Promise((resolve, reject) => {
+          video.onloadeddata = resolve;
+          video.onerror = reject;
+          
+          // Fallback timeout
+          setTimeout(reject, 10000);
+        });
+        
+        setIsLoaded(true);
+        
+        // Start playing
+        await video.play();
+        
+        // Safari-specific: Keep a global reference to prevent GC
+        (window as any).safariPersistentVideo = video;
+        
+      } catch (error) {
+        console.warn('Video autoplay failed, will retry on user interaction:', error);
+        
+        // Retry on first user interaction
+        const playOnInteraction = async () => {
+          try {
+            await video.play();
+            setIsLoaded(true);
+            document.removeEventListener('click', playOnInteraction);
+            document.removeEventListener('touchstart', playOnInteraction);
+          } catch (e) {
+            console.warn('Failed to play video on interaction:', e);
+          }
+        };
+        
+        document.addEventListener('click', playOnInteraction);
+        document.addEventListener('touchstart', playOnInteraction);
+      }
+    };
+
+    setupVideo();
+
+    // Visibility change handler - more aggressive for Safari
+    const handleVisibilityChange = () => {
+      if (!document.hidden && video.paused) {
+        video.play().catch(() => {
+          // Silent fail
+        });
+      }
+    };
+
+    // Page focus handler - Safari sometimes pauses on blur
+    const handlePageFocus = () => {
+      if (video.paused) {
+        video.play().catch(() => {
+          // Silent fail
+        });
+      }
+    };
+
+    // Safari-specific: prevent video from being paused during page transitions
+    const preventPause = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
+    if (isSafari) {
+      video.addEventListener('pause', preventPause);
+      video.addEventListener('suspend', preventPause);
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handlePageFocus);
+    
+    // Safari-specific: force video to stay active during page transitions
+    const maintainVideoState = () => {
+      if (video.paused) {
+        video.play().catch(() => {});
+      }
+    };
+    
+    const intervalId = setInterval(maintainVideoState, 100);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handlePageFocus);
+      clearInterval(intervalId);
+      
+      if (isSafari) {
+        video.removeEventListener('pause', preventPause);
+        video.removeEventListener('suspend', preventPause);
+      }
+    };
   }, []);
   
   return (
@@ -206,9 +293,22 @@ const PersistentBackground = () => {
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0
+        bottom: 0,
+        willChange: 'transform',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden'
       }}
     >
+      {/* Fallback black background for when video is loading */}
+      <div 
+        className="absolute inset-0 bg-black"
+        style={{
+          opacity: isLoaded ? 0 : 1,
+          transition: 'opacity 0.5s ease-in-out',
+          zIndex: 1
+        }}
+      />
+      
       <video 
         ref={videoRef}
         id="background-video"
@@ -226,15 +326,23 @@ const PersistentBackground = () => {
           filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
           WebkitTransform: 'translateZ(0)',
           transform: 'translateZ(0)',
-          opacity: 1,
+          opacity: isLoaded ? 1 : 0,
           visibility: 'visible',
           position: 'absolute',
           top: 0,
-          left: 0
+          left: 0,
+          zIndex: 2,
+          transition: 'opacity 0.5s ease-in-out',
+          willChange: 'transform',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          WebkitPerspective: '1000px',
+          perspective: '1000px'
         }}
       >
         <source src={schoolVideo} type="video/mp4" />
       </video>
+      
       {/* Overlay to darken the background video */}
       <div 
         className="absolute inset-0"
@@ -246,7 +354,9 @@ const PersistentBackground = () => {
           top: 0,
           left: 0,
           right: 0,
-          bottom: 0
+          bottom: 0,
+          zIndex: 3,
+          pointerEvents: 'none'
         }}
       />
     </div>

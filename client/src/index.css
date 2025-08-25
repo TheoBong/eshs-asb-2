@@ -387,27 +387,54 @@ div[style*="zIndex: -1"] {
   video[data-persistent="true"] {
     display: block !important;
     visibility: visible !important;
-    opacity: 1 !important;
     position: fixed !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+    -webkit-perspective: 1000px !important;
+    perspective: 1000px !important;
   }
   
   /* Ensure persistent background container is never hidden */
   #persistent-background {
     display: block !important;
     visibility: visible !important;
-    opacity: 1 !important;
     pointer-events: none !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+    position: fixed !important;
+    z-index: -1000 !important;
   }
   
   #background-video {
     display: block !important;
     visibility: visible !important;
-    opacity: 1 !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
   }
   
   /* Prevent black background flashes */
   body {
     background-color: #000 !important;
+  }
+  
+  /* Additional Safari-specific video persistence fixes */
+  video[data-persistent="true"]::-webkit-media-controls {
+    display: none !important;
+  }
+  
+  /* Prevent Safari from suspending video during page changes */
+  video[data-persistent="true"] {
+    -webkit-transform: translateZ(0) !important;
+    -webkit-backface-visibility: hidden !important;
+    -webkit-perspective: 1000px !important;
+    will-change: transform !important;
   }
 }
 
@@ -431,5 +458,45 @@ div[style*="zIndex: -1"] {
       z-index: -100;
       background: #000;
     }
+    
+    /* Safari-specific video optimization */
+    video[data-persistent="true"] {
+      -webkit-transform: translate3d(0, 0, 0) !important;
+      transform: translate3d(0, 0, 0) !important;
+      -webkit-backface-visibility: hidden !important;
+      -webkit-perspective: 1000 !important;
+      will-change: transform !important;
+      /* Force GPU layer */
+      -webkit-transform-style: preserve-3d !important;
+      transform-style: preserve-3d !important;
+    }
+    
+    /* Prevent Safari from suspending videos */
+    video[data-persistent="true"]:not(:hover) {
+      -webkit-transform: translateZ(0) !important;
+    }
+  }
+}
+
+/* Safari Mobile specific fixes */
+@supports (-webkit-touch-callout: none) {
+  video[data-persistent="true"] {
+    /* Prevent Safari iOS from pausing video */
+    -webkit-playsinline: true !important;
+    /* Force hardware acceleration */
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    transform: translate3d(0, 0, 0) !important;
+    /* Prevent video from being optimized away */
+    will-change: transform !important;
+    /* Ensure video stays in GPU memory */
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+  }
+  
+  /* Force persistent background to stay in composite layer */
+  #persistent-background {
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    transform: translate3d(0, 0, 0) !important;
+    will-change: transform !important;
   }
 }
