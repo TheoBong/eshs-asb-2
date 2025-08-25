@@ -147,7 +147,6 @@ export default function Home() {
   const isInternalNavigation = () => {
     // Check if we have an internal navigation flag in sessionStorage
     const internalNav = sessionStorage.getItem('internal-navigation');
-    
     // Also check document.referrer as backup
     let hasInternalReferrer = false;
     if (document.referrer) {
@@ -155,323 +154,31 @@ export default function Home() {
         const referrerUrl = new URL(document.referrer);
         const currentUrl = new URL(window.location.href);
         hasInternalReferrer = referrerUrl.origin === currentUrl.origin;
-                scale: textFadingOut ? 0.95 : 1,
-                y: textFadingOut ? -10 : 0
-              }}
-              transition={{ 
-                delay: textFadingOut ? 0 : 1.0, 
-                duration: textFadingOut ? 0.4 : 0.8,
-                ease: textFadingOut ? "easeIn" : "easeOut"
-              }}
-            >
-              {/* El Segundo High School text with handwriting animation */}
-              <motion.div 
-                className="flex flex-col items-center justify-center"
-                initial={{ filter: "blur(2px)" }}
-                animate={{ 
-                  filter: textFadingOut ? "blur(4px)" : "blur(0px)",
-                  opacity: textFadingOut ? 0 : 1,
-                  y: textFadingOut ? -15 : 0
-                }}
-                transition={{ 
-                  delay: textFadingOut ? 0 : 1.0, 
-                  duration: textFadingOut ? 0.4 : 0.8,
-                  ease: textFadingOut ? "easeIn" : "easeOut"
-                }}
-              >                {/* First line - El Segundo High School */}
-                <motion.h1
-                  className="font-['Great_Vibes',_cursive] text-6xl md:text-7xl lg:text-8xl text-center text-white tracking-wide"
-                  style={{ 
-                    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5))',
-                    WebkitTextStroke: '0.5px rgba(0, 0, 0, 0.3)'
-                  }}
-                  initial={{ filter: "blur(2px)" }}
-                  animate={{ 
-                    filter: textFadingOut ? "blur(4px)" : "blur(0px)",
-                    opacity: textFadingOut ? 0 : 1,
-                    y: textFadingOut ? -15 : 0,
-                    scale: textFadingOut ? 0.95 : 1
-                  }}
-                  transition={{ 
-                    delay: textFadingOut ? 0 : 1.0, 
-                    duration: textFadingOut ? 0.4 : 0.8,
-                    ease: textFadingOut ? "easeIn" : "easeOut"
-                  }}
-                >
-                  <div className="relative">
-                    {/* Invisible text to maintain layout */}
-                    <span className="invisible whitespace-nowrap">El Segundo High School</span>
-                    
-                    {/* SVG Text Drawing Animation */}
-                    <motion.div 
-                      className="absolute inset-0 flex items-center justify-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ 
-                        opacity: textFadingOut ? 0 : 1,
-                        scale: textFadingOut ? 0.95 : 1,
-                        y: textFadingOut ? -10 : 0
-                      }}
-                      transition={{ 
-                        delay: textFadingOut ? 0 : 1.3, 
-                        duration: textFadingOut ? 0.4 : 0.3,
-                        ease: textFadingOut ? "easeIn" : "easeOut"
-                      }}
-                    >
-                      <svg width="100%" height="100%" viewBox="0 0 700 120" className="absolute inset-0">
-                        <motion.text
-                          x="50%"
-                          y="50%"
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="none"
-                          stroke="white"
-                          strokeWidth="1.5"
-                          fontFamily="'Great Vibes', cursive"
-                          fontSize="58"
-                          className="text-shadow-sm"
-                          initial={{ strokeDasharray: 1000, strokeDashoffset: 1000 }}
-                          animate={{ 
-                            strokeDashoffset: textFadingOut ? 1000 : 0,
-                            opacity: textFadingOut ? 0 : 1
-                          }}
-                          transition={{ 
-                            delay: textFadingOut ? 0 : 2.0, 
-                            duration: textFadingOut ? 0.4 : 3.0,
-                            ease: textFadingOut ? "easeIn" : "easeOut"
-                          }}
-                        >
-                          El Segundo High School
-                        </motion.text>
-                        <motion.text
-                          x="50%"
-                          y="50%"
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="white"
-                          fontFamily="'Great Vibes', cursive"
-                          fontSize="58"
-                          initial={{ opacity: 0 }}
-                          animate={{ 
-                            opacity: textFadingOut ? 0 : 1,
-                            scale: textFadingOut ? 0.9 : 1
-                          }}
-                          transition={{ 
-                            delay: textFadingOut ? 0 : 5.0, 
-                            duration: textFadingOut ? 0.4 : 0.3,
-                            ease: textFadingOut ? "easeIn" : "easeOut"
-                          }}
-                        >
-                          El Segundo High School
-                        </motion.text>
-                      </svg>
-                    </motion.div>
-                  </div>
-                </motion.h1>
-                  {/* Second line - ASB */}
-                <motion.div 
-                  className="mt-8 block text-center" // Increased margin-top for spacing
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ 
-                    opacity: textFadingOut ? 0 : 1, 
-                    y: textFadingOut ? -15 : 0,
-                    scale: textFadingOut ? 0.95 : 1
-                  }}
-                  transition={{ 
-                    delay: textFadingOut ? 0 : 3.5, 
-                    duration: textFadingOut ? 0.4 : 0.5,
-                    ease: textFadingOut ? "easeIn" : "easeOut"
-                  }}
-                >
-                  <motion.h1
-                    className="font-['Great_Vibes',_cursive] text-8xl md:text-9xl lg:text-[10rem] font-bold text-white" // Further increased text size
-                    style={{ 
-                      filter: 'drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5))',
-                      WebkitTextStroke: '0.8px rgba(0, 0, 0, 0.3)'
-                    }}
-                    initial={{ filter: "blur(2px)" }}
-                    animate={{ 
-                      filter: textFadingOut ? "blur(4px)" : "blur(0px)",
-                      opacity: textFadingOut ? 0 : 1,
-                      y: textFadingOut ? -10 : 0,
-                      scale: textFadingOut ? 0.95 : 1
-                    }}
-                    transition={{ 
-                      delay: textFadingOut ? 0 : 3.0, 
-                      duration: textFadingOut ? 0.4 : 0.8,
-                      ease: textFadingOut ? "easeIn" : "easeOut"
-                    }}
-                  >
-                    <div className="relative">
-                      {/* Invisible text to maintain layout */}
-                      <span className="invisible whitespace-nowrap">ASB</span>
-                      
-                      {/* SVG Text Drawing Animation */}
-                      <motion.div 
-                        className="absolute inset-0 flex items-center justify-center"
-                        initial={{ opacity: 0 }}
-                        animate={{ 
-                          opacity: textFadingOut ? 0 : 1,
-                          scale: textFadingOut ? 0.95 : 1,
-                          y: textFadingOut ? -10 : 0
-                        }}
-                        transition={{ 
-                          delay: textFadingOut ? 0 : 3.3, 
-                          duration: textFadingOut ? 0.4 : 0.3,
-                          ease: textFadingOut ? "easeIn" : "easeOut"
-                        }}
-                      >
-                        <svg width="100%" height="100%" viewBox="0 0 250 140" className="absolute inset-0">
-                          <motion.text
-                            x="50%"
-                            y="50%"
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                            fill="none"
-                            stroke="white"
-                            strokeWidth="2.5" // Further increased stroke width
-                            fontFamily="'Great Vibes', cursive"
-                            fontSize="100" // Further increased font size
-                            fontWeight="bold"
-                            className="text-shadow-sm"
-                            initial={{ strokeDasharray: 600, strokeDashoffset: 600 }}
-                            animate={{ 
-                              strokeDashoffset: textFadingOut ? 600 : 0,
-                              opacity: textFadingOut ? 0 : 1
-                            }}
-                            transition={{ 
-                              delay: textFadingOut ? 0 : 3.7, 
-                              duration: textFadingOut ? 0.4 : 2.0,
-                              ease: textFadingOut ? "easeIn" : "easeOut"
-                            }}
-                          >
-                            ASB
-                          </motion.text>
-                          <motion.text
-                            x="50%"
-                            y="50%"
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                            fill="white"
-                            fontFamily="'Great Vibes', cursive"
-                            fontSize="100" // Match the increased font size
-                            fontWeight="bold"
-                            initial={{ opacity: 0 }}
-                            animate={{ 
-                              opacity: textFadingOut ? 0 : 1,
-                              scale: textFadingOut ? 0.9 : 1
-                            }}
-                            transition={{ 
-                              delay: textFadingOut ? 0 : 6.7, 
-                              duration: textFadingOut ? 0.4 : 0.3,
-                              ease: textFadingOut ? "easeIn" : "easeOut"
-                            }}
-                          >
-                            ASB
-                          </motion.text>
-                        </svg>
-                      </motion.div>
-                    </div>
-                  </motion.h1>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          </motion.div>        )}
-      </AnimatePresence>      {/* Standalone Text Animation - Always shows regardless of internal navigation */}
-      <AnimatePresence>
-        {showTextAnimation && (
-          <motion.div 
-            className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: textFadingOut ? 0 : 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ 
-              duration: textFadingOut ? 0.4 : 0.8,
-              ease: textFadingOut ? "easeIn" : "easeOut"
-            }}
-          >
-            {/* Text Animation - Cursive white text with drawing effect */}
-            <motion.div
-              className="relative z-10 mb-32" /* Moved text higher by adding margin-bottom */
-              initial={{ opacity: 0 }}
-              animate={{ 
-                opacity: textFadingOut ? 0 : 1,
-                scale: textFadingOut ? 0.95 : 1,
-                y: textFadingOut ? -10 : 0
-              }}
-              transition={{ 
-                delay: showClouds ? 1.0 : 0.2, 
-                duration: textFadingOut ? 0.4 : 0.8,
-                ease: textFadingOut ? "easeIn" : "easeOut"
-              }}
-            >              {/* El Segundo High School text with handwriting animation */}
-              <motion.div 
-                className="flex flex-col items-center justify-center"
-                initial={{ filter: "blur(2px)" }}
-                animate={{ 
-                  filter: textFadingOut ? "blur(4px)" : "blur(0px)",
-                  opacity: textFadingOut ? 0 : 1,
-                  y: textFadingOut ? -15 : 0
-                }}
-                transition={{ 
-                  delay: textFadingOut ? 0 : (showClouds ? 1.0 : 0.2), 
-                  duration: textFadingOut ? 0.4 : 0.8,
-                  ease: textFadingOut ? "easeIn" : "easeOut"
-                }}
-              >                {/* First line - El Segundo High School */}
-                <motion.h1
-                  className="font-['Great_Vibes',_cursive] text-6xl md:text-7xl lg:text-8xl text-center text-white tracking-wide"
-                  style={{ 
-                    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5))',
-                    WebkitTextStroke: '0.5px rgba(0, 0, 0, 0.3)'
-                  }}
-                >
-                  {showClouds ? (
-                    // Drawing animation for cloud animation (first load/refresh)
-                    <div className="relative">
-                      {/* Invisible text to maintain layout */}
-                      <span className="invisible whitespace-nowrap">El Segundo High School</span>
-                      
-                      {/* SVG Text Drawing Animation */}
-                      <motion.div 
-                        className="absolute inset-0 flex items-center justify-center"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1.3, duration: 0.3 }}
-                      >
-                        <svg width="100%" height="100%" viewBox="0 0 700 120" className="absolute inset-0">
-                          <motion.text
-                            x="50%"
-                            y="50%"
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                            fill="none"
-                            stroke="white"
-                            strokeWidth="1.5"
-                            fontFamily="'Great Vibes', cursive"
-                            fontSize="58"
-                            className="text-shadow-sm"
-                            initial={{ strokeDasharray: 1000, strokeDashoffset: 1000 }}
-                            animate={{ strokeDashoffset: 0 }}
-                            transition={{ 
-                              delay: 2.0, 
-                              duration: 3.0,
-                              ease: "easeOut"
-                            }}
-                          >
-                            El Segundo High School
-                          </motion.text>
-                          <motion.text
-                            x="50%"
-                            y="50%"
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                            fill="white"
-                            fontFamily="'Great Vibes', cursive"
-                            fontSize="58"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ 
-                              delay: 5.0,
+      } catch {}
+    }
+    return internalNav === 'true' || hasInternalReferrer;
+  };
+
+  // ...existing state and animation logic...
+
+  // Place all animation and JSX code here, outside of isInternalNavigation
+  // ...existing code...
+
+  return (
+    <>
+      {/* Video background at the very bottom */}
+      <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+        >
+          <source src="/school2.mp4" type="video/mp4" />
+        </video>
+      </div>
+
                               duration: 0.3,
                             }}
                           >
