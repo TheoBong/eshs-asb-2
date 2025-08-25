@@ -62,9 +62,6 @@ export default function CheckoutPage() {
 
   return (
     <ThemedPageWrapper pageType="shop">
-      {/* Overlay to darken the background video */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
-
       {/* Main content */}
       <div className="relative z-10 min-h-screen py-12">
         <div className="container mx-auto px-4">

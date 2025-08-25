@@ -70,8 +70,6 @@ export default function Elections() {
   if (loading) {
     return (
       <ThemedPageWrapper pageType="information">
-        {/* Overlay to darken the background video */}
-        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
         
         {/* Loading content */}
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
@@ -84,8 +82,6 @@ export default function Elections() {
   if (error) {
     return (
       <ThemedPageWrapper pageType="information">
-        {/* Overlay to darken the background video */}
-        <div className="fixed inset-0 bg-black bg-opacity-50 -z-10"></div>
         
         {/* Error content */}
         <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">

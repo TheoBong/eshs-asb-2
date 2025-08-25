@@ -136,6 +136,9 @@ function App() {
               <source src={schoolVideo} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
+            
+            {/* Vignette overlay applied directly over video */}
+            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
           </div>
           <Toaster />
           <Router />
