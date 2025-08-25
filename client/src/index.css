@@ -235,13 +235,13 @@
     -webkit-transform: scale(1) !important;
   }
   
-  /* Mobile positioning adjustments */
+  /* Mobile positioning adjustments with increased spacing */
   .shop-overlay {
     left: 0.5rem !important;
   }
   
   .theater-overlay {
-    left: -10rem !important;  /* Move far left, partially off-screen */
+    left: -15rem !important;  /* Move further left for more spacing */
     bottom: 13rem !important;
   }
   
@@ -250,8 +250,17 @@
   }
   
   .information-overlay {
-    right: -10rem !important;  /* Move far right, partially off-screen */
+    right: -15rem !important;  /* Move further right for more spacing */
     bottom: 13rem !important;
+  }
+  
+  /* Move text up on mobile only - multiple selectors for text containers */
+  .fixed.inset-0.z-50.flex.items-center.justify-center,
+  .fixed.inset-0.z-40.flex.items-center.justify-center,
+  .relative.z-10.mb-32 {
+    align-items: flex-start !important;
+    padding-top: 15vh !important;
+    margin-top: -10vh !important;
   }
   
   /* Prevent horizontal scroll on mobile */
@@ -265,6 +274,38 @@
   #root {
     overflow-x: hidden !important;
     max-width: 100vw !important;
+  }
+}
+
+/* iPhone size specific adjustments (393x852) */
+@media screen and (max-width: 393px) and (min-height: 852px) {
+  /* Top buttons - ensure they're twice as large and properly spaced */
+  .theater-overlay img,
+  .information-overlay img {
+    width: 512px !important;
+    max-width: 512px !important;
+    min-width: 512px !important;
+    -webkit-transform: scale(1) !important;
+  }
+  
+  /* Increase spacing further for iPhone size */
+  .theater-overlay {
+    left: -18rem !important;  /* Even further left */
+    bottom: 13rem !important;
+  }
+  
+  .information-overlay {
+    right: -18rem !important;  /* Even further right */
+    bottom: 13rem !important;
+  }
+  
+  /* Move text higher on iPhone specifically */
+  .fixed.inset-0.z-50.flex.items-center.justify-center,
+  .fixed.inset-0.z-40.flex.items-center.justify-center,
+  .relative.z-10.mb-32 {
+    align-items: flex-start !important;
+    padding-top: 12vh !important;
+    margin-top: -12vh !important;
   }
 }
 
@@ -292,6 +333,15 @@
       height: auto !important;
       -webkit-transform: translateZ(0) scale(1) !important;
       transform: translateZ(0) scale(1) !important;
+    }
+    
+    /* Safari-specific text positioning for mobile */
+    .fixed.inset-0.z-50.flex.items-center.justify-center,
+    .fixed.inset-0.z-40.flex.items-center.justify-center,
+    .relative.z-10.mb-32 {
+      align-items: flex-start !important;
+      padding-top: 15vh !important;
+      margin-top: -10vh !important;
     }
   }
 }
