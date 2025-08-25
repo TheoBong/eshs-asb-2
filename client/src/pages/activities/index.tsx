@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
@@ -10,7 +10,7 @@ import { useCart } from "@/contexts/CartContext";
 const mockEvents: Event[] = [];
 
 export default function Activities() {
-  const [, setLocation] = useLocation();
+  const { navigateTo } = useNavigation();
   const [activeTab, setActiveTab] = useState("All");
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,8 +38,7 @@ export default function Activities() {
   }, []);
 
   const handleBackClick = () => {
-    sessionStorage.setItem('internal-navigation', 'true');
-    setLocation("/");
+    navigateTo("home");
   };
 
   // Filter events by category
@@ -60,12 +59,11 @@ export default function Activities() {
   };
 
   const handleEventDetails = (eventId: string) => {
-    setLocation(`/activities/details/${eventId}`);
+    navigateTo("event-details", { id: eventId });
   };
 
   const handleCartClick = () => {
-    sessionStorage.setItem('cart-referrer', '/activities');
-    setLocation("/shop/cart");
+    navigateTo("cart");
   };
 
   return (

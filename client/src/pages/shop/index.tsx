@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,7 @@ import { getProducts, type Product } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
 
 export default function Shop() {
-  const [, setLocation] = useLocation();
+  const { navigateTo } = useNavigation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterOrganization, setFilterOrganization] = useState("all");
@@ -73,17 +73,15 @@ export default function Shop() {
   });
   
   const handleProductClick = (productId: string) => {
-    setLocation(`/shop/product/${productId}`);
+    navigateTo("product", { id: productId });
   };  // Use cart count from CartContext
   const { cartCount } = useCart();
 
   const handleCartClick = () => {
-    sessionStorage.setItem('cart-referrer', '/shop');
-    setLocation("/shop/cart");
+    navigateTo("cart");
   };
     const handleBackClick = () => {
-    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
-    setLocation("/");
+    navigateTo("home");
   };
   return (
     <ThemedPageWrapper pageType="shop">

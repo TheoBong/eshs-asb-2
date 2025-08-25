@@ -1,4 +1,4 @@
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +21,7 @@ interface CartItem {
 }
 
 export default function CartPage() {
-  const [, setLocation] = useLocation();
+  const { navigateTo } = useNavigation();
   const { cartItems, updateQuantity, removeFromCart } = useCart();
 
   const handleQuantityChange = (id: number | string, change: number, size?: string, color?: string) => {
@@ -41,11 +41,7 @@ export default function CartPage() {
   };
 
   const handleContinueShopping = () => {
-    const referrer = sessionStorage.getItem('cart-referrer');
-    // Default to /shop if no referrer is found
-    setLocation(referrer || "/shop");
-    // Clear the referrer after using it
-    sessionStorage.removeItem('cart-referrer');
+    navigateTo("shop");
   };
 
   const handleCheckout = () => {
@@ -59,7 +55,7 @@ export default function CartPage() {
     }
     
     // Navigate to checkout page
-    setLocation("/shop/checkout");
+    navigateTo("checkout");
   };
 
   const subtotal = calculateSubtotal();

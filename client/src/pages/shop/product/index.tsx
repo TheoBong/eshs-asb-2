@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useRoute } from "wouter";
+import { useNavigation } from "@/App";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -10,8 +10,7 @@ import { getProduct } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
 
 export default function ProductPage() {
-  const [match, params] = useRoute("/shop/product/:id");
-  const [, setLocation] = useLocation();
+  const { navigateTo, currentParams } = useNavigation();
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
@@ -23,11 +22,11 @@ export default function ProductPage() {
   // Fetch product data from API
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!params?.id) return;
+      if (!currentParams?.id) return;
       
       try {
         setLoading(true);
-        const data = await getProduct(params.id);
+        const data = await getProduct(currentParams.id);
         setProduct(data);
         setError(null);
       } catch (err) {
@@ -39,7 +38,7 @@ export default function ProductPage() {
     };
 
     fetchProduct();
-  }, [params?.id]);  if (loading) {
+  }, [currentParams?.id]);  if (loading) {
     return (
       <ThemedPageWrapper pageType="shop">
         <div className="min-h-screen flex items-center justify-center">
@@ -59,7 +58,7 @@ export default function ProductPage() {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2 text-white">Product Not Found</h2>
             <p className="mb-4 text-gray-300">The product you're looking for doesn't exist or has been removed.</p>
-            <PrimaryButton onClick={() => setLocation("/shop")}>Return to Shop</PrimaryButton>
+            <PrimaryButton onClick={() => navigateTo("shop")}>Return to Shop</PrimaryButton>
           </div>
         </div>
       </ThemedPageWrapper>
@@ -128,13 +127,12 @@ export default function ProductPage() {
     
     // Navigate to cart page after short delay
     setTimeout(() => {
-      sessionStorage.setItem('cart-referrer', `/shop/product/${productId}`);
-      setLocation("/shop/cart");
+      navigateTo("cart");
     }, 1500);
   };
 
   const handleBackClick = () => {
-    setLocation("/shop");
+    navigateTo("shop");
   };
 
   return (

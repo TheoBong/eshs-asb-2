@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
@@ -30,7 +30,7 @@ const clubResources = [
 ];
 
 export default function Clubs() {
-  const [, setLocation] = useLocation();
+  const { navigateTo } = useNavigation();
   const [activeTab, setActiveTab] = useState("All");
   const [clubs, setClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +54,7 @@ export default function Clubs() {
   }, []);
 
   const handleBackClick = () => {
-    setLocation("/information");
+    navigateTo("information");
   };
 
   // Filter clubs by category

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ import { ThemedPageWrapper } from "@/components/ThemedComponents";
 import { getVideos, type VideoPost } from "@/lib/api";
 
 const BirdsEyeView = () => {
-  const [, setLocation] = useLocation();
+  const { navigateTo } = useNavigation();
   const [videos, setVideos] = useState<VideoPost[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<VideoPost | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,8 +39,7 @@ const BirdsEyeView = () => {
   }, []);
   
   const handleBackClick = () => {
-    sessionStorage.setItem('internal-navigation', 'true');
-    setLocation("/");
+    navigateTo("home");
   };
   
   const handleVideoSelect = (video: VideoPost) => {

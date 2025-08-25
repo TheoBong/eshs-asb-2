@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +27,7 @@ interface CartItem {
 }
 
 export default function CheckoutPage() {
-  const [, setLocation] = useLocation();
+  const { navigateTo } = useNavigation();
   const [paymentMethod, setPaymentMethod] = useState("credit");
   const [billingIsSameAsShipping, setBillingIsSameAsShipping] = useState(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -75,8 +75,7 @@ export default function CheckoutPage() {
   };
 
   const handleBackToCart = () => {
-    sessionStorage.setItem('cart-referrer', '/shop/checkout');
-    setLocation("/shop/cart");
+    navigateTo("cart");
   };
 
   const validateForm = () => {
@@ -152,7 +151,7 @@ export default function CheckoutPage() {
       
       // Redirect to shop page
       setTimeout(() => {
-        setLocation("/shop");
+        navigateTo("shop");
       }, 1500);
     } catch (err) {
       console.error('Failed to process order:', err);
@@ -473,7 +472,7 @@ export default function CheckoutPage() {
                       ) : (
                         <div className="text-center py-4">
                           <p className="text-gray-300">Your cart is empty</p>
-                          <OutlineButton className="mt-2" onClick={() => setLocation('/shop')}>
+                          <OutlineButton className="mt-2" onClick={() => navigateTo('shop')}>
                             Return to Shop
                           </OutlineButton>
                         </div>

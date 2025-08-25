@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,7 +42,7 @@ interface CartItem {
 }
 
 export default function EventDetails() {
-  const [, setLocation] = useLocation();
+  const { navigateTo, currentParams } = useNavigation();
   const [eventId, setEventId] = useState<string>("");
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
@@ -83,12 +83,10 @@ export default function EventDetails() {
         setLoading(true);
         setError(null);
 
-        // Extract event ID from the URL
-        const currentPath = window.location.pathname;
-        const matches = currentPath.match(/\/activities\/details\/(.+)$/);
+        // Get event ID from navigation params
+        const id = currentParams.id;
         
-        if (matches) {
-          const id = matches[1];
+        if (id) {
           setEventId(id);
           
           // Fetch all events and find the specific one
@@ -100,7 +98,7 @@ export default function EventDetails() {
             setError('Event not found');
           }
         } else {
-          setError('Invalid event URL');
+          setError('Event ID not provided');
         }
       } catch (err) {
         console.error('Failed to load event:', err);
@@ -114,8 +112,7 @@ export default function EventDetails() {
   }, []);
 
   const handleBackClick = () => {
-    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
-    setLocation("/activities");
+    navigateTo("activities");
   };
   const formatDate = (date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -322,7 +319,7 @@ export default function EventDetails() {
 
       // After success, redirect back to activities after 3 seconds
       setTimeout(() => {
-        setLocation("/activities");
+        navigateTo("activities");
       }, 3000);
     } catch (error) {
       console.error('Form submission failed:', error);
@@ -351,8 +348,7 @@ export default function EventDetails() {
     };
 
     addToCart(cartItem);
-    sessionStorage.setItem('cart-referrer', `/activities/details/${event._id}`);
-    setLocation("/shop/cart");
+    navigateTo("cart");
   };
 
   if (!event) {

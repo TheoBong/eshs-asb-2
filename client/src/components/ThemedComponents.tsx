@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import React from "react";
 
 // Themed Button variants
@@ -178,15 +178,14 @@ export const ThemedTopBar: React.FC<{
   showBackButton?: boolean;
   customBackAction?: () => void;
 }> = ({ title, showBackButton = true, customBackAction }) => {
-  const [, navigate] = useLocation(); // useLocation returns [path, navigate]
+  const { navigateTo } = useNavigation();
 
   const handleBack = () => {
     if (customBackAction) {
       customBackAction();
     } else {
-      // wouter doesn't have a direct equivalent of navigate(-1)
-      // Using window.history.back() is a common approach
-      window.history.back();
+      // Navigate to home as default back action for SPA
+      navigateTo("home");
     }
   };
 

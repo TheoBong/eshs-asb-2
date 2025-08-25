@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ const governmentResources = [
 ];
 
 export default function Elections() {
-  const [, setLocation] = useLocation();
+  const { navigateTo } = useNavigation();
   const [activeTab, setActiveTab] = useState("All");
   const [positions, setPositions] = useState<StudentGovPosition[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +55,7 @@ export default function Elections() {
   }, []);
 
   const handleBackClick = () => {
-    setLocation("/information");
+    navigateTo("information");
   };
 
   // Filter positions by grade level

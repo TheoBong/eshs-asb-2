@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigation } from "@/App";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ThemedPageWrapper, PrimaryButton, OutlineButton, ThemedCard } from "@/components/ThemedComponents";
@@ -78,7 +78,7 @@ const getIcon = (sectionId: string) => {
 };
 
 export default function Information() {
-	const [, setLocation] = useLocation();
+	const { navigateTo } = useNavigation();
 	const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 	const [loading, setLoading] = useState(true);
 
@@ -101,11 +101,14 @@ export default function Information() {
 	}, []);
 
 	const handleNavigate = (path: string) => {
-		setLocation(path);
+		if (path === "/information/student-government") {
+			navigateTo("elections");
+		} else if (path === "/information/clubs") {
+			navigateTo("clubs");
+		}
 	};
 	const handleBackClick = () => {
-		sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
-		setLocation("/");
+		navigateTo("home");
 	};
 	return (
 		<ThemedPageWrapper pageType="information">
