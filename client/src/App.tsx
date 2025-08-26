@@ -138,7 +138,7 @@ function App() {
             </video>
             
             {/* Vignette overlay applied directly over video */}
-            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+            <div className="absolute inset-0 bg-black bg-opacity-35"></div>
           </div>
           <Toaster />
           <Router />

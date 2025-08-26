@@ -6,7 +6,12 @@
       "Bash(npm run dev:*)",
       "Bash(npm run build:*)",
       "Bash(rm:*)",
-      "Read(/c:\\Users\\theob\\OneDrive\\Documents\\ShareX\\Screenshots\\2025-08/**)"
+      "Read(/c:\\Users\\theob\\OneDrive\\Documents\\ShareX\\Screenshots\\2025-08/**)",
+      "Bash(taskkill:*)",
+      "WebFetch(domain:132.145.137.212)",
+      "Read(/c:\\Users\\theob\\Downloads/**)",
+      "Read(/c:\\Users\\theob\\Downloads/**)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

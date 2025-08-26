@@ -88,13 +88,13 @@ export default function Shop() {
   return (
     <ThemedPageWrapper pageType="shop">
       {/* Main content */}
-      <div className="relative z-10 min-h-screen">
+      <div className="relative z-30 min-h-screen" style={{ isolation: 'isolate' }}>
         <div className="container mx-auto px-4 py-8">
           {/* Transparent back button with title */}          <div className="flex items-center mb-8">
             <Button
               variant="ghost"
               onClick={handleBackClick}
-              className="text-white/90 hover:text-white p-2 mr-4 bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+              className="text-white/90 hover:text-white p-2 mr-4 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/15 transition-all duration-300 flex items-center space-x-2"
             >
               <svg
                 className="w-5 h-5"
@@ -117,7 +117,7 @@ export default function Shop() {
           </div>
 
           {/* Important Shopping Information */}
-          <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl p-6">
             <div className="space-y-4">
               <div className="p-4 rounded-lg border border-blue-400/50 bg-blue-500/20">
                 <div className="flex justify-between items-start">
@@ -149,7 +149,7 @@ export default function Shop() {
 
           {/* Error State */}
           {error && (
-            <ThemedCard className="p-6 text-center mb-8">
+            <ThemedCard className="p-6 text-center mb-8 bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
               <div className="text-red-400 mb-4">
                 <svg className="w-12 h-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -168,7 +168,7 @@ export default function Shop() {
                 <div className="flex items-center mt-6">
                   {/* Tab Navigation */}
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-                    <TabsList className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl h-10">
+                    <TabsList className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl h-10">
                       <TabsTrigger value="all" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white h-8">All Products</TabsTrigger>
                       <TabsTrigger value="apparel" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white h-8">Apparel</TabsTrigger>
                       <TabsTrigger value="accessories" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white h-8">Accessories</TabsTrigger>
@@ -178,7 +178,7 @@ export default function Shop() {
                   {/* Cart Button - Inline with tabs */}
                   <PrimaryButton 
                     onClick={handleCartClick} 
-                    className="bg-white/10 hover:bg-white/20 text-white shadow-xl border border-white/20 backdrop-blur-xl px-4 h-10 text-sm font-medium rounded-lg flex items-center space-x-2 ml-4"
+                    className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:bg-white/20 text-white px-4 h-10 text-sm font-medium rounded-lg flex items-center space-x-2 ml-4"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -193,7 +193,7 @@ export default function Shop() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">              {filteredItems.map(item => (
                   <ThemedCard 
                     key={item._id} 
-                    className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl hover:shadow-2xl transition-transform hover:scale-[1.01] cursor-pointer"
+                    className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:shadow-2xl transition-transform hover:scale-[1.01] cursor-pointer"
                     onClick={() => handleProductClick(item._id)}
                   >{/* Product Image */}
                     <div className="h-48 bg-gray-900 overflow-hidden">
@@ -229,7 +229,7 @@ export default function Shop() {
                   </ThemedCard>
                 ))}
               </div>
-            ) : (            <ThemedCard className="p-12 text-center">
+            ) : (            <ThemedCard className="p-12 text-center bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                 <div className="flex flex-col items-center">
                   <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

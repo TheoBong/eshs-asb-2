@@ -57,7 +57,7 @@ export const ThemedCard = React.forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <Card 
-      className={cn("card-themed backdrop-blur-md", className)} 
+      className={cn("card-themed backdrop-blur-xl", className)} 
       ref={ref} 
       {...props} 
     />
@@ -72,7 +72,7 @@ export const TheaterCard = React.forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <Card 
-      className={cn("card-themed backdrop-blur-md", className)} 
+      className={cn("card-themed backdrop-blur-xl", className)} 
       ref={ref} 
       {...props} 
     />

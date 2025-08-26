@@ -78,7 +78,12 @@ export default function Activities() {
           <div className="flex items-center mb-8">
             <OutlineButton
               onClick={handleBackClick}
-              className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
+              className="bg-white/[0.05] border border-white/20 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/15 transition-all duration-300 font-semibold p-3 mr-4"
+              style={{ 
+                backdropFilter: 'blur(25px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(25px) saturate(180%)',
+                boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 8px 32px 0 rgba(0, 0, 0, 0.3)'
+              }}
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -89,7 +94,11 @@ export default function Activities() {
           </div>
 
           {/* Activities Banner */}
-          <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6 mb-8 text-white">
+          <div className="bg-white/[0.05] border border-white/20 shadow-2xl rounded-xl p-6 mb-8 text-white" style={{
+            backdropFilter: 'blur(30px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+            boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 16px 64px 0 rgba(0, 0, 0, 0.3)'
+          }}>
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold mb-2">Upcoming Events & Ticket Sales</h2>
@@ -104,8 +113,13 @@ export default function Activities() {
           </div>          {/* Category Filter Tabs with Cart Button */}
           <div className="mb-8 flex items-center justify-center">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 max-w-3xl">
-              <TabsList className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-lg grid w-full h-10" 
-                        style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
+              <TabsList className="bg-white/[0.05] border border-white/20 shadow-lg grid w-full h-10" 
+                        style={{ 
+                          gridTemplateColumns: `repeat(${categories.length}, 1fr)`,
+                          backdropFilter: 'blur(25px) saturate(180%)',
+                          WebkitBackdropFilter: 'blur(25px) saturate(180%)',
+                          boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 8px 32px 0 rgba(0, 0, 0, 0.3)'
+                        }}>
                 {categories.map(category => (
                   <TabsTrigger 
                     key={category}
@@ -122,6 +136,7 @@ export default function Activities() {
             <PrimaryButton 
               onClick={handleCartClick} 
               className="bg-white/10 hover:bg-white/20 text-white shadow-xl border border-white/20 backdrop-blur-xl px-4 h-10 text-sm font-medium rounded-lg flex items-center space-x-2 ml-4"
+              style={{ backdropFilter: 'blur(25px)' }}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -171,7 +186,7 @@ export default function Activities() {
           {!loading && !error && events.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {filteredEvents.map((event) => (
-                <ThemedCard key={event._id} className="hover:shadow-md transition-all bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl">
+                <ThemedCard key={event._id} className="hover:shadow-md transition-all bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl" style={{ backdropFilter: 'blur(30px)' }}>
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
@@ -231,7 +246,7 @@ export default function Activities() {
                           <h4 className="font-medium text-gray-200 mb-3">Ticket Options:</h4>
                           <div className="space-y-2">
                             {event.ticketTypes.map((ticket, index) => (
-                              <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                              <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10" style={{ backdropFilter: 'blur(15px)' }}>
                                 <div className="flex-1">
                                   <div className="font-medium text-white">{ticket.name}</div>
                                   <div className="text-sm text-gray-300">{ticket.description}</div>
