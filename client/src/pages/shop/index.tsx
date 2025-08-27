@@ -88,7 +88,7 @@ export default function Shop() {
   return (
     <ThemedPageWrapper pageType="shop">
       {/* Main content */}
-      <div className="relative z-30 min-h-screen" style={{ isolation: 'isolate' }}>
+      <div className="relative z-10 min-h-screen">
         <div className="container mx-auto px-4 py-8">
           {/* Transparent back button with title */}          <div className="flex items-center mb-8">
             <Button
