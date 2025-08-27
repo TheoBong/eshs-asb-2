@@ -1,4 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
+import { useState, useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -33,32 +34,31 @@ import Admin from "@/pages/admin/index";
 import CommaTest from "@/pages/admin/comma-test";
 
 
-// Page wrapper component for fade transitions
+// Page wrapper component for fade transitions - WITHOUT creating stacking context
 const PageWrapper = ({ children }: { children: React.ReactNode }) => {
+  // Instead of using Framer Motion which adds transforms, use CSS transitions
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    // Trigger fade-in after mount
+    setIsVisible(true);
+  }, []);
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ 
-        duration: 0.2,
-        ease: "easeInOut"
-      }}
-      className="w-full h-full relative"
+    <div
+      className="w-full h-full"
       style={{
-        // Safari-specific fixes for smooth transitions
-        WebkitBackfaceVisibility: 'hidden',
-        WebkitPerspective: 1000,
-        // Remove transform to avoid creating new stacking context
+        opacity: isVisible ? 1 : 0,
+        transition: 'opacity 0.2s ease-in-out',
         backgroundColor: 'transparent',
-        // Force hardware acceleration and prevent flickering
-        willChange: 'opacity',
+        // CRITICAL: No transform, no will-change: transform
+        // These would create a new stacking context
         WebkitFontSmoothing: 'antialiased',
-        MozOsxFontSmoothing: 'grayscale'
+        MozOsxFontSmoothing: 'grayscale',
       }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };
 
@@ -101,48 +101,97 @@ function Router() {
 }
 
 function App() {
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [contentReady, setContentReady] = useState(false);
+
+  useEffect(() => {
+    // Delay content appearance slightly after video loads for smoother transition
+    if (videoLoaded) {
+      const timer = setTimeout(() => {
+        setContentReady(true);
+      }, 100); // Small delay to ensure smooth transition
+      return () => clearTimeout(timer);
+    }
+  }, [videoLoaded]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <TooltipProvider>
-          {/* Persistent Video Background - stays mounted across all routes */}
-          <div className="fixed inset-0 -z-10 overflow-hidden bg-black">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              webkit-playsinline="true"
-              x5-playsinline="true"
-              className="absolute w-full h-full object-cover"
+          {/* Create a wrapper that doesn't have any transforms */}
+          <div className="relative w-full h-full">
+            {/* Persistent Video Background - stays mounted across all routes */}
+            <div className="fixed inset-0 -z-10 overflow-hidden bg-black">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                webkit-playsinline="true"
+                x5-playsinline="true"
+                className="absolute w-full h-full object-cover"
+                style={{
+                  objectFit: 'cover',
+                  width: '100vw',
+                  height: '100vh',
+                  filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
+                  minWidth: '100%',
+                  minHeight: '100%',
+                  left: '50%',
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  opacity: videoLoaded ? 1 : 0,
+                  transition: 'opacity 0.8s ease-out',
+                }}
+                onError={(e) => {
+                  console.error('Video failed to load:', e);
+                  console.log('Video src:', schoolVideo);
+                  // Still set loaded to true to show content even if video fails
+                  setVideoLoaded(true);
+                }}
+                onLoadStart={() => console.log('Video loading started')}
+                onCanPlay={() => {
+                  console.log('Video can play');
+                  setVideoLoaded(true);
+                }}
+              >
+                <source src={schoolVideo} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              
+              {/* Vignette overlay applied directly over video */}
+              <div className="absolute inset-0 bg-black bg-opacity-35"
+                style={{
+                  opacity: videoLoaded ? 1 : 0,
+                  transition: 'opacity 0.8s ease-out',
+                }}
+              ></div>
+            </div>
+
+            {/* Loading screen with fade out */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black pointer-events-none"
               style={{
-                objectFit: 'cover',
-                width: '100vw',
-                height: '100vh',
-                filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
-                minWidth: '100%',
-                minHeight: '100%',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
+                opacity: videoLoaded ? 0 : 1,
+                transition: 'opacity 0.6s ease-out',
               }}
-              onError={(e) => {
-                console.error('Video failed to load:', e);
-                console.log('Video src:', schoolVideo);
-              }}
-              onLoadStart={() => console.log('Video loading started')}
-              onCanPlay={() => console.log('Video can play')}
             >
-              <source src={schoolVideo} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            
-            {/* Vignette overlay applied directly over video */}
-            <div className="absolute inset-0 bg-black bg-opacity-35"></div>
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+                <p className="text-white/70 text-sm">Loading...</p>
+              </div>
+            </div>
+
+            {/* Content wrapper with smooth fade-in */}
+            <div style={{
+              opacity: contentReady ? 1 : 0,
+              transform: contentReady ? 'translateY(0)' : 'translateY(10px)',
+              transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
+            }}>
+              <Toaster />
+              <Router />
+            </div>
           </div>
-          <Toaster />
-          <Router />
         </TooltipProvider>
       </CartProvider>
     </QueryClientProvider>
