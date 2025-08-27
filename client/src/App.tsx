@@ -49,7 +49,7 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
         // Safari-specific fixes for smooth transitions
         WebkitBackfaceVisibility: 'hidden',
         WebkitPerspective: 1000,
-        WebkitTransform: 'translate3d(0,0,0)',
+        // Remove transform to avoid creating new stacking context
         backgroundColor: 'transparent',
         // Force hardware acceleration and prevent flickering
         willChange: 'opacity',
@@ -57,42 +57,6 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
         MozOsxFontSmoothing: 'grayscale'
       }}
     >
-      {/* Video background inside the stacking context */}
-      <div className="fixed inset-0 -z-10 overflow-hidden bg-black">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          webkit-playsinline="true"
-          x5-playsinline="true"
-          className="absolute w-full h-full object-cover"
-          style={{
-            objectFit: 'cover',
-            width: '100vw',
-            height: '100vh',
-            filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
-            minWidth: '100%',
-            minHeight: '100%',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
-          onError={(e) => {
-            console.error('Video failed to load:', e);
-            console.log('Video src:', schoolVideo);
-          }}
-          onLoadStart={() => console.log('Video loading started')}
-          onCanPlay={() => console.log('Video can play')}
-        >
-          <source src={schoolVideo} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        
-        {/* Vignette overlay applied directly over video */}
-        <div className="absolute inset-0 bg-black bg-opacity-35"></div>
-      </div>
       {children}
     </motion.div>
   );
@@ -141,7 +105,42 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <TooltipProvider>
-          {/* Video background now moved to PageWrapper for proper stacking context */}
+          {/* Persistent Video Background - stays mounted across all routes */}
+          <div className="fixed inset-0 -z-10 overflow-hidden bg-black">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              webkit-playsinline="true"
+              x5-playsinline="true"
+              className="absolute w-full h-full object-cover"
+              style={{
+                objectFit: 'cover',
+                width: '100vw',
+                height: '100vh',
+                filter: 'brightness(0.8) contrast(1.15) saturate(1.05)',
+                minWidth: '100%',
+                minHeight: '100%',
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
+              onError={(e) => {
+                console.error('Video failed to load:', e);
+                console.log('Video src:', schoolVideo);
+              }}
+              onLoadStart={() => console.log('Video loading started')}
+              onCanPlay={() => console.log('Video can play')}
+            >
+              <source src={schoolVideo} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            
+            {/* Vignette overlay applied directly over video */}
+            <div className="absolute inset-0 bg-black bg-opacity-35"></div>
+          </div>
           <Toaster />
           <Router />
         </TooltipProvider>
