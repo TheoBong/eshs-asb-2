@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
 import { StudentGovPosition, getStudentGovPositions } from "@/lib/api";
+import { UniversalPageLayout } from "@/components/UniversalPageLayout";
+import { BlurContainer, BlurCard, BlurActionButton } from "@/components/UniversalBlurComponents";
 
 // Government resources
 const governmentResources = [
@@ -69,92 +71,91 @@ export default function Elections() {
 
   if (loading) {
     return (
-      <ThemedPageWrapper pageType="information">
-        
-        {/* Loading content */}
-        <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
-          <div className="text-white text-xl">Loading student government positions...</div>
-        </div>
-      </ThemedPageWrapper>
+      <UniversalPageLayout pageType="information" title="Student Government">
+        {({ contentVisible }) => (
+          <BlurContainer contentVisible={contentVisible} className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <div className="text-white text-xl">Loading student government positions...</div>
+          </BlurContainer>
+        )}
+      </UniversalPageLayout>
     );
   }
 
   if (error) {
     return (
-      <ThemedPageWrapper pageType="information">
-        
-        {/* Error content */}
-        <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
-          <div className="text-center">
+      <UniversalPageLayout pageType="information" title="Student Government">
+        {({ contentVisible }) => (
+          <BlurContainer contentVisible={contentVisible} className="text-center py-12">
             <div className="text-white text-xl mb-4">{error}</div>
-            <OutlineButton
+            <BlurActionButton
+              contentVisible={contentVisible}
               onClick={handleBackClick}
-              className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold"
             >
               Back to Information
-            </OutlineButton>
-          </div>
-        </div>
-      </ThemedPageWrapper>
+            </BlurActionButton>
+          </BlurContainer>
+        )}
+      </UniversalPageLayout>
     );
   }
 
   return (
-    <ThemedPageWrapper pageType="information">
-      {/* Light overlay for better text contrast without darkening UI */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 -z-10" style={{ pointerEvents: 'none' }}></div>
-      
-      {/* Main content */}
-      <div className="relative z-10 min-h-screen py-12">
-        <div className="container mx-auto px-4">
-          {/* Header with back button */}
-          <div className="flex items-center mb-8">
-            <OutlineButton
-              onClick={handleBackClick}
-              className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back
-            </OutlineButton>
-            <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">Student Government</h1>
-          </div>
-
+    <UniversalPageLayout 
+      pageType="information" 
+      title="Student Government"
+      backButtonText="Back"
+    >
+      {({ contentVisible }) => (
+        <>
           {/* Student Government Banner */}
-          <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6 mb-8 text-white">
+          <BlurContainer contentVisible={contentVisible} delay="200ms" className="p-6 mb-8 text-white">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold mb-2">Student Government Representatives</h2>
                 <p className="mb-4">Meet your student government representatives and learn about their roles in representing your voice at school.</p>
               </div>
-              <div className="mt-6 md:mt-0 h-24 w-24 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20">
+              <div className="mt-6 md:mt-0 h-24 w-24 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
                 <svg className="h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
             </div>
-          </div>          {/* Grade Level Filter Tabs */}
-          <Tabs defaultValue="All" className="mb-8" onValueChange={setActiveTab}>
-            <TabsList className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-lg grid w-full max-w-4xl mx-auto" style={{gridTemplateColumns: `repeat(${gradeLevels.length}, minmax(0, 1fr))`}}>
-              {gradeLevels.map((level) => (
-                <TabsTrigger 
-                  key={level}
-                  value={level} 
-                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
-                >
-                  {level}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          </BlurContainer>
+          
+          {/* Grade Level Filter Tabs */}
+          <BlurContainer contentVisible={contentVisible} delay="300ms" className="mb-8">
+            <Tabs defaultValue="All" className="" onValueChange={setActiveTab}>
+              <TabsList 
+                className="bg-white/5 border border-white/10 shadow-lg grid w-full max-w-4xl mx-auto" 
+                style={{
+                  gridTemplateColumns: `repeat(${gradeLevels.length}, minmax(0, 1fr))`
+                }}
+              >
+                {gradeLevels.map((level) => (
+                  <TabsTrigger 
+                    key={level}
+                    value={level} 
+                    className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
+                  >
+                    {level}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </BlurContainer>
 
           {/* Positions Grid */}
           <div className="mb-8">
             {filteredPositions.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredPositions.map((position) => (
-                  <ThemedCard key={position._id} className="hover:shadow-md transition-all bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-lg">
+                {filteredPositions.map((position, index) => (
+                  <BlurCard
+                    key={position._id}
+                    contentVisible={contentVisible}
+                    index={index}
+                    delay={`${500 + (index * 50)}ms`}
+                  >
                     <div className="p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div>
@@ -193,14 +194,12 @@ export default function Elections() {
                           ))}
                         </div>
                       )}
-
-
                     </div>
-                  </ThemedCard>
+                  </BlurCard>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-lg">
+              <BlurContainer contentVisible={contentVisible} delay="400ms" className="text-center py-12">
                 <svg className="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -208,18 +207,23 @@ export default function Elections() {
                 <p className="mt-1 text-sm text-gray-300">
                   There are currently no positions listed for this category.
                 </p>
-              </div>
+              </BlurContainer>
             )}
           </div>
 
           {/* Government Resources */}
           <h2 className="text-2xl font-bold text-white mb-6">Student Government Resources</h2>
-          <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6 mb-8">
+          <BlurContainer contentVisible={contentVisible} delay="700ms" className="p-6 mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {governmentResources.map((resource, index) => (
-                <ThemedCard key={index} className="hover:shadow-md transition-all bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-lg">
+                <BlurCard
+                  key={index}
+                  contentVisible={contentVisible}
+                  index={index}
+                  delay={`${800 + (index * 50)}ms`}
+                >
                   <div className="p-4 flex items-center">
-                    <div className="mr-4 h-10 w-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white">
+                    <div className="mr-4 h-10 w-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
                       <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
@@ -228,18 +232,24 @@ export default function Elections() {
                       <h3 className="font-semibold text-white">{resource.title}</h3>
                       <p className="text-sm text-gray-300">{resource.description}</p>
                     </div>
-                    <OutlineButton className="ml-auto bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3" asChild>
-                      <a href={resource.link}>View</a>
-                    </OutlineButton>
+                    <a href={resource.link}>
+                      <BlurActionButton
+                        contentVisible={contentVisible}
+                        onClick={() => {}}
+                        className="ml-auto p-3"
+                      >
+                        View
+                      </BlurActionButton>
+                    </a>
                   </div>
-                </ThemedCard>
+                </BlurCard>
               ))}
             </div>
-          </div>
+          </BlurContainer>
 
           {/* Student Government FAQ */}
           <h2 className="text-2xl font-bold text-white mb-6">Student Government FAQ</h2>
-          <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6">
+          <BlurContainer contentVisible={contentVisible} delay="1100ms" className="p-6">
             <div className="space-y-4">
               <div className="border-b border-white/10 pb-4">
                 <h3 className="font-semibold mb-2 text-white">How can I contact my class representative?</h3>
@@ -250,9 +260,9 @@ export default function Elections() {
                 <p className="text-gray-300">Every school day during fourth period in Mrs. Richmond's room (B101).</p>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </ThemedPageWrapper>
+          </BlurContainer>
+        </>
+      )}
+    </UniversalPageLayout>
   );
 }

@@ -11,7 +11,8 @@
       "WebFetch(domain:132.145.137.212)",
       "Read(/c:\\Users\\theob\\Downloads/**)",
       "Read(/c:\\Users\\theob\\Downloads/**)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": []

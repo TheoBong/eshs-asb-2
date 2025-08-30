@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,6 +7,8 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, SecondaryButton, OutlineButton } from "@/components/ThemedComponents";
 import { useCart } from "@/contexts/CartContext";
+import { UniversalPageLayout } from "@/components/UniversalPageLayout";
+import { BlurContainer, BlurCard, BlurActionButton } from "@/components/UniversalBlurComponents";
 
 // Cart items interface - supports both shop items and event tickets
 interface CartItem {
@@ -64,36 +67,27 @@ export default function CartPage() {
 
   const subtotal = calculateSubtotal();
   const tax = subtotal * 0.0875; // 8.75% tax
-  const total = subtotal + tax;  return (
-    <ThemedPageWrapper pageType="shop">
-      {/* Main content */}
-      <div className="relative z-10 min-h-screen py-12">
-        <div className="container mx-auto px-4">
-          {/* Header */}          <div className="flex items-center mb-8">
-            <Button
-              variant="ghost"
-              onClick={handleContinueShopping}
-              className="text-white/90 hover:text-white p-2 mr-4 bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span>Back</span>
-            </Button>
-            <div>
-              <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">Your Shopping Cart</h1>
-              <p className="text-gray-300">Review your items before checkout</p>
-            </div>
-          </div>
+  const total = subtotal + tax;
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">            {/* Cart Items */}
+  return (
+    <UniversalPageLayout pageType="shop" title="Your Shopping Cart" backButtonText="Back">
+      {({ contentVisible }) => (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Cart Items */}
             <div className="lg:col-span-2">
-              <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl">
-                <CardContent className="p-6">
+              <BlurContainer contentVisible={contentVisible} delay="200ms" className="overflow-hidden">
+                <div className="p-6">
                   {cartItems.length > 0 ? (
                     <div className="space-y-6">
-                      {cartItems.map((item) => (
-                        <div key={item.id} className="flex gap-4 pb-6 border-b border-white/10 last:border-b-0 last:pb-0">
+                      {cartItems.map((item, index) => (
+                        <BlurCard 
+                          key={item.id} 
+                          contentVisible={contentVisible}
+                          index={index}
+                          delay={`${300 + (index * 100)}ms`}
+                          className="flex gap-4 pb-6 border-b border-white/10 last:border-b-0 last:pb-0"
+                        >
                           {/* Product/Event Image */}
                           <div className="w-24 h-24 bg-gray-900 rounded-md overflow-hidden">
                             {item.type === 'event' ? (
@@ -138,30 +132,28 @@ export default function CartPage() {
                             <div className="mt-4 flex justify-between items-center">
                               {/* Quantity Control */}
                               <div className="flex items-center">
-                                <OutlineButton
-                                  size="icon"
-                                  className="h-8 w-8 rounded-r-none"
+                                <button
+                                  className="h-8 w-8 rounded-r-none bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors duration-300 flex items-center justify-center"
                                   onClick={() => handleQuantityChange(item.id, -1, item.size, item.color)}
                                 >
                                   -
-                                </OutlineButton>
+                                </button>
                                 <div className="h-8 w-12 flex items-center justify-center border-y border-white/10 bg-white/5 text-white">
                                   {item.quantity}
                                 </div>
-                                <OutlineButton
-                                  size="icon"
-                                  className="h-8 w-8 rounded-l-none"
+                                <button
+                                  className="h-8 w-8 rounded-l-none bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors duration-300 flex items-center justify-center"
                                   onClick={() => handleQuantityChange(item.id, 1, item.size, item.color)}
                                 >
                                   +
-                                </OutlineButton>
+                                </button>
                               </div>
                               
                               {/* Remove Button */}
-                              <OutlineButton
-                                size="sm"
-                                className="text-red-400 hover:text-red-300"
+                              <BlurActionButton
+                                contentVisible={contentVisible}
                                 onClick={() => handleRemoveItem(item.id, item.size, item.color)}
+                                className="text-red-400 hover:text-red-300 py-2 px-3 text-sm flex items-center"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                                   <path d="M3 6h18"></path>
@@ -169,17 +161,21 @@ export default function CartPage() {
                                   <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
                                 </svg>
                                 Remove
-                              </OutlineButton>
+                              </BlurActionButton>
                             </div>
                           </div>
-                        </div>
+                        </BlurCard>
                       ))}
                       
                       {/* Keep Shopping Button */}
                       <div className="text-center">
-                        <OutlineButton onClick={handleContinueShopping}>
+                        <BlurActionButton 
+                          contentVisible={contentVisible}
+                          onClick={handleContinueShopping}
+                          className="py-2 px-4"
+                        >
                           Continue Shopping
-                        </OutlineButton>
+                        </BlurActionButton>
                       </div>
                     </div>
                   ) : (
@@ -190,16 +186,24 @@ export default function CartPage() {
                       <h3 className="mt-2 text-lg font-medium text-white">Your cart is empty</h3>
                       <p className="mt-1 text-gray-300">Looks like you haven't added anything to your cart yet.</p>
                       <div className="mt-6">
-                        <PrimaryButton onClick={handleContinueShopping}>Start Shopping</PrimaryButton>
+                        <BlurActionButton 
+                          contentVisible={contentVisible}
+                          onClick={handleContinueShopping}
+                          className="py-3 px-6 font-semibold"
+                        >
+                          Start Shopping
+                        </BlurActionButton>
                       </div>
                     </div>
                   )}
-                </CardContent>
-              </ThemedCard>
-            </div>              {/* Order Summary */}
+                </div>
+              </BlurContainer>
+            </div>
+
+            {/* Order Summary */}
             <div className="lg:col-span-1">
-              <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl">
-                <CardContent className="p-6">
+              <BlurContainer contentVisible={contentVisible} delay="400ms" className="overflow-hidden">
+                <div className="p-6">
                   <h2 className="text-xl font-semibold mb-4 text-white">Order Summary</h2>
                   
                   <div className="space-y-4">
@@ -223,12 +227,14 @@ export default function CartPage() {
                       <span>${total.toFixed(2)}</span>
                     </div>
                     
-                    <PrimaryButton
-                      className="w-full mt-4 bg-gray-600 hover:bg-gray-700 cursor-not-allowed"
+                    <BlurActionButton
+                      contentVisible={contentVisible}
+                      onClick={handleCheckout}
+                      className="w-full mt-4 py-3 px-6 font-semibold bg-gray-600 hover:bg-gray-700 cursor-not-allowed"
                       disabled={true}
                     >
                       Coming Soon
-                    </PrimaryButton>
+                    </BlurActionButton>
                     
                     <div className="mt-4 text-center">
                       <p className="text-sm text-gray-300">
@@ -236,9 +242,11 @@ export default function CartPage() {
                       </p>
                     </div>
                   </div>
-                </CardContent>
-              </ThemedCard>                {/* School Organization Support */}
-              <div className="mt-6 bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6">
+                </div>
+              </BlurContainer>
+
+              {/* School Organization Support */}
+              <BlurContainer contentVisible={contentVisible} delay="500ms" className="mt-6 p-6">
                 <div className="flex items-center mb-4">
                   <Badge className="bg-emerald-500">Supporting School Organizations</Badge>
                 </div>
@@ -246,10 +254,11 @@ export default function CartPage() {
                   Your purchase directly supports our school's organizations and activities. 
                   Thank you for your contribution to our community!
                 </p>
-              </div>
-            </div>          </div>
-        </div>
-      </div>
-    </ThemedPageWrapper>
+              </BlurContainer>
+            </div>
+          </div>
+        </>
+      )}
+    </UniversalPageLayout>
   );
 }

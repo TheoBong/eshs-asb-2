@@ -8,11 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton, ThemedInput } from "@/components/ThemedComponents";
 import { useCart } from "@/contexts/CartContext";
+import { UniversalPageLayout } from "@/components/UniversalPageLayout";
+import { BlurContainer, BlurCard, BlurActionButton } from "@/components/UniversalBlurComponents";
 
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   const { cartItems, clearCart } = useCart();
   const [deliveryMethod, setDeliveryMethod] = useState("pickup");
+  
   const [formState, setFormState] = useState({
     firstName: "",
     lastName: "",
@@ -61,36 +64,19 @@ export default function CheckoutPage() {
   const total = subtotal + tax;
 
   return (
-    <ThemedPageWrapper pageType="shop">
-      {/* Main content */}
-      <div className="relative z-10 min-h-screen py-12">
-        <div className="container mx-auto px-4">
-          {/* Header with back button */}
-          <div className="flex items-center mb-8">
-            <OutlineButton
-              onClick={handleBackToCart}
-              className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to Cart
-            </OutlineButton>
-            <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">
-              Order Information
-            </h1>
-          </div>
-
+    <UniversalPageLayout pageType="shop" title="Order Information" backButtonText="Back to Cart">
+      {({ contentVisible }) => (
+        <>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Order Form */}
             <div className="lg:col-span-2">
-              <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl">
+              <BlurContainer contentVisible={contentVisible} delay="200ms" className="overflow-hidden">
                 <div className="p-6">
                   <h2 className="text-xl font-semibold text-white mb-6">Contact Information</h2>
                   
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Personal Information */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <BlurContainer contentVisible={contentVisible} delay="300ms" className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="firstName" className="text-white">First Name *</Label>
                         <ThemedInput
@@ -111,7 +97,7 @@ export default function CheckoutPage() {
                           className="mt-1"
                         />
                       </div>
-                    </div>
+                    </BlurContainer>
 
                     <div>
                       <Label htmlFor="email" className="text-white">Email *</Label>
@@ -138,7 +124,7 @@ export default function CheckoutPage() {
                     </div>
 
                     {/* Delivery Method */}
-                    <div>
+                    <BlurContainer contentVisible={contentVisible} delay="400ms">
                       <Label className="text-white text-lg font-medium mb-4 block">Delivery Method *</Label>
                       <RadioGroup 
                         value={deliveryMethod} 
@@ -182,25 +168,26 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                       </RadioGroup>
-                    </div>
+                    </BlurContainer>
 
-                    <div className="pt-4">
-                      <PrimaryButton
-                        type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                    <BlurContainer contentVisible={contentVisible} delay="500ms" className="pt-4">
+                      <BlurActionButton
+                        contentVisible={contentVisible}
+                        onClick={handleSubmit}
+                        className="w-full py-3 px-6 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={isSubmitting || cartItems.length === 0}
                       >
                         {isSubmitting ? "Submitting Order..." : "Submit Order"}
-                      </PrimaryButton>
-                    </div>
+                      </BlurActionButton>
+                    </BlurContainer>
                   </form>
                 </div>
-              </ThemedCard>
+              </BlurContainer>
             </div>
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl sticky top-8">
+              <BlurContainer contentVisible={contentVisible} delay="300ms" className="sticky top-8 overflow-hidden">
                 <div className="p-6">
                   <h2 className="text-xl font-semibold text-white mb-4">Order Summary</h2>
                   
@@ -243,11 +230,11 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                 </div>
-              </ThemedCard>
+              </BlurContainer>
             </div>
           </div>
-        </div>
-      </div>
-    </ThemedPageWrapper>
+        </>
+      )}
+    </UniversalPageLayout>
   );
 }

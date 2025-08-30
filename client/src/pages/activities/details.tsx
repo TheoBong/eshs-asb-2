@@ -114,7 +114,6 @@ export default function EventDetails() {
   }, []);
 
   const handleBackClick = () => {
-    sessionStorage.setItem('internal-navigation', 'true'); // Mark as internal navigation
     setLocation("/activities");
   };
   const formatDate = (date: Date | string) => {

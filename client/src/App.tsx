@@ -4,7 +4,6 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AnimatePresence, motion } from "framer-motion";
 import Home from "@/pages/home";
 import Shop from "@/pages/shop";
 import NotFound from "@/pages/not-found";
@@ -35,21 +34,23 @@ import CommaTest from "@/pages/admin/comma-test";
 
 
 // Page wrapper component for fade transitions - WITHOUT creating stacking context
-const PageWrapper = ({ children }: { children: React.ReactNode }) => {
+const PageWrapper = ({ children, skipFade = false }: { children: React.ReactNode, skipFade?: boolean }) => {
   // Instead of using Framer Motion which adds transforms, use CSS transitions
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(skipFade); // Start visible if skipFade is true
   
   useEffect(() => {
-    // Trigger fade-in after mount
-    setIsVisible(true);
-  }, []);
+    if (!skipFade) {
+      // Trigger fade-in after mount only if not skipping
+      setIsVisible(true);
+    }
+  }, [skipFade]);
 
   return (
     <div
       className="w-full h-full"
       style={{
         opacity: isVisible ? 1 : 0,
-        transition: 'opacity 0.2s ease-in-out',
+        transition: skipFade ? 'none' : 'opacity 0.2s ease-in-out',
         backgroundColor: 'transparent',
         // CRITICAL: No transform, no will-change: transform
         // These would create a new stacking context
@@ -66,10 +67,9 @@ function Router() {
   const [location] = useLocation();
   
   return (
-    <AnimatePresence mode="wait">
-      <Switch key={location}>
+    <Switch>
         {/* Main pages */}
-        <Route path="/" component={() => <PageWrapper><Home /></PageWrapper>} />
+        <Route path="/" component={() => <PageWrapper skipFade={true}><Home /></PageWrapper>} />
         
         {/* Shop pages */}
         <Route path="/shop" component={() => <PageWrapper><Shop /></PageWrapper>} />
@@ -96,7 +96,6 @@ function Router() {
         {/* 404 page */}
         <Route component={() => <PageWrapper><NotFound /></PageWrapper>} />
       </Switch>
-    </AnimatePresence>
   );
 }
 

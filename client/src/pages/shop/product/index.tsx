@@ -8,6 +8,8 @@ import { toast } from "@/hooks/use-toast";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton, ThemedInput } from "@/components/ThemedComponents";
 import { getProduct } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
+import { UniversalPageLayout } from "@/components/UniversalPageLayout";
+import { BlurContainer, BlurCard, BlurActionButton } from "@/components/UniversalBlurComponents";
 
 export default function ProductPage() {
   const [match, params] = useRoute("/shop/product/:id");
@@ -15,7 +17,8 @@ export default function ProductPage() {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
-  const [activeImageIndex, setActiveImageIndex] = useState(0);  const [product, setProduct] = useState<any>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
@@ -39,50 +42,7 @@ export default function ProductPage() {
     };
 
     fetchProduct();
-  }, [params?.id]);  if (loading) {
-    return (
-      <ThemedPageWrapper pageType="shop">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2 text-white">Loading Product...</h2>
-            <p className="mb-4 text-gray-300">Please wait while we fetch the product details</p>
-          </div>
-        </div>
-      </ThemedPageWrapper>
-    );
-  }
-  
-  if (error || !product) {
-    return (
-      <ThemedPageWrapper pageType="shop">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2 text-white">Product Not Found</h2>
-            <p className="mb-4 text-gray-300">The product you're looking for doesn't exist or has been removed.</p>
-            <PrimaryButton onClick={() => setLocation("/shop")}>Return to Shop</PrimaryButton>
-          </div>
-        </div>
-      </ThemedPageWrapper>
-    );
-  }
-  // Cart utility functions
-  const getCartFromCookies = (): any[] => {
-    try {
-      const cartData = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('cart='))
-        ?.split('=')[1];
-      return cartData ? JSON.parse(decodeURIComponent(cartData)) : [];
-    } catch {
-      return [];
-    }
-  };
-
-  const saveCartToCookies = (items: any[]) => {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000)); // 24 hours
-    document.cookie = `cart=${encodeURIComponent(JSON.stringify(items))}; path=/; expires=${expires.toUTCString()}`;
-  };
+  }, [params?.id]);
 
   const handleAddToCart = () => {
     // Check if size is required for Apparel products
@@ -128,7 +88,7 @@ export default function ProductPage() {
     
     // Navigate to cart page after short delay
     setTimeout(() => {
-      sessionStorage.setItem('cart-referrer', `/shop/product/${productId}`);
+      sessionStorage.setItem('cart-referrer', `/shop/product/${params?.id}`);
       setLocation("/shop/cart");
     }, 1500);
   };
@@ -137,29 +97,51 @@ export default function ProductPage() {
     setLocation("/shop");
   };
 
-  return (
-    <ThemedPageWrapper pageType="shop">
-      {/* Main content */}
-      <div className="relative z-10 min-h-screen pt-8 pb-16">
-        <div className="container mx-auto px-4">
-          {/* Glassmorphism back button with title */}
-          <div className="flex items-center mb-6">
-            <OutlineButton
-              onClick={handleBackClick}
-              className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to Shop
-            </OutlineButton>
-            <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">Product Details</h1>
-          </div>
+  if (loading) {
+    return (
+      <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back to Shop">
+        {({ contentVisible }) => (
+          <BlurContainer contentVisible={contentVisible} className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-2 text-white">Loading Product...</h2>
+              <p className="mb-4 text-gray-300">Please wait while we fetch the product details</p>
+            </div>
+          </BlurContainer>
+        )}
+      </UniversalPageLayout>
+    );
+  }
+  
+  if (error || !product) {
+    return (
+      <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back to Shop">
+        {({ contentVisible }) => (
+          <BlurContainer contentVisible={contentVisible} className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-2 text-white">Product Not Found</h2>
+              <p className="mb-4 text-gray-300">The product you're looking for doesn't exist or has been removed.</p>
+              <BlurActionButton 
+                contentVisible={contentVisible}
+                onClick={() => setLocation("/shop")}
+              >
+                Return to Shop
+              </BlurActionButton>
+            </div>
+          </BlurContainer>
+        )}
+      </UniversalPageLayout>
+    );
+  }
 
+  return (
+    <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back to Shop">
+      {({ contentVisible }) => (
+        <>
           {/* Product Details */}
-          <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl overflow-hidden">
+          <BlurContainer contentVisible={contentVisible} delay="200ms" className="overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-              {/* Product Images */}              <div className="space-y-4">
+              {/* Product Images */}
+              <BlurContainer contentVisible={contentVisible} delay="300ms" className="space-y-4">
                 {/* Main Image */}
                 <div className="aspect-square w-full rounded-lg overflow-hidden bg-gray-900">
                   <img
@@ -217,10 +199,10 @@ export default function ProductPage() {
                     ))}
                   </div>
                 )}
-              </div>
+              </BlurContainer>
 
               {/* Product Information */}
-              <div className="space-y-6">
+              <BlurContainer contentVisible={contentVisible} delay="400ms" className="space-y-6">
                 {/* Header information */}
                 <div>
                   <div className="flex items-center justify-between">
@@ -305,15 +287,14 @@ export default function ProductPage() {
                       Quantity
                     </Label>
                     <div className="flex items-center">
-                      <OutlineButton
+                      <button
                         type="button"
-                        size="icon"
-                        className="rounded-r-none bg-white/5 border-white/20 text-gray-200 hover:bg-white/10 hover:text-white"
+                        className="rounded-r-none bg-white/5 border border-white/20 text-gray-200 hover:bg-white/10 hover:text-white w-8 h-9 flex items-center justify-center transition-colors duration-300 disabled:opacity-50"
                         onClick={() => quantity > 1 && setQuantity(quantity - 1)}
                         disabled={quantity <= 1}
                       >
                         -
-                      </OutlineButton>
+                      </button>
                       <input
                         id="quantity"
                         type="number"
@@ -328,40 +309,38 @@ export default function ProductPage() {
                           }
                         }}
                       />
-                      <OutlineButton
+                      <button
                         type="button"
-                        size="icon"
-                        className="rounded-l-none bg-white/5 border-white/20 text-gray-200 hover:bg-white/10 hover:text-white"
+                        className="rounded-l-none bg-white/5 border border-white/20 text-gray-200 hover:bg-white/10 hover:text-white w-8 h-9 flex items-center justify-center transition-colors duration-300 disabled:opacity-50"
                         onClick={() => quantity < 10 && setQuantity(quantity + 1)}
                         disabled={quantity >= 10}
                       >
                         +
-                      </OutlineButton>
+                      </button>
                     </div>
-                  </div>                  {/* Add to Cart Button */}
-                  <div className="pt-4">
-                    <PrimaryButton 
-                      size="lg" 
-                      className="w-full bg-white/10 hover:bg-blue-600/80 backdrop-blur-xl border border-white/20 shadow-lg" 
-                      onClick={handleAddToCart}
-                      disabled={
-                        product.category === 'Apparel' 
-                          ? !(product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0))
-                          : !(product.stock > 0)
-                      }
-                    >
-                      {product.category === 'Apparel' 
-                        ? (product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0) ? "Add to Cart" : "Out of Stock")
-                        : (product.stock > 0 ? "Add to Cart" : "Out of Stock")
-                      }
-                    </PrimaryButton>
                   </div>
+
+                  {/* Add to Cart Button */}
+                  <BlurActionButton
+                    contentVisible={contentVisible}
+                    onClick={handleAddToCart}
+                    className={`w-full py-3 px-6 font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${
+                      product.category === 'Apparel' 
+                        ? (product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0) ? "" : "opacity-50 cursor-not-allowed")
+                        : (product.stock > 0 ? "" : "opacity-50 cursor-not-allowed")
+                    }`}
+                  >
+                    {product.category === 'Apparel' 
+                      ? (product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0) ? "Add to Cart" : "Out of Stock")
+                      : (product.stock > 0 ? "Add to Cart" : "Out of Stock")
+                    }
+                  </BlurActionButton>
                 </div>
-              </div>
+              </BlurContainer>
             </div>
-          </ThemedCard>
-        </div>
-      </div>
-    </ThemedPageWrapper>
+          </BlurContainer>
+        </>
+      )}
+    </UniversalPageLayout>
   );
 }

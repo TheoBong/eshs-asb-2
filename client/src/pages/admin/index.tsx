@@ -1683,8 +1683,7 @@ ESHS ASB Team
   };
 
   const handleBackClick = () => {
-    sessionStorage.setItem('internal-navigation', 'true');
-    setLocation("/");
+    sessionStorage.setItem("came-from-internal", "true"); setLocation("/");
   };
   // Product form submission handler
   const handleProductSubmit = async (productData: Partial<Product>) => {
