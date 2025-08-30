@@ -31,22 +31,22 @@ video {
 @media (max-width: 640px) {
   /* Make text larger on mobile */
   .responsive-text {
-    font-size: clamp(32px, 8vw, 48px) !important;
+    font-size: clamp(36px, 9vw, 52px) !important;
   }
   
   /* Ensure SVG text is visible and properly sized on mobile */
   svg text {
-    font-size: clamp(32px, 8vw, 48px) !important;
+    font-size: clamp(36px, 9vw, 52px) !important;
   }
   
-  /* Move text overlay up on mobile */
-  .fixed.inset-0.z-50 > div {
-    margin-bottom: 16rem !important;
+  /* Override Tailwind margin-bottom classes for text container - move both texts up */
+  .mb-32 {
+    margin-bottom: 20rem !important;
   }
   
-  /* Move all buttons up on mobile */
-  .absolute.bottom-0.w-full.h-4\/5 {
-    height: 60% !important;
+  /* Move all buttons up on mobile by reducing container height */
+  .h-4\/5 {
+    height: 55% !important;
   }
   
   /* Mobile positioning adjustments */
