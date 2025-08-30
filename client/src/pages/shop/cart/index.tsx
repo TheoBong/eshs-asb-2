@@ -70,7 +70,12 @@ export default function CartPage() {
   const total = subtotal + tax;
 
   return (
-    <UniversalPageLayout pageType="shop" title="Your Shopping Cart" backButtonText="Back">
+    <UniversalPageLayout 
+      pageType="shop" 
+      title="Your Shopping Cart" 
+      backButtonText="Back"
+      onBackClick={handleContinueShopping}
+    >
       {({ contentVisible }) => (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

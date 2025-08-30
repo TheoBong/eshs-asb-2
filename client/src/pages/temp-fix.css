@@ -26,3 +26,35 @@ video {
   width: 100% !important;
   height: 100% !important;
 }
+
+/* Mobile responsive adjustments for home page - MOBILE ONLY */
+@media (max-width: 640px) {
+  /* Scale down SVG text on mobile only */
+  .responsive-text {
+    font-size: clamp(24px, 6vw, 40px) !important;
+  }
+  
+  /* Ensure SVG text is visible and properly sized on mobile */
+  svg text {
+    font-size: clamp(24px, 6vw, 40px) !important;
+  }
+  
+  /* Mobile positioning adjustments */
+  .shop-overlay {
+    left: clamp(1rem, 8vw, 12rem) !important;
+  }
+  
+  .theater-overlay {
+    left: clamp(5rem, 15vw, 25rem) !important;
+    bottom: clamp(5rem, 10vh, 7rem) !important;
+  }
+  
+  .activities-overlay {
+    right: clamp(1rem, 8vw, 12rem) !important;
+  }
+  
+  .information-overlay {
+    right: clamp(5rem, 15vw, 25rem) !important;
+    bottom: clamp(5rem, 10vh, 7rem) !important;
+  }
+}

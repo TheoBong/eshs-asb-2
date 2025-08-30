@@ -9,12 +9,17 @@ export const BlurBackButton: React.FC<{
   contentVisible: boolean;
   className?: string;
   children?: React.ReactNode;
-}> = ({ contentVisible, className, children }) => {
+  onClick?: () => void;
+}> = ({ contentVisible, className, children, onClick }) => {
   const [, setLocation] = useLocation();
   
   const handleBackClick = () => {
-    sessionStorage.setItem("came-from-internal", "true");
-    setLocation("/");
+    if (onClick) {
+      onClick();
+    } else {
+      sessionStorage.setItem("came-from-internal", "true");
+      setLocation("/");
+    }
   };
 
   return (
@@ -116,9 +121,10 @@ export const BlurPageHeader: React.FC<{
   title: string;
   showBackButton?: boolean;
   backButtonText?: string;
+  onBackClick?: () => void;
   rightElement?: React.ReactNode;
   className?: string;
-}> = ({ contentVisible, title, showBackButton = true, backButtonText, rightElement, className }) => {
+}> = ({ contentVisible, title, showBackButton = true, backButtonText, onBackClick, rightElement, className }) => {
   return (
     <div 
       className={cn("flex items-center justify-between mb-8 transition-all duration-700 ease-out", className)}
@@ -130,7 +136,7 @@ export const BlurPageHeader: React.FC<{
     >
       <div className="flex items-center">
         {showBackButton && (
-          <BlurBackButton contentVisible={contentVisible}>
+          <BlurBackButton contentVisible={contentVisible} onClick={onBackClick}>
             {backButtonText}
           </BlurBackButton>
         )}

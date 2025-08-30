@@ -9,6 +9,7 @@ export const UniversalPageLayout: React.FC<{
   title: string;
   showBackButton?: boolean;
   backButtonText?: string;
+  onBackClick?: () => void;
   loadingText?: string;
   rightElement?: (props: { contentVisible: boolean }) => React.ReactNode;
   children: (props: { contentVisible: boolean, blurReady: boolean }) => React.ReactNode;
@@ -18,6 +19,7 @@ export const UniversalPageLayout: React.FC<{
   title, 
   showBackButton = true, 
   backButtonText,
+  onBackClick,
   loadingText = "Loading glassmorphism effects...",
   rightElement,
   children,
@@ -46,6 +48,7 @@ export const UniversalPageLayout: React.FC<{
             title={title}
             showBackButton={showBackButton}
             backButtonText={backButtonText}
+            onBackClick={onBackClick}
             rightElement={rightElement ? rightElement({ contentVisible }) : undefined}
           />
 
