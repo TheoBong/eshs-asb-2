@@ -29,14 +29,24 @@ video {
 
 /* Mobile responsive adjustments for home page - MOBILE ONLY */
 @media (max-width: 640px) {
-  /* Scale down SVG text on mobile only */
+  /* Make text larger on mobile */
   .responsive-text {
-    font-size: clamp(24px, 6vw, 40px) !important;
+    font-size: clamp(32px, 8vw, 48px) !important;
   }
   
   /* Ensure SVG text is visible and properly sized on mobile */
   svg text {
-    font-size: clamp(24px, 6vw, 40px) !important;
+    font-size: clamp(32px, 8vw, 48px) !important;
+  }
+  
+  /* Move text overlay up on mobile */
+  .fixed.inset-0.z-50 > div {
+    margin-bottom: 16rem !important;
+  }
+  
+  /* Move all buttons up on mobile */
+  .absolute.bottom-0.w-full.h-4\/5 {
+    height: 60% !important;
   }
   
   /* Mobile positioning adjustments */
@@ -46,7 +56,7 @@ video {
   
   .theater-overlay {
     left: clamp(5rem, 15vw, 25rem) !important;
-    bottom: clamp(5rem, 10vh, 7rem) !important;
+    bottom: clamp(3rem, 8vh, 5rem) !important;
   }
   
   .activities-overlay {
@@ -55,6 +65,6 @@ video {
   
   .information-overlay {
     right: clamp(5rem, 15vw, 25rem) !important;
-    bottom: clamp(5rem, 10vh, 7rem) !important;
+    bottom: clamp(3rem, 8vh, 5rem) !important;
   }
 }
