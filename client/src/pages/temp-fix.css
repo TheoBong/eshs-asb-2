@@ -29,14 +29,14 @@ video {
 
 /* Mobile responsive adjustments for home page - MOBILE ONLY */
 @media (max-width: 640px) {
-  /* Make text 3x larger on mobile */
+  /* Make text dynamically fit the screen width on mobile */
   .responsive-text {
-    font-size: clamp(108px, 27vw, 156px) !important;
+    font-size: clamp(8vw, 15vw, 20vw) !important;
   }
   
-  /* Ensure SVG text is visible and properly sized on mobile */
+  /* Ensure SVG text is visible and dynamically sized on mobile */
   svg text {
-    font-size: clamp(108px, 27vw, 156px) !important;
+    font-size: clamp(8vw, 15vw, 20vw) !important;
   }
   
   /* Override Tailwind margin-bottom classes for text container - move both texts up */
@@ -44,9 +44,14 @@ video {
     margin-bottom: 20rem !important;
   }
   
-  /* Move all buttons up much further on mobile by reducing container height more */
+  /* Move all buttons up and add lots of bottom padding to prevent cutoff */
   .h-4\/5 {
-    height: 40% !important;
+    height: 35% !important;
+  }
+  
+  /* Add significant bottom padding to prevent icon cutoff */
+  .pb-2 {
+    padding-bottom: 6rem !important;
   }
   
   /* Mobile positioning adjustments */
