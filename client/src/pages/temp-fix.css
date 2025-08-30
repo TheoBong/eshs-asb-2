@@ -29,14 +29,14 @@ video {
 
 /* Mobile responsive adjustments for home page - MOBILE ONLY */
 @media (max-width: 640px) {
-  /* Make text dynamically fit the screen width on mobile */
+  /* Make text fit properly without cutoff on mobile */
   .responsive-text {
-    font-size: clamp(8vw, 15vw, 20vw) !important;
+    font-size: clamp(4vw, 7vw, 10vw) !important;
   }
   
-  /* Ensure SVG text is visible and dynamically sized on mobile */
+  /* Ensure SVG text is visible and properly sized on mobile */
   svg text {
-    font-size: clamp(8vw, 15vw, 20vw) !important;
+    font-size: clamp(4vw, 7vw, 10vw) !important;
   }
   
   /* Override Tailwind margin-bottom classes for text container - move both texts up */
@@ -44,14 +44,14 @@ video {
     margin-bottom: 20rem !important;
   }
   
-  /* Move all buttons up and add lots of bottom padding to prevent cutoff */
+  /* Move all buttons up much more and add lots of bottom padding */
   .h-4\/5 {
-    height: 35% !important;
+    height: 25% !important;
   }
   
   /* Add significant bottom padding to prevent icon cutoff */
   .pb-2 {
-    padding-bottom: 6rem !important;
+    padding-bottom: 8rem !important;
   }
   
   /* Mobile positioning adjustments */
@@ -61,7 +61,7 @@ video {
   
   .theater-overlay {
     left: clamp(5rem, 15vw, 25rem) !important;
-    bottom: clamp(3rem, 8vh, 5rem) !important;
+    bottom: clamp(8rem, 25vh, 15rem) !important;
   }
   
   .activities-overlay {
@@ -70,6 +70,6 @@ video {
   
   .information-overlay {
     right: clamp(5rem, 15vw, 25rem) !important;
-    bottom: clamp(3rem, 8vh, 5rem) !important;
+    bottom: clamp(8rem, 25vh, 15rem) !important;
   }
 }
