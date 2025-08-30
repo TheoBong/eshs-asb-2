@@ -29,14 +29,14 @@ video {
 
 /* Mobile responsive adjustments for home page - MOBILE ONLY */
 @media (max-width: 640px) {
-  /* Make text larger but still fit on mobile screens */
+  /* Make text twice as big on mobile screens */
   .responsive-text {
-    font-size: clamp(24px, 11vw, 48px) !important;
+    font-size: clamp(48px, 22vw, 96px) !important;
   }
   
   /* Ensure SVG text is visible and properly sized on mobile */
   svg text {
-    font-size: clamp(24px, 11vw, 48px) !important;
+    font-size: clamp(48px, 22vw, 96px) !important;
   }
   
   /* Override Tailwind margin-bottom classes for text container - move both texts up */
