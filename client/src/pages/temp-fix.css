@@ -49,9 +49,9 @@ video {
     margin-bottom: 20rem !important;
   }
   
-  /* Move ASB closer to El Segundo High School text */
+  /* Move ASB much closer to El Segundo High School text */
   .mb-8 {
-    margin-bottom: 2rem !important;
+    margin-bottom: 0.5rem !important;
   }
   
   /* Move all buttons up much more and add lots of bottom padding */
@@ -69,11 +69,12 @@ video {
     left: clamp(0.5rem, 5vw, 8rem) !important;
   }
   
-  /* Make Shop and Activities (top buttons) larger on mobile */
+  /* Make Shop and Activities (top buttons) twice as big on mobile */
   .shop-overlay img,
   .activities-overlay img {
-    width: 60vw !important;
-    max-width: 200px !important;
+    width: 80vw !important;
+    max-width: 300px !important;
+    height: auto !important;
   }
   
   .theater-overlay {
