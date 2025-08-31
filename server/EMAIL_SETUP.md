@@ -198,12 +198,11 @@ emailService.sendTestEmail('test@example.com')
 ## Security Considerations
 
 ### Best Practices
-1. **Environment Variables**: Never commit credentials to version control
-2. **App Passwords**: Use app-specific passwords for Gmail (not account password)
-3. **Local Network**: Configure Postfix to only accept local connections
-4. **Rate Limiting**: Consider implementing email rate limiting
-5. **Input Validation**: All email addresses are validated before sending
-6. **Error Handling**: Email failures don't break application functionality
+1. **Environment Variables**: Never commit email configuration to version control
+2. **Local Network**: Configure Postfix to only accept local connections
+3. **Rate Limiting**: Consider implementing email rate limiting
+4. **Input Validation**: All email addresses are validated before sending
+5. **Error Handling**: Email failures don't break application functionality
 
 ### Postfix Security
 ```bash

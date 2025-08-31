@@ -47,6 +47,7 @@ export default function EventDetails() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTicketType, setSelectedTicketType] = useState<number>(0); // Index of selected ticket type
   const [formData, setFormData] = useState<FormData>({
     contractForm: null,
     guestForm: null,
@@ -139,16 +140,24 @@ export default function EventDetails() {
     return { status: "Sold Out", color: "bg-gray-500/20 text-gray-200 border-gray-500/30" };
   };
 
-  // Helper function to get the first ticket type's price, or 0 if no tickets
+  // Helper function to get the selected ticket type's price, or 0 if no tickets
   const getEventPrice = () => {
     if (!event?.ticketTypes || event.ticketTypes.length === 0) return 0;
-    return event.ticketTypes[0].price;
+    const selectedTicket = event.ticketTypes[selectedTicketType];
+    return selectedTicket ? selectedTicket.price : event.ticketTypes[0].price;
   };
 
-  // Helper function to get max tickets from the first ticket type
+  // Helper function to get max tickets from the selected ticket type
   const getMaxTickets = () => {
     if (!event?.ticketTypes || event.ticketTypes.length === 0) return undefined;
-    return event.ticketTypes[0].maxTickets;
+    const selectedTicket = event.ticketTypes[selectedTicketType];
+    return selectedTicket ? selectedTicket.maxTickets : event.ticketTypes[0].maxTickets;
+  };
+
+  // Helper function to get the selected ticket type details
+  const getSelectedTicketType = () => {
+    if (!event?.ticketTypes || event.ticketTypes.length === 0) return null;
+    return event.ticketTypes[selectedTicketType] || event.ticketTypes[0];
   };
   const handleQuantityChange = (quantity: number) => {
     if (event) {
@@ -313,6 +322,7 @@ export default function EventDetails() {
       }
 
       // Create form submission record
+      const selectedTicket = getSelectedTicketType();
       await createFormSubmission({
         eventId: event._id,
         studentName: formData.studentName,
@@ -321,7 +331,12 @@ export default function EventDetails() {
         quantity: formData.quantity,
         totalAmount: getEventPrice() * formData.quantity,
         notes: formData.notes,
-        status: 'pending'
+        status: 'pending',
+        ticketType: selectedTicket ? {
+          name: selectedTicket.name,
+          price: selectedTicket.price,
+          description: selectedTicket.description
+        } : undefined
       });
 
       // Show success message
@@ -352,13 +367,15 @@ export default function EventDetails() {
     if (!event) return;
     
     // Add to cart using CartContext
+    const selectedTicket = getSelectedTicketType();
     const cartItem = {
       id: event._id,
-      name: event.title,
+      name: selectedTicket ? `${event.title} - ${selectedTicket.name}` : event.title,
       price: getEventPrice(),
       quantity: formData.quantity,
       type: 'event' as const,
       eventId: event._id,
+      ticketType: selectedTicket?.name,
       image: "/api/placeholder/300/300" // Default image for events
     };
 
@@ -397,7 +414,8 @@ export default function EventDetails() {
     );
   }
 
-  const availability = getAvailabilityStatus(getMaxTickets());
+  // No longer needed since we removed the availability card
+  // const availability = getAvailabilityStatus(getMaxTickets());
 
   return (
     <ThemedPageWrapper pageType="information">
@@ -432,82 +450,92 @@ export default function EventDetails() {
           {/* Event Details */}
           <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl mb-8">
             <div className="p-8">
+              {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <h2 className="text-3xl font-bold text-white">{event.title}</h2>                    {event.requiresApproval && (
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="text-3xl font-bold text-white">{event.title}</h2>
+                    {event.requiresApproval && (
                       <Badge variant="outline" className="bg-orange-500/20 text-orange-200 border-orange-500/30">
                         Requires Approval
                       </Badge>
                     )}
                   </div>
-                  <p className="text-gray-300 text-lg mb-4">{event.description}</p>
                 </div>
                 <Badge variant="outline" className="ml-4 text-lg px-3 py-1">
                   {event.category}
                 </Badge>
               </div>
 
-              {/* Event Info Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="space-y-4">
-                  <div className="flex items-center text-lg">
-                    <svg className="w-6 h-6 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span className="text-gray-200">{formatDate(event.date)}</span>
-                  </div>
-                  <div className="flex items-center text-lg">
-                    <svg className="w-6 h-6 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-gray-200">{event.time}</span>
-                  </div>
-                  <div className="flex items-center text-lg">
-                    <svg className="w-6 h-6 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-gray-200">{event.location}</span>
-                  </div>
+              {/* Event Info */}
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center text-lg">
+                  <svg className="w-6 h-6 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-gray-200">{formatDate(event.date)}</span>
                 </div>
-
-                <div className="space-y-4">
-                  {event.ticketTypes && event.ticketTypes.length > 0 ? (
-                    <div>
-                      <h4 className="text-center font-medium text-gray-200 mb-3">Ticket Options:</h4>
-                      <div className="space-y-2">
-                        {event.ticketTypes.map((ticket, index) => (
-                          <div key={index} className="p-3 bg-white/5 rounded-lg border border-white/10">
-                            <div className="text-center">
-                              <div className="font-medium text-white">{ticket.name}</div>
-                              <div className="text-2xl font-bold text-green-400">${ticket.price.toFixed(2)}</div>
-                              <div className="text-sm text-gray-300">{ticket.description}</div>
-                              <div className="text-xs text-gray-400">Max: {ticket.maxTickets} tickets</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <span className="text-4xl font-bold text-white">
-                        {getEventPrice() === 0 ? "FREE" : `$${getEventPrice()}`}
-                      </span>
-                      {getEventPrice() > 0 && <p className="text-gray-400">per ticket</p>}
-                    </div>
-                  )}
-                    <div className={`p-4 rounded-lg border ${availability.color}`}>
-                    <div className="text-center">
-                      <p className="font-medium">{availability.status}</p>
-                      <p className="text-sm">{getMaxTickets() ? getMaxTickets() : 'Unlimited'} max tickets</p>
-                    </div>
-                  </div>
+                <div className="flex items-center text-lg">
+                  <svg className="w-6 h-6 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-gray-200">{event.time}</span>
+                </div>
+                <div className="flex items-center text-lg">
+                  <svg className="w-6 h-6 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="text-gray-200">{event.location}</span>
                 </div>
               </div>
 
+              {/* Description - Now prominently placed after location */}
+              <div className="mb-6 p-6 bg-white/5 rounded-lg border border-white/10">
+                <h3 className="text-xl font-semibold text-white mb-3">About This Event</h3>
+                <p className="text-gray-300 text-lg leading-relaxed">{event.description}</p>
+              </div>
             </div>
-          </ThemedCard>          {/* Purchase/Registration Section */}
+          </ThemedCard>
+
+          {/* Ticket Selection */}
+          {event.ticketTypes && event.ticketTypes.length > 0 && (
+            <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl mb-8">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-white mb-6">Select Ticket Type</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {event.ticketTypes.map((ticket, index) => (
+                    <div 
+                      key={index} 
+                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                        selectedTicketType === index 
+                          ? 'border-blue-400 bg-blue-500/10 shadow-lg transform scale-105' 
+                          : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
+                      }`}
+                      onClick={() => setSelectedTicketType(index)}
+                    >
+                      <div className="text-center">
+                        <div className="font-semibold text-white text-lg mb-1">{ticket.name}</div>
+                        <div className="text-3xl font-bold text-green-400 mb-2">${ticket.price.toFixed(2)}</div>
+                        <div className="text-sm text-gray-300 mb-2">{ticket.description}</div>
+                        <div className="text-xs text-gray-400">Max: {ticket.maxTickets} per person</div>
+                        {selectedTicketType === index && (
+                          <div className="mt-3">
+                            <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-500/20 text-blue-200 border border-blue-500/30">
+                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                              Selected
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ThemedCard>
+          )}          {/* Purchase/Registration Section */}
           <div className="border-t border-white/10 pt-6 mt-6">
             {event.requiresApproval ? (
               // Direct approval form display (no card wrapper)
