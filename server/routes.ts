@@ -11,6 +11,7 @@ import { requireAdminAuth, handleAdminLogin, handleAdminLogout, checkAdminAuth }
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { emailService } from './email-service';
 
 // Ensure upload directory exists
 import { fileURLToPath } from 'url';
@@ -456,6 +457,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/form-submissions", async (req, res) => {
     try {
       const submission = await storage.createFormSubmission(req.body);
+      
+      // Send email notification to admin
+      try {
+        // Get event details
+        const event = await storage.getEvent(submission.eventId.toString());
+        
+        // Prepare attachments if forms are included
+        const attachments = [];
+        if (submission.forms && submission.forms.length > 0) {
+          for (const form of submission.forms) {
+            // Read file from disk if it exists
+            const filePath = path.join(__dirname, '..', form.fileUrl);
+            if (fs.existsSync(filePath)) {
+              const fileContent = fs.readFileSync(filePath);
+              attachments.push({
+                filename: form.fileName,
+                content: fileContent,
+                contentType: form.fileType
+              });
+            }
+          }
+        }
+        
+        await emailService.sendFormSubmissionNotification({
+          eventName: event?.title || 'Unknown Event',
+          studentName: submission.studentName,
+          email: submission.email,
+          submissionDate: submission.submissionDate,
+          quantity: submission.quantity || 1,
+          totalAmount: submission.totalAmount || 0,
+          notes: submission.notes,
+          forms: submission.forms
+        }, attachments);
+      } catch (emailError) {
+        console.error('Failed to send email notification:', emailError);
+        // Don't fail the request if email fails
+      }
+      
       res.status(201).json(submission);
     } catch (error) {
       res.status(400).json({ message: "Error creating form submission", error });
@@ -481,10 +520,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/form-submissions/:id", requireAdminAuth, async (req, res) => {
     try {
+      // Get the original submission to check status change
+      const originalSubmission = await storage.getFormSubmission(req.params.id);
+      
       const submission = await storage.updateFormSubmission(req.params.id, req.body);
       if (!submission) {
         return res.status(404).json({ message: "Form submission not found" });
       }
+      
+      // Send email if status changed from pending to approved/rejected
+      if (originalSubmission?.status === 'pending' && submission.status !== 'pending') {
+        try {
+          // Get event details
+          const event = await storage.getEvent(submission.eventId.toString());
+          
+          if (submission.status === 'approved') {
+            // Send approval email
+            await emailService.sendApprovalNotification(submission.email, {
+              eventName: event?.title || 'Unknown Event',
+              studentName: submission.studentName,
+              ticketPurchaseUrl: `https://eshs-asb.edu/activities/purchase/${submission.eventId}`, // Placeholder URL
+              quantity: submission.quantity || 1,
+              totalAmount: submission.totalAmount || 0
+            });
+          } else if (submission.status === 'rejected') {
+            // Send rejection email
+            const reason = req.body.rejectionReason || 'Your request did not meet the requirements. Please review the guidelines and try again.';
+            await emailService.sendRejectionNotification(submission.email, {
+              eventName: event?.title || 'Unknown Event',
+              studentName: submission.studentName,
+              reason: reason,
+              retryUrl: `https://eshs-asb.edu/activities/details/${submission.eventId}` // Placeholder URL
+            });
+          }
+        } catch (emailError) {
+          console.error('Failed to send status update email:', emailError);
+          // Don't fail the request if email fails
+        }
+      }
+      
       res.json(submission);
     } catch (error) {
       res.status(400).json({ message: "Error updating form submission", error });
@@ -640,6 +714,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('File deletion error:', error);
       res.status(500).json({ message: "Error deleting file", error: error.message });
+    }
+  });
+
+  // Email test endpoint (admin only)
+  app.post("/api/test-email", requireAdminAuth, async (req, res) => {
+    try {
+      const { to, type = 'test' } = req.body;
+      
+      if (!to) {
+        return res.status(400).json({ message: "Email address is required" });
+      }
+
+      switch (type) {
+        case 'test':
+          await emailService.sendTestEmail(to);
+          break;
+        case 'approval':
+          await emailService.sendApprovalNotification(to, {
+            eventName: 'Test Event',
+            studentName: 'Test Student',
+            ticketPurchaseUrl: 'https://eshsasb.org/activities/purchase/test',
+            quantity: 1,
+            totalAmount: 10.00
+          });
+          break;
+        case 'rejection':
+          await emailService.sendRejectionNotification(to, {
+            eventName: 'Test Event',
+            studentName: 'Test Student',
+            reason: 'This is a test rejection email.',
+            retryUrl: 'https://eshsasb.org/activities/details/test'
+          });
+          break;
+        case 'submission':
+          await emailService.sendFormSubmissionNotification({
+            eventName: 'Test Event',
+            studentName: 'Test Student',
+            email: to,
+            submissionDate: new Date(),
+            quantity: 1,
+            totalAmount: 10.00,
+            notes: 'This is a test submission notification.',
+            forms: [{ fileName: 'test-form.pdf', fileUrl: '/test', fileType: 'application/pdf' }]
+          });
+          break;
+        default:
+          return res.status(400).json({ message: "Invalid email type" });
+      }
+
+      res.json({ message: `${type} email sent successfully to ${to}` });
+    } catch (error) {
+      console.error('Email test error:', error);
+      res.status(500).json({ message: "Error sending test email", error: error.message });
     }
   });
 

@@ -157,7 +157,8 @@ const formSubmissionSchema = new mongoose.Schema({
   totalAmount: { type: Number, default: 0 },
   notes: { type: String },
   reviewedBy: { type: String },
-  reviewedAt: { type: Date }
+  reviewedAt: { type: Date },
+  rejectionReason: { type: String }
 });
 
 // Purchase Schema
