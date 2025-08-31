@@ -62,15 +62,12 @@ const eventSchema = new mongoose.Schema({
   time: { type: String, required: true },
   location: { type: String, required: true },
   description: { type: String, required: true },
-  price: { type: Number, default: 0 }, // Keep for backward compatibility
-  maxTickets: { type: Number }, // Keep for backward compatibility
   ticketTypes: [{
     name: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
     maxTickets: { type: Number, required: true }
   }],
-  features: [{ type: String }],
   requiresApproval: { type: Boolean, default: false },
   requiredForms: {
     studentIdRequired: { type: Boolean, default: false },

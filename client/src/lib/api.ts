@@ -298,15 +298,12 @@ export interface Event {
   time: string;
   location: string;
   description: string;
-  price: number; // Keep for backward compatibility
-  maxTickets?: number; // Keep for backward compatibility
   ticketTypes?: Array<{
     name: string;
     description: string;
     price: number;
     maxTickets: number;
   }>;
-  features: string[];
   requiresApproval: boolean;
   image?: string;
   createdAt: Date;

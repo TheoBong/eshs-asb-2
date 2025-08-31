@@ -138,10 +138,23 @@ export default function EventDetails() {
     if (percentage > 0) return { status: "Few Left", color: "bg-red-500/20 text-red-200 border-red-500/30" };
     return { status: "Sold Out", color: "bg-gray-500/20 text-gray-200 border-gray-500/30" };
   };
+
+  // Helper function to get the first ticket type's price, or 0 if no tickets
+  const getEventPrice = () => {
+    if (!event?.ticketTypes || event.ticketTypes.length === 0) return 0;
+    return event.ticketTypes[0].price;
+  };
+
+  // Helper function to get max tickets from the first ticket type
+  const getMaxTickets = () => {
+    if (!event?.ticketTypes || event.ticketTypes.length === 0) return undefined;
+    return event.ticketTypes[0].maxTickets;
+  };
   const handleQuantityChange = (quantity: number) => {
     if (event) {
       // For now, allow up to 10 tickets or maxTickets if specified
-      const maxAllowed = event.maxTickets ? Math.min(10, event.maxTickets) : 10;
+      const maxTickets = getMaxTickets();
+      const maxAllowed = maxTickets ? Math.min(10, maxTickets) : 10;
       setFormData(prev => ({
         ...prev,
         quantity: Math.max(1, Math.min(quantity, maxAllowed))
@@ -306,7 +319,7 @@ export default function EventDetails() {
         email: formData.email,
         forms: uploadedForms,
         quantity: formData.quantity,
-        totalAmount: event.price * formData.quantity,
+        totalAmount: getEventPrice() * formData.quantity,
         notes: formData.notes,
         status: 'pending'
       });
@@ -342,7 +355,7 @@ export default function EventDetails() {
     const cartItem = {
       id: event._id,
       name: event.title,
-      price: event.price,
+      price: getEventPrice(),
       quantity: formData.quantity,
       type: 'event' as const,
       eventId: event._id,
@@ -384,7 +397,7 @@ export default function EventDetails() {
     );
   }
 
-  const availability = getAvailabilityStatus(event.maxTickets);
+  const availability = getAvailabilityStatus(getMaxTickets());
 
   return (
     <ThemedPageWrapper pageType="information">
@@ -479,36 +492,20 @@ export default function EventDetails() {
                   ) : (
                     <div className="text-center">
                       <span className="text-4xl font-bold text-white">
-                        {event.price === 0 ? "FREE" : `$${event.price}`}
+                        {getEventPrice() === 0 ? "FREE" : `$${getEventPrice()}`}
                       </span>
-                      {event.price > 0 && <p className="text-gray-400">per ticket</p>}
+                      {getEventPrice() > 0 && <p className="text-gray-400">per ticket</p>}
                     </div>
                   )}
                     <div className={`p-4 rounded-lg border ${availability.color}`}>
                     <div className="text-center">
                       <p className="font-medium">{availability.status}</p>
-                      <p className="text-sm">{event.maxTickets ? event.maxTickets : 'Unlimited'} max tickets</p>
+                      <p className="text-sm">{getMaxTickets() ? getMaxTickets() : 'Unlimited'} max tickets</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Features */}
-              {event.features && (
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold text-white mb-3">Event Features</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {event.features.map((feature, index) => (
-                      <div key={index} className="flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className="text-gray-300">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </ThemedCard>          {/* Purchase/Registration Section */}
           <div className="border-t border-white/10 pt-6 mt-6">
@@ -727,7 +724,7 @@ export default function EventDetails() {
                   <div className="flex-1 space-y-4">
                     {/* Price and Availability */}
                     <div className="flex items-center gap-4">
-                      <div className="text-3xl font-bold text-white">${event.price.toFixed(2)}</div>
+                      <div className="text-3xl font-bold text-white">${getEventPrice().toFixed(2)}</div>
                       <Badge variant="outline" className={`${availability.color} ml-2 px-2 py-1`}>
                         {availability.status}
                       </Badge>
@@ -754,7 +751,7 @@ export default function EventDetails() {
                           onChange={(e) => handleQuantityChange(parseInt(e.target.value))}
                           className="w-16 text-center mx-2 bg-white/5 border-white/20 text-white"
                           min="1"
-                          max={event.maxTickets || 10}
+                          max={getMaxTickets() || 10}
                         />
                         <Button
                           type="button"
@@ -773,7 +770,7 @@ export default function EventDetails() {
                     {/* Total Price */}
                     <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-4">
                       <div className="text-white text-lg font-medium">Total:</div>
-                      <div className="text-white text-xl font-bold">${(event.price * formData.quantity).toFixed(2)}</div>
+                      <div className="text-white text-xl font-bold">${(getEventPrice() * formData.quantity).toFixed(2)}</div>
                     </div>
                   </div>
                   
