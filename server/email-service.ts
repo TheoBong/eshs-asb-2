@@ -55,7 +55,7 @@ class EmailService {
     this.adminEmail = process.env.ADMIN_EMAIL || 'theo@bongbong.com';
 
     // Configure transporter for local Postfix only
-    this.transporter = nodemailer.createTransporter({
+    this.transporter = nodemailer.createTransport({
       host: 'localhost',
       port: 25,
       secure: false,
