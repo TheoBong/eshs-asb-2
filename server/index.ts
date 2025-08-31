@@ -6,8 +6,8 @@ import { connectDB } from "@shared/mongodb-schema";
 import { sessionConfig } from "./auth";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(sessionConfig);
 
 app.use((req, res, next) => {
