@@ -6,6 +6,30 @@ import { connectDB } from "@shared/mongodb-schema";
 import { sessionConfig } from "./auth";
 
 const app = express();
+
+// Early request size check
+app.use((req, res, next) => {
+  const contentLength = parseInt(req.headers['content-length'] || '0');
+  const maxSize = 50 * 1024 * 1024; // 50MB
+  
+  if (contentLength > maxSize) {
+    console.error(`Request too large: ${contentLength} bytes (max: ${maxSize})`);
+    return res.status(413).json({
+      message: "Request too large",
+      maxSize: "50MB",
+      receivedSize: `${Math.round(contentLength / 1024 / 1024)}MB`
+    });
+  }
+  
+  next();
+});
+
+// Configure body parsing with size limits, but skip multipart data (handled by multer)
+app.use('/api/upload', (req, res, next) => {
+  console.log(`Upload request: ${req.headers['content-length']} bytes`);
+  next();
+});
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(sessionConfig);
@@ -47,10 +71,26 @@ app.use((req, res, next) => {
   
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
+    
+    console.error('Global error handler:', {
+      url: req.url,
+      method: req.method,
+      error: err.message,
+      status,
+      stack: err.stack
+    });
 
+    // Always return JSON for API requests
+    if (req.path.startsWith('/api/')) {
+      return res.status(status).json({ 
+        message,
+        error: err.code || 'UNKNOWN_ERROR'
+      });
+    }
+    
     res.status(status).json({ message });
     throw err;
   });

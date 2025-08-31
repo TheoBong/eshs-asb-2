@@ -646,12 +646,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // File upload endpoints
-  app.post("/api/upload", requireAdminAuth, upload.single('file'), async (req, res) => {
+  app.post("/api/upload", (req, res, next) => {
+    console.log('Upload request headers:', req.headers);
+    console.log('Content-Length:', req.headers['content-length']);
+    console.log('Content-Type:', req.headers['content-type']);
+    next();
+  }, requireAdminAuth, (req, res, next) => {
+    upload.single('file')(req, res, (err) => {
+      if (err) {
+        console.error('Multer error:', err);
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(413).json({ 
+            message: "File too large", 
+            maxSize: "50MB",
+            error: err.message 
+          });
+        }
+        if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+          return res.status(400).json({ 
+            message: "Unexpected file field", 
+            error: err.message 
+          });
+        }
+        return res.status(400).json({ 
+          message: "Upload error", 
+          error: err.message 
+        });
+      }
+      next();
+    });
+  }, async (req, res) => {
     try {
       console.log('Upload request received');
+      console.log('Body size:', JSON.stringify(req.body).length);
       
       if (!req.file) {
         console.log('No file in request');
+        console.log('Request files:', req.files);
         return res.status(400).json({ message: "No file uploaded" });
       }
 

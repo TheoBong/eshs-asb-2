@@ -235,12 +235,12 @@ export default function EventDetails() {
       // Check custom forms
       if (event.requiredForms.customForms && event.requiredForms.customForms.length > 0) {
         for (const customForm of event.requiredForms.customForms) {
-          if (!formData.customForms[customForm]) {
+          if (!formData.customForms[customForm.name]) {
             setUploadStatus({
               uploading: false,
               success: false,
               error: true,
-              message: `${customForm} form is required`
+              message: `${customForm.name} form is required`
             });
             return;
           }
@@ -648,20 +648,32 @@ export default function EventDetails() {
                         {/* Custom Forms */}
                         {event.requiredForms?.customForms && event.requiredForms.customForms.length > 0 && (
                           <div className="space-y-3">
-                            {event.requiredForms.customForms.map((formName, index) => (
+                            {event.requiredForms.customForms.map((customForm, index) => (
                               <div key={index}>
                                 <Label htmlFor={`customForm_${index}`} className="text-white mb-2 block">
-                                  {formName} {formData.customForms[formName] ? '✓' : '*'}
+                                  {customForm.name} {formData.customForms[customForm.name] ? '✓' : '*'}
                                 </Label>
-                                <Input
-                                  id={`customForm_${index}`}
-                                  type="file"
-                                  ref={(el) => { customFormRefs.current[formName] = el; }}
-                                  onChange={(e) => handleCustomFileUpload(formName, e.target.files?.[0] || null)}
-                                  className="bg-white/5 border-white/20 text-white"
-                                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                  required
-                                />
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    id={`customForm_${index}`}
+                                    type="file"
+                                    ref={(el) => { customFormRefs.current[customForm.name] = el; }}
+                                    onChange={(e) => handleCustomFileUpload(customForm.name, e.target.files?.[0] || null)}
+                                    className="bg-white/5 border-white/20 text-white"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                    required
+                                  />
+                                  {customForm.pdfUrl && (
+                                    <a 
+                                      href={customForm.pdfUrl} 
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-300 hover:text-blue-200 text-sm whitespace-nowrap"
+                                    >
+                                      Download Template
+                                    </a>
+                                  )}
+                                </div>
                               </div>
                             ))}
                           </div>
