@@ -397,8 +397,19 @@ function EventForm({ event, onSubmit, onCancel }: {
   event?: Event;
   onSubmit: (data: Partial<Event>) => void;
   onCancel: () => void;
-}) {  const [formData, setFormData] = useState<Partial<Event>>(
-    event || {
+}) {  const [formData, setFormData] = useState<Partial<Event>>(() => {
+    if (event) {
+      // Ensure existing events have proper structure with fallbacks
+      return {
+        ...event,
+        ticketTypes: Array.isArray(event.ticketTypes) ? event.ticketTypes : [],
+        requiredForms: {
+          studentIdRequired: event.requiredForms?.studentIdRequired || false,
+          customForms: Array.isArray(event.requiredForms?.customForms) ? event.requiredForms.customForms : []
+        }
+      };
+    }
+    return {
       title: '',
       category: '',
       date: new Date(),
@@ -411,11 +422,11 @@ function EventForm({ event, onSubmit, onCancel }: {
         studentIdRequired: false,
         customForms: []
       }
-    }
-  );
+    };
+  });
   
   const [newCustomForm, setNewCustomForm] = useState({ name: '', pdfUrl: '' });
-  const [newTicketType, setNewTicketType] = useState({ name: '', description: '', price: 0, maxTickets: 0 });
+  const [newTicketType, setNewTicketType] = useState({ name: '', description: '', price: '', maxTickets: '' });
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -482,17 +493,20 @@ function EventForm({ event, onSubmit, onCancel }: {
   };
 
   const addTicketType = () => {
-    if (newTicketType.name.trim() && newTicketType.description.trim() && newTicketType.price > 0 && newTicketType.maxTickets > 0) {
+    const price = parseFloat(newTicketType.price);
+    const maxTickets = parseInt(newTicketType.maxTickets);
+    
+    if (newTicketType.name.trim() && newTicketType.description.trim() && price > 0 && maxTickets > 0) {
       setFormData({
         ...formData,
         ticketTypes: [...(formData.ticketTypes || []), { 
           name: newTicketType.name.trim(), 
           description: newTicketType.description.trim(),
-          price: newTicketType.price,
-          maxTickets: newTicketType.maxTickets
+          price: price,
+          maxTickets: maxTickets
         }]
       });
-      setNewTicketType({ name: '', description: '', price: 0, maxTickets: 0 });
+      setNewTicketType({ name: '', description: '', price: '', maxTickets: '' });
     }
   };
 
@@ -596,7 +610,7 @@ function EventForm({ event, onSubmit, onCancel }: {
               type="number"
               placeholder="Price"
               value={newTicketType.price}
-              onChange={(e) => setNewTicketType({...newTicketType, price: parseFloat(e.target.value) || 0})}
+              onChange={(e) => setNewTicketType({...newTicketType, price: e.target.value})}
               step="0.01"
             />
           </div>
@@ -610,7 +624,7 @@ function EventForm({ event, onSubmit, onCancel }: {
               type="number"
               placeholder="Max Tickets"
               value={newTicketType.maxTickets}
-              onChange={(e) => setNewTicketType({...newTicketType, maxTickets: parseInt(e.target.value) || 0})}
+              onChange={(e) => setNewTicketType({...newTicketType, maxTickets: e.target.value})}
             />
           </div>
         </div>
@@ -644,7 +658,7 @@ function EventForm({ event, onSubmit, onCancel }: {
               </Button>
             </div>
           ))}
-          {(formData.ticketTypes || []).length === 0 && (
+          {(!formData.ticketTypes || !Array.isArray(formData.ticketTypes) || formData.ticketTypes.length === 0) && (
             <p className="text-sm text-gray-400 italic">No ticket types added yet. Add ticket types above for multiple pricing options.</p>
           )}
         </div>
@@ -715,7 +729,7 @@ function EventForm({ event, onSubmit, onCancel }: {
             </div>
 
             {/* Custom Forms List */}
-            {formData.requiredForms?.customForms && formData.requiredForms.customForms.length > 0 && (
+            {formData.requiredForms?.customForms && Array.isArray(formData.requiredForms.customForms) && formData.requiredForms.customForms.length > 0 && (
               <div className="space-y-2">
                 {formData.requiredForms.customForms.map((form, index) => (
                   <div key={index} className="flex items-center justify-between bg-white/10 rounded-lg p-3">
@@ -2028,10 +2042,15 @@ ESHS ASB Team
                       <p><strong>Time:</strong> {event.time}</p>
                       <p><strong>Location:</strong> {event.location}</p>
                       <p><strong>Category:</strong> {event.category}</p>
-                      {event.price > 0 && <p><strong>Price:</strong> ${event.price}</p>}
-                      {event.maxTickets && <p><strong>Max Tickets:</strong> {event.maxTickets}</p>}
-                      {event.features.length > 0 && (
-                        <p><strong>Features:</strong> {event.features.join(', ')}</p>
+                      {event.ticketTypes && Array.isArray(event.ticketTypes) && event.ticketTypes.length > 0 && (
+                        <div>
+                          <p><strong>Ticket Types:</strong></p>
+                          {event.ticketTypes.map((ticket, idx) => (
+                            <div key={idx} className="ml-4 text-sm">
+                              {ticket.name}: ${ticket.price} (Max: {ticket.maxTickets})
+                            </div>
+                          ))}
+                        </div>
                       )}
                       <p><strong>Requires Approval:</strong> {event.requiresApproval ? 'Yes' : 'No'}</p>
                     </div>

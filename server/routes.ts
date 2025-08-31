@@ -646,12 +646,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // File upload endpoints
+  // Simple test endpoint to verify upload route is working
+  app.get("/api/upload-test", (req, res) => {
+    res.json({ message: "Upload endpoint is accessible", timestamp: new Date().toISOString() });
+  });
+
   app.post("/api/upload", (req, res, next) => {
     console.log('Upload request headers:', req.headers);
     console.log('Content-Length:', req.headers['content-length']);
     console.log('Content-Type:', req.headers['content-type']);
+    console.log('Request URL:', req.url);
+    console.log('Request method:', req.method);
+    
+    // Set a timeout for the upload request
+    req.setTimeout(60000, () => {
+      console.log('Upload request timed out');
+      if (!res.headersSent) {
+        res.status(408).json({ message: "Upload timed out" });
+      }
+    });
+    
     next();
   }, requireAdminAuth, (req, res, next) => {
+    console.log('Auth check passed, proceeding to multer');
+    next();
+  }, (req, res, next) => {
+    console.log('About to call multer');
     upload.single('file')(req, res, (err) => {
       if (err) {
         console.error('Multer error:', err);
@@ -673,6 +693,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           error: err.message 
         });
       }
+      console.log('Multer completed successfully');
       next();
     });
   }, async (req, res) => {
