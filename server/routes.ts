@@ -24,9 +24,19 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure multer for memory storage
+// Configure multer for disk storage
 const upload = multer({ 
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const ext = path.extname(file.originalname);
+      const filename = `${path.basename(file.originalname, ext)}-${uniqueSuffix}${ext}`;
+      cb(null, filename);
+    }
+  }),
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
   },
@@ -61,6 +71,9 @@ const handleError = (res: express.Response, error: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve uploaded files statically
+  app.use('/uploads', express.static(uploadDir));
+
   // Authentication routes
   app.post("/api/admin/login", handleAdminLogin);
   app.post("/api/admin/logout", handleAdminLogout);
@@ -635,30 +648,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // File upload endpoints
   app.post("/api/upload", requireAdminAuth, upload.single('file'), async (req, res) => {
     try {
+      console.log('Upload request received');
+      
       if (!req.file) {
+        console.log('No file in request');
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const { originalname, mimetype, size, buffer } = req.file;
+      const { originalname, mimetype, size, filename, path: filePath } = req.file;
+      console.log(`Processing file: ${originalname}, size: ${size}, type: ${mimetype}, saved as: ${filename}`);
       
-      // Convert buffer to base64
-      const base64Data = buffer.toString('base64');
-      
-      // Generate unique filename
-      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-      const ext = path.extname(originalname);
-      const filename = `${path.basename(originalname, ext)}-${uniqueSuffix}${ext}`;
-
-      // Save to database
+      console.log('Saving metadata to database...');
+      // Save file metadata to database (not the file data itself)
       const file = new File({
         filename,
         originalName: originalname,
         mimeType: mimetype,
         size,
-        data: base64Data
+        data: filePath // Store file path instead of base64 data
       });
 
       const savedFile = await file.save();
+      console.log('File metadata saved successfully');
       
       res.json({
         id: savedFile._id,
@@ -684,17 +695,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "File not found" });
       }
 
-      // Convert base64 back to buffer
-      const buffer = Buffer.from(file.data, 'base64');
+      // Check if file exists on disk
+      const filePath = file.data; // data field now contains file path
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "Physical file not found" });
+      }
       
       // Set appropriate headers
       res.set({
         'Content-Type': file.mimeType,
-        'Content-Length': buffer.length,
         'Content-Disposition': `inline; filename="${file.originalName}"`
       });
       
-      res.send(buffer);
+      // Stream the file from disk
+      res.sendFile(path.resolve(filePath));
     } catch (error) {
       console.error('File serving error:', error);
       res.status(500).json({ message: "Error serving file", error: error.message });

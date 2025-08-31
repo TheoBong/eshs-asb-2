@@ -423,12 +423,24 @@ function EventForm({ event, onSubmit, onCancel }: {
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({...formData, date: new Date(e.target.value)});
+    const value = e.target.value;
+    if (value) {
+      const newDate = new Date(value);
+      // Only update if the date is valid
+      if (!isNaN(newDate.getTime())) {
+        setFormData({...formData, date: newDate});
+      }
+    } else {
+      // Handle empty value
+      setFormData({...formData, date: undefined});
+    }
   };
 
   const formatDateForInput = (date: Date | undefined) => {
     if (!date) return '';
     const d = new Date(date);
+    // Check if date is valid before calling toISOString
+    if (isNaN(d.getTime())) return '';
     return d.toISOString().split('T')[0];
   };
   

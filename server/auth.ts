@@ -9,19 +9,23 @@ dotenv.config();
 const MemStore = MemoryStore(session);
 
 // Session configuration
+const SESSION_SECRET = process.env.SESSION_SECRET || 'eshs-asb-2024-admin-session-secret-' + Date.now();
+
 export const sessionConfig = session({
-  secret: process.env.SESSION_SECRET || 'fallback-secret-change-this',
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: new MemStore({
-    checkPeriod: 86400000 // prune expired entries every 24h
+    checkPeriod: 86400000, // prune expired entries every 24h
+    ttl: 30 * 24 * 60 * 60 * 1000 // 30 days TTL
   }),
   cookie: {
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Allow HTTP for development/local deployment
     sameSite: 'lax'
-  }
+  },
+  name: 'eshs.admin.session' // Custom session name
 });
 
 // Extend session type
@@ -57,13 +61,22 @@ export const handleAdminLogin = async (req: Request, res: Response) => {
   const isValid = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
 
   if (isValid) {
-    req.session.adminAuthenticated = true;
-    req.session.save((err) => {
+    // Regenerate session ID for security
+    req.session.regenerate((err) => {
       if (err) {
-        console.error('Session save error:', err);
-        return res.status(500).json({ error: 'Failed to save session' });
+        console.error('Session regeneration error:', err);
+        return res.status(500).json({ error: 'Failed to create session' });
       }
-      res.json({ success: true });
+      
+      req.session.adminAuthenticated = true;
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ error: 'Failed to save session' });
+        }
+        console.log('Admin session created successfully');
+        res.json({ success: true, message: 'Login successful' });
+      });
     });
   } else {
     res.status(401).json({ error: 'Invalid password' });
@@ -72,17 +85,29 @@ export const handleAdminLogin = async (req: Request, res: Response) => {
 
 // Logout endpoint handler
 export const handleAdminLogout = (req: Request, res: Response) => {
-  req.session.adminAuthenticated = false;
-  req.session.save((err) => {
-    if (err) {
-      console.error('Session save error:', err);
-      return res.status(500).json({ error: 'Failed to save session' });
-    }
-    res.json({ success: true });
-  });
+  if (req.session.adminAuthenticated) {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Session destruction error:', err);
+        return res.status(500).json({ error: 'Failed to logout' });
+      }
+      res.clearCookie('eshs.admin.session');
+      console.log('Admin session destroyed successfully');
+      res.json({ success: true, message: 'Logout successful' });
+    });
+  } else {
+    res.json({ success: true, message: 'Already logged out' });
+  }
 };
 
 // Check auth status endpoint handler
 export const checkAdminAuth = (req: Request, res: Response) => {
-  res.json({ authenticated: !!req.session.adminAuthenticated });
+  const authenticated = !!req.session.adminAuthenticated;
+  console.log(`Auth check: ${authenticated ? 'authenticated' : 'not authenticated'}`);
+  
+  res.json({ 
+    authenticated,
+    sessionId: req.sessionID,
+    expiresAt: req.session.cookie?.expires || null
+  });
 };
