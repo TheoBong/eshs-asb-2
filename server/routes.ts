@@ -560,9 +560,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (originalSubmission?.status === 'pending' && (submission.status === 'approved' || submission.status === 'rejected')) {
         console.log(`Sending status update email to ${submission.email} for ${submission.status} status`);
         try {
-          // Get event details
-          const event = await storage.getEvent(submission.eventId.toString());
-          console.log(`Found event: ${event?.title}`);
+          // Event is already populated by the storage layer
+          const event = submission.eventId;
+          console.log(`Using populated event: ${event?.title}`);
           
           if (submission.status === 'approved') {
             // Send approval email
