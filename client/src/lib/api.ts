@@ -312,6 +312,7 @@ export interface Event {
     customForms: Array<{
       name: string;
       pdfUrl: string;
+      required: boolean;
     }>;
   };
 }

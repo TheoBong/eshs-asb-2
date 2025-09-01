@@ -5,7 +5,7 @@ The ESHS ASB system includes email notifications for activity form submissions a
 
 ## Features
 
-### 1. Form Submission Notification
+### 1. Form Submission Notification (Admin)
 When a student submits a form for an activity requiring approval:
 - **Recipient**: Admin email (configured via environment variables)
 - **Content**: 
@@ -17,7 +17,20 @@ When a student submits a form for an activity requiring approval:
 - **Attachments**: All submitted forms are attached to the email
 - **Enhanced Design**: Modern HTML template with school branding
 
-### 2. Approval Notification
+### 2. Form Submission Receipt (Student)
+When a student submits a form, they automatically receive a receipt:
+- **Recipient**: Student's email address
+- **Content**:
+  - Confirmation of submission receipt
+  - Event details with quantity and total amount
+  - Status indicator (Pending Review)
+  - Next steps and expected timeline
+  - All submission details for records
+- **Attachments**: All submitted forms are attached as a receipt
+- **Subject**: 📧 Submission Receipt - [Event Name]
+- **Design**: Purple gradient theme with clear status tracking
+
+### 3. Approval Notification
 When an admin approves a form submission:
 - **Recipient**: Student's email
 - **Content**:
@@ -28,7 +41,7 @@ When an admin approves a form submission:
 - **Subject**: ✅ Activity Request Approved - [Event Name]
 - **Design**: Green gradient theme with professional styling
 
-### 3. Rejection Notification
+### 4. Rejection Notification
 When an admin rejects a form submission:
 - **Recipient**: Student's email
 - **Content**:
@@ -101,10 +114,15 @@ curl -X POST http://localhost:3000/api/test-email \
   -H "Content-Type: application/json" \
   -d '{"to": "test@example.com", "type": "rejection"}'
 
-# Test submission notification
+# Test submission notification (admin)
 curl -X POST http://localhost:3000/api/test-email \
   -H "Content-Type: application/json" \
   -d '{"to": "admin@example.com", "type": "submission"}'
+
+# Test submission receipt (student)
+curl -X POST http://localhost:3000/api/test-email \
+  -H "Content-Type: application/json" \
+  -d '{"to": "student@example.com", "type": "receipt"}'
 ```
 
 ## API Integration
@@ -113,9 +131,10 @@ curl -X POST http://localhost:3000/api/test-email \
 
 #### Form Submission
 `POST /api/form-submissions`
-- Automatically sends notification to admin
-- Includes form attachments if present
-- Professional HTML template with all submission details
+- Automatically sends notification to admin with all submission details
+- Automatically sends receipt to student with their submitted forms
+- Includes form attachments in both emails
+- Professional HTML templates with school branding
 
 #### Status Updates
 `PUT /api/form-submissions/:id`

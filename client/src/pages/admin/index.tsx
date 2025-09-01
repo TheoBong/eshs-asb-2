@@ -425,7 +425,7 @@ function EventForm({ event, onSubmit, onCancel }: {
     };
   });
   
-  const [newCustomForm, setNewCustomForm] = useState({ name: '', pdfUrl: '' });
+  const [newCustomForm, setNewCustomForm] = useState({ name: '', pdfUrl: '', required: true });
   const [newTicketType, setNewTicketType] = useState({ name: '', description: '', price: '', maxTickets: '' });
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -463,11 +463,12 @@ function EventForm({ event, onSubmit, onCancel }: {
           ...formData.requiredForms,
           customForms: [...(formData.requiredForms.customForms || []), { 
             name: newCustomForm.name.trim(), 
-            pdfUrl: newCustomForm.pdfUrl.trim() 
+            pdfUrl: newCustomForm.pdfUrl.trim(),
+            required: newCustomForm.required
           }]
         }
       });
-      setNewCustomForm({ name: '', pdfUrl: '' });
+      setNewCustomForm({ name: '', pdfUrl: '', required: true });
     }
   };
 
@@ -681,8 +682,8 @@ function EventForm({ event, onSubmit, onCancel }: {
         <div className="border border-white/20 rounded-lg p-4 bg-white/5 space-y-4">
           <h3 className="text-lg font-semibold text-white">Form Requirements</h3>
           
-          {/* Student ID Required */}
-          <div className="flex items-center space-x-2">
+          {/* Form Requirements Checkboxes */}
+          <div className="flex items-center space-x-2 mb-4">
             <input
               type="checkbox"
               id="studentIdRequired"
@@ -715,6 +716,18 @@ function EventForm({ event, onSubmit, onCancel }: {
                 placeholder="Upload a PDF form or paste URL"
                 maxSizeMB={5}
               />
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="newFormRequired"
+                  checked={newCustomForm.required}
+                  onChange={(e) => setNewCustomForm({...newCustomForm, required: e.target.checked})}
+                  className="rounded border-gray-600 bg-gray-700"
+                />
+                <label htmlFor="newFormRequired" className="text-sm font-medium text-gray-300">
+                  Required Form
+                </label>
+              </div>
               <Button 
                 type="button" 
                 onClick={addCustomForm}
@@ -734,7 +747,16 @@ function EventForm({ event, onSubmit, onCancel }: {
                 {formData.requiredForms.customForms.map((form, index) => (
                   <div key={index} className="flex items-center justify-between bg-white/10 rounded-lg p-3">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-white">{form.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-white">{form.name}</p>
+                        <span className={`text-xs px-2 py-1 rounded ${
+                          form.required !== false 
+                            ? 'bg-red-500/20 text-red-200 border border-red-500/30' 
+                            : 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                        }`}>
+                          {form.required !== false ? 'Required' : 'Optional'}
+                        </span>
+                      </div>
                       <a 
                         href={form.pdfUrl} 
                         target="_blank" 

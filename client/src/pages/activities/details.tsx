@@ -11,8 +11,6 @@ import { useCart } from "@/contexts/CartContext";
 
 // Types for form data
 interface FormData {
-  contractForm: File | null;
-  guestForm: File | null;
   studentId: File | null;
   customForms: { [key: string]: File | null };
   studentName: string;
@@ -49,8 +47,6 @@ export default function EventDetails() {
   const [error, setError] = useState<string | null>(null);
   const [selectedTicketType, setSelectedTicketType] = useState<number | null>(null); // Index of selected ticket type
   const [formData, setFormData] = useState<FormData>({
-    contractForm: null,
-    guestForm: null,
     studentId: null,
     customForms: {},
     studentName: '',
@@ -69,8 +65,6 @@ export default function EventDetails() {
 
   // File input refs
   const fileInputRefs = {
-    contractForm: useRef<HTMLInputElement>(null),
-    guestForm: useRef<HTMLInputElement>(null),
     studentId: useRef<HTMLInputElement>(null),
   };
 
@@ -186,7 +180,7 @@ export default function EventDetails() {
   };
 
   const handleFileUpload = (field: keyof FormData, file: File | null) => {
-    if (field === 'customForms' && file) {
+    if (field === 'customForms') {
       // This won't be called directly for customForms
       return;
     }
@@ -238,26 +232,6 @@ export default function EventDetails() {
 
     // Check required forms based on event settings
     if (event.requiredForms) {
-      if (event.requiredForms.contractForm && !formData.contractForm) {
-        setUploadStatus({
-          uploading: false,
-          success: false,
-          error: true,
-          message: 'Contract form is required'
-        });
-        return;
-      }
-      
-      if (event.requiredForms.guestForm && !formData.guestForm) {
-        setUploadStatus({
-          uploading: false,
-          success: false,
-          error: true,
-          message: 'Guest form is required'
-        });
-        return;
-      }
-      
       if (event.requiredForms.studentIdRequired && !formData.studentId) {
         setUploadStatus({
           uploading: false,
@@ -271,7 +245,7 @@ export default function EventDetails() {
       // Check custom forms
       if (event.requiredForms.customForms && event.requiredForms.customForms.length > 0) {
         for (const customForm of event.requiredForms.customForms) {
-          if (!formData.customForms[customForm.name]) {
+          if (customForm.required !== false && !formData.customForms[customForm.name]) {
             setUploadStatus({
               uploading: false,
               success: false,
@@ -296,24 +270,6 @@ export default function EventDetails() {
       // In a real implementation, we'd upload the files to a server/storage
       // For now, we'll simulate the file upload by creating URLs
       const uploadedForms = [];
-      
-      // Process contract form
-      if (formData.contractForm) {
-        uploadedForms.push({
-          fileName: 'Contract Form',
-          fileUrl: URL.createObjectURL(formData.contractForm),
-          fileType: formData.contractForm.type
-        });
-      }
-      
-      // Process guest form
-      if (formData.guestForm) {
-        uploadedForms.push({
-          fileName: 'Guest Form',
-          fileUrl: URL.createObjectURL(formData.guestForm),
-          fileType: formData.guestForm.type
-        });
-      }
       
       // Process student ID
       if (formData.studentId) {
@@ -342,8 +298,8 @@ export default function EventDetails() {
         studentName: formData.studentName,
         email: formData.email,
         forms: uploadedForms,
-        quantity: formData.quantity,
-        totalAmount: selectedTicket ? selectedTicket.price * formData.quantity : 0,
+        quantity: 1, // Always 1 for approval requests
+        totalAmount: selectedTicket ? selectedTicket.price * 1 : 0,
         notes: formData.notes,
         status: 'pending',
         ticketType: selectedTicket ? {
@@ -514,16 +470,16 @@ export default function EventDetails() {
           {/* Ticket Selection */}
           {event.ticketTypes && event.ticketTypes.length > 0 && (
             <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl mb-8">
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-4">Select Ticket Type</h3>
+              <div className="p-4">
+                <h3 className="text-lg font-bold text-white mb-3">Select Ticket Type</h3>
                 {getAvailableTicketTypes().length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {getAvailableTicketTypes().map((ticket, availableIndex) => {
                       const originalIndex = event.ticketTypes!.findIndex(t => t === ticket);
                       return (
                         <div 
                           key={originalIndex} 
-                          className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                          className={`p-2 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                             selectedTicketType === originalIndex 
                               ? 'border-blue-400 bg-blue-500/10 shadow-lg transform scale-105' 
                               : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
@@ -531,29 +487,19 @@ export default function EventDetails() {
                           onClick={() => setSelectedTicketType(originalIndex)}
                         >
                           <div className="text-center">
-                            <div className="font-semibold text-white text-base mb-1">{ticket.name}</div>
-                            <div className="text-2xl font-bold text-green-400 mb-2">${ticket.price.toFixed(2)}</div>
-                            <div className="text-sm text-gray-300">{ticket.description}</div>
-                            {selectedTicketType === originalIndex && (
-                              <div className="mt-2">
-                                <div className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-200 border border-blue-500/30">
-                                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                  Selected
-                                </div>
-                              </div>
-                            )}
+                            <div className="font-semibold text-white text-sm mb-1">{ticket.name}</div>
+                            <div className="text-xl font-bold text-green-400 mb-1">${ticket.price.toFixed(2)}</div>
+                            <div className="text-xs text-gray-300">{ticket.description}</div>
                           </div>
                         </div>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <div className="text-6xl mb-4">🎫</div>
-                    <div className="text-2xl font-bold text-red-400 mb-2">SOLD OUT</div>
-                    <div className="text-gray-400">All ticket types for this event are currently sold out.</div>
+                  <div className="text-center py-4">
+                    <div className="text-4xl mb-2">🎫</div>
+                    <div className="text-xl font-bold text-red-400 mb-1">SOLD OUT</div>
+                    <div className="text-gray-400 text-sm">All ticket types for this event are currently sold out.</div>
                   </div>
                 )}
               </div>
@@ -608,118 +554,11 @@ export default function EventDetails() {
                         </div>
                       </div>
 
-                      {/* Quantity Selection - Only show if there are available ticket types */}
-                      {getAvailableTicketTypes().length > 0 && selectedTicketType !== null && (
-                        <div>
-                          <Label htmlFor="quantity" className="text-white mb-2 block">Quantity</Label>
-                          <div className="flex items-center space-x-4">
-                            <div className="flex items-center">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                className="h-9 w-9 bg-white/5 border-white/20 text-white"
-                                onClick={() => handleQuantityChange(formData.quantity - 1)}
-                              >
-                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                                </svg>
-                              </Button>
-                              <Input
-                                type="number"
-                                value={formData.quantity}
-                                onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
-                                className="w-16 text-center mx-2 bg-white/5 border-white/20 text-white"
-                                min="1"
-                                max={getMaxTickets() || 10}
-                              />
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                className="h-9 w-9 bg-white/5 border-white/20 text-white"
-                                onClick={() => handleQuantityChange(formData.quantity + 1)}
-                              >
-                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                              </Button>
-                            </div>
-                            {selectedTicketType !== null && (
-                              <div className="text-white">
-                                Total: <span className="font-bold">${(getEventPrice() * formData.quantity).toFixed(2)}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
 
                       {/* Required Forms Section */}
                       <div className="space-y-4">
                         <h4 className="text-xl font-semibold text-white">Required Forms</h4>
                         
-                        {/* Contract Form */}
-                        {event.requiredForms?.contractForm && (
-                          <div>
-                            <Label htmlFor="contractForm" className="text-white mb-2 block">
-                              Contract Form {formData.contractForm ? '✓' : '*'}
-                            </Label>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                id="contractForm"
-                                type="file"
-                                ref={fileInputRefs.contractForm}
-                                onChange={(e) => handleFileUpload('contractForm', e.target.files?.[0] || null)}
-                                className="bg-white/5 border-white/20 text-white"
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                required
-                              />
-                              <a 
-                                href="#" 
-                                className="text-blue-300 hover:text-blue-200 text-sm whitespace-nowrap"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  // In a real implementation, this would link to the form template
-                                  alert('Download contract form template (this would be implemented in production)');
-                                }}
-                              >
-                                Download Template
-                              </a>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Guest Form */}
-                        {event.requiredForms?.guestForm && (
-                          <div>
-                            <Label htmlFor="guestForm" className="text-white mb-2 block">
-                              Guest Form {formData.guestForm ? '✓' : '*'}
-                            </Label>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                id="guestForm"
-                                type="file"
-                                ref={fileInputRefs.guestForm}
-                                onChange={(e) => handleFileUpload('guestForm', e.target.files?.[0] || null)}
-                                className="bg-white/5 border-white/20 text-white"
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                required
-                              />
-                              <a 
-                                href="#" 
-                                className="text-blue-300 hover:text-blue-200 text-sm whitespace-nowrap"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  // In a real implementation, this would link to the form template
-                                  alert('Download guest form template (this would be implemented in production)');
-                                }}
-                              >
-                                Download Template
-                              </a>
-                            </div>
-                          </div>
-                        )}
-
                         {/* Student ID */}
                         {event.requiredForms?.studentIdRequired && (
                           <div>
@@ -745,7 +584,7 @@ export default function EventDetails() {
                             {event.requiredForms.customForms.map((customForm, index) => (
                               <div key={index}>
                                 <Label htmlFor={`customForm_${index}`} className="text-white mb-2 block">
-                                  {customForm.name} {formData.customForms[customForm.name] ? '✓' : '*'}
+                                  {customForm.name} {formData.customForms[customForm.name] ? '✓' : (customForm.required !== false ? '*' : '')}
                                 </Label>
                                 <div className="flex items-center gap-2">
                                   <Input
@@ -755,7 +594,7 @@ export default function EventDetails() {
                                     onChange={(e) => handleCustomFileUpload(customForm.name, e.target.files?.[0] || null)}
                                     className="bg-white/5 border-white/20 text-white"
                                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                    required
+                                    required={customForm.required !== false}
                                   />
                                   {customForm.pdfUrl && (
                                     <a 

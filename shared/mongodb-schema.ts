@@ -73,7 +73,8 @@ const eventSchema = new mongoose.Schema({
     studentIdRequired: { type: Boolean, default: false },
     customForms: [{
       name: { type: String, required: true },
-      pdfUrl: { type: String, required: true }
+      pdfUrl: { type: String, required: true },
+      required: { type: Boolean, default: true }
     }]
   },
   image: { type: String },

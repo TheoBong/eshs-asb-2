@@ -103,6 +103,108 @@ class EmailService {
     }
   }
 
+  async sendFormSubmissionReceipt(to: string, data: FormSubmissionEmailData, attachments?: Array<{
+    filename: string;
+    content: Buffer;
+    contentType: string;
+  }>): Promise<void> {
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #f8f9fa; padding: 30px; margin-top: 0; border-radius: 0 0 8px 8px; }
+    .info-box { background: #fff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea; }
+    .info-row { margin: 10px 0; }
+    .label { font-weight: bold; color: #003366; }
+    .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; }
+    .attachments { background: #f0f8ff; padding: 15px; border-radius: 5px; margin: 15px 0; border: 1px solid #b3d9ff; }
+    .status-badge { display: inline-block; padding: 5px 10px; background: #ffd700; color: #333; border-radius: 15px; font-weight: bold; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>📧 Submission Receipt</h2>
+      <p style="margin: 0; font-size: 14px;">Your form submission has been received</p>
+    </div>
+    <div class="content">
+      <p>Dear ${data.studentName},</p>
+      
+      <p>Thank you for submitting your forms for <strong>${data.eventName}</strong>. This email serves as your receipt and confirmation that we have received your submission.</p>
+      
+      <div class="info-box">
+        <h3 style="margin-top: 0; color: #667eea;">📋 Submission Details</h3>
+        <div class="info-row">
+          <span class="label">Event:</span> ${data.eventName}
+        </div>
+        <div class="info-row">
+          <span class="label">Submission Date:</span> ${new Date(data.submissionDate).toLocaleString()}
+        </div>
+        <div class="info-row">
+          <span class="label">Quantity:</span> ${data.quantity}
+        </div>
+        <div class="info-row">
+          <span class="label">Total Amount:</span> $${data.totalAmount.toFixed(2)}
+        </div>
+        ${data.notes ? `
+        <div class="info-row">
+          <span class="label">Your Notes:</span> ${data.notes}
+        </div>
+        ` : ''}
+        <div class="info-row">
+          <span class="label">Status:</span> <span class="status-badge">⏳ PENDING REVIEW</span>
+        </div>
+      </div>
+      
+      <div class="attachments">
+        <p><strong>📎 Submitted Forms:</strong></p>
+        <p style="font-size: 14px; color: #666;">The following forms have been submitted and are attached to this email for your records:</p>
+        <ul>
+          ${data.forms?.map(form => `<li>${form.fileName}</li>`).join('') || '<li>No forms attached</li>'}
+        </ul>
+      </div>
+      
+      <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 20px;">
+        <h4 style="margin-top: 0; color: #2e7d32;">📬 What happens next?</h4>
+        <ol style="margin: 10px 0; padding-left: 20px;">
+          <li>Your submission will be reviewed by an administrator</li>
+          <li>You will receive an email notification once your request is approved or if additional information is needed</li>
+          <li>If approved, you'll receive instructions for completing your purchase</li>
+        </ol>
+        <p style="margin-bottom: 0; font-size: 14px;"><strong>Expected review time:</strong> Within 1-2 business days</p>
+      </div>
+      
+      <p style="margin-top: 20px; font-size: 14px; color: #666;">
+        <strong>Important:</strong> Please keep this email for your records. The attached forms are the same documents you submitted. If you have any questions about your submission, please contact the ASB office.
+      </p>
+    </div>
+    <div class="footer">
+      <p><strong>El Segundo High School ASB Team</strong></p>
+      <p style="font-size: 12px;">This is an automated receipt. Please do not reply to this email.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    const emailAttachments = attachments?.map(att => ({
+      filename: att.filename,
+      content: att.content,
+      contentType: att.contentType
+    })) || [];
+
+    await this.sendEmail({
+      to,
+      subject: `📧 Submission Receipt - ${data.eventName}`,
+      html,
+      attachments: emailAttachments
+    });
+  }
+
   async sendFormSubmissionNotification(data: FormSubmissionEmailData, attachments?: Array<{
     filename: string;
     content: Buffer;

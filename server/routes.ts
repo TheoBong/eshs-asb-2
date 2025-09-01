@@ -493,7 +493,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
         
-        await emailService.sendFormSubmissionNotification({
+        // Prepare email data
+        const emailData = {
           eventName: event?.title || 'Unknown Event',
           studentName: submission.studentName,
           email: submission.email,
@@ -502,9 +503,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalAmount: submission.totalAmount || 0,
           notes: submission.notes,
           forms: submission.forms
-        }, attachments);
+        };
+        
+        // Send notification to admin
+        await emailService.sendFormSubmissionNotification(emailData, attachments);
+        
+        // Send receipt to student with the same attachments
+        await emailService.sendFormSubmissionReceipt(
+          submission.email,
+          emailData,
+          attachments
+        );
       } catch (emailError) {
-        console.error('Failed to send email notification:', emailError);
+        console.error('Failed to send email notifications:', emailError);
         // Don't fail the request if email fails
       }
       
@@ -822,6 +833,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
             quantity: 1,
             totalAmount: 10.00,
             notes: 'This is a test submission notification.',
+            forms: [{ fileName: 'test-form.pdf', fileUrl: '/test', fileType: 'application/pdf' }]
+          });
+          break;
+        case 'receipt':
+          await emailService.sendFormSubmissionReceipt(to, {
+            eventName: 'Test Event',
+            studentName: 'Test Student',
+            email: to,
+            submissionDate: new Date(),
+            quantity: 1,
+            totalAmount: 10.00,
+            notes: 'This is a test receipt email.',
             forms: [{ fileName: 'test-form.pdf', fileUrl: '/test', fileType: 'application/pdf' }]
           });
           break;
