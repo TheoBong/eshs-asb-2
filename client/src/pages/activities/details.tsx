@@ -395,37 +395,16 @@ export default function EventDetails() {
   // const availability = getAvailabilityStatus(getMaxTickets());
 
   return (
-    <ThemedPageWrapper pageType="information">
-      {/* Background Video */}
-      <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline
-          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
-        >
-        </video>
-      </div>
-      
-      <div className="relative z-10 min-h-screen py-12">
-        <div className="container mx-auto px-4 max-w-4xl">
-          {/* Header with back button */}
-          <div className="flex items-center mb-8">
-            <OutlineButton
-              onClick={handleBackClick}
-              className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl flex items-center text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-semibold p-3 mr-4"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to Activities
-            </OutlineButton>
-            <h1 className="font-bold text-2xl md:text-3xl text-white tracking-tight">Event Details</h1>
-          </div>
-
+    <UniversalPageLayout pageType="information" title="Event Details">
+      {({ contentVisible }) => (
+        <>
           {/* Event Details */}
-          <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl mb-8">
+          <BlurCard
+            contentVisible={contentVisible}
+            index={0}
+            delay="200ms"
+            className="mb-8"
+          >
             <div className="p-8">
               {/* Header */}
               <div className="flex items-start justify-between mb-6">
@@ -472,11 +451,16 @@ export default function EventDetails() {
                 <p className="text-gray-300 text-lg leading-relaxed">{event.description}</p>
               </div>
             </div>
-          </ThemedCard>
+          </BlurCard>
 
           {/* Ticket Selection */}
           {event.ticketTypes && event.ticketTypes.length > 0 && (
-            <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl mb-8">
+            <BlurCard
+              contentVisible={contentVisible}
+              index={1}
+              delay="300ms"
+              className="mb-8"
+            >
               <div className="p-4">
                 <h3 className="text-lg font-bold text-white mb-3">
                   Select Ticket Type <span className="text-red-400">*</span>
@@ -512,9 +496,9 @@ export default function EventDetails() {
                   </div>
                 )}
               </div>
-            </ThemedCard>
+            </BlurCard>
           )}          {/* Purchase/Registration Section */}
-          <div className="border-t border-white/10 pt-6 mt-6">
+          <BlurContainer contentVisible={contentVisible} delay="400ms" className="border-t border-white/10 pt-6 mt-6">
             {event.requiresApproval ? (
               // Direct approval form display (no card wrapper)
               <div>
@@ -550,7 +534,12 @@ export default function EventDetails() {
                 )}
 
                 {!uploadStatus.success && (
-                  <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl p-6">
+                  <BlurCard
+                    contentVisible={contentVisible}
+                    index={2}
+                    delay="500ms"
+                    className="p-6"
+                  >
                     <form className="space-y-6">
                       {/* Student Information */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -653,7 +642,8 @@ export default function EventDetails() {
 
                       {/* Submit Button */}
                       <div className="pt-2">
-                        <PrimaryButton
+                        <BlurActionButton
+                          contentVisible={contentVisible}
                           onClick={handleSubmitApproval}
                           disabled={isSubmitting || uploadStatus.success || (event.ticketTypes && event.ticketTypes.length > 0 && selectedTicketType === null)}
                           className="w-full py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
@@ -667,7 +657,7 @@ export default function EventDetails() {
                               Submitting...
                             </>
                           ) : (event.ticketTypes && event.ticketTypes.length > 0 && selectedTicketType === null) ? 'Select Ticket Type First' : 'Submit for Approval'}
-                        </PrimaryButton>
+                        </BlurActionButton>
 
                         <p className="text-sm text-gray-400 mt-3">
                           * Once submitted, your request will be reviewed by an administrator. 
@@ -675,12 +665,17 @@ export default function EventDetails() {
                         </p>
                       </div>
                     </form>
-                  </ThemedCard>
+                  </BlurCard>
                 )}
               </div>
             ) : (
               // Price/Quantity section for non-approval events
-              <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl p-6">
+              <BlurCard
+                contentVisible={contentVisible}
+                index={2}
+                delay="500ms"
+                className="p-6"
+              >
                 <div className="flex flex-col md:flex-row gap-6">
                   <div className="flex-1 space-y-4">
                     {/* Price and Availability */}
@@ -739,19 +734,20 @@ export default function EventDetails() {
                   
                   {/* Action Button */}
                   <div className="flex-1 flex items-end justify-center md:justify-end">
-                    <PrimaryButton
+                    <BlurActionButton
+                      contentVisible={contentVisible}
                       onClick={handleDirectPurchase}
                       disabled={selectedTicketType === null}
                       className="w-full md:w-auto px-8 py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {selectedTicketType === null ? 'Select Ticket Type' : 'Add to Cart'}
-                    </PrimaryButton>
+                    </BlurActionButton>
                   </div>
                 </div>
-              </ThemedCard>
-            )}          </div>
-        </div>
-      </div>
-    </ThemedPageWrapper>
+              </BlurCard>
+            )}          </BlurContainer>
+        </>
+      )}
+    </UniversalPageLayout>
   );
 }

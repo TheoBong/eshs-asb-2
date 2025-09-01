@@ -34,6 +34,8 @@ const clubResources = [
 export default function Clubs() {
   const [, setLocation] = useLocation();
   const [clubs, setClubs] = useState<Club[]>([]);
+  const [displayedClubs, setDisplayedClubs] = useState<Club[]>([]);
+  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +45,7 @@ export default function Clubs() {
         setLoading(true);
         const data = await getClubs();
         setClubs(data);
+        setDisplayedClubs(data.slice(0, 4));
       } catch (err) {
         setError('Failed to load clubs');
         console.error('Error fetching clubs:', err);
@@ -53,6 +56,11 @@ export default function Clubs() {
 
     fetchClubs();
   }, []);
+
+  const handleLoadMore = () => {
+    setDisplayedClubs(clubs);
+    setShowAll(true);
+  };
 
   const handleBackClick = () => {
     // Check if user came from internal navigation
@@ -120,44 +128,68 @@ export default function Clubs() {
 
           {/* Clubs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {clubs.map((club, index) => (
+            {displayedClubs.map((club, index) => (
               <BlurCard
                 key={club._id}
                 contentVisible={contentVisible}
                 index={index}
                 delay={`${500 + (index * 50)}ms`}
               >
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-xl font-semibold text-white mb-2">{club.name}</h3>
-                      <p className="text-gray-300 mb-3">{club.description}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3 mb-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-200">Members: <span className="text-white">{club.memberCount}</span></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-200">Contact: <span className="text-white">{club.contactEmail}</span></p>
-                    </div>
-                  </div>
-
-                  {club.activities && club.activities.length > 0 && (
-                    <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
-                      <p className="text-sm font-medium text-blue-200 mb-2">Activities:</p>
-                      <ul className="text-sm text-blue-100 space-y-1">
-                        {club.activities.map((activity, index) => (
-                          <li key={index}>• {activity}</li>
-                        ))}
-                      </ul>
+                <div className="overflow-hidden">
+                  {club.image && (
+                    <div className="h-48 overflow-hidden">
+                      <img 
+                        src={club.image} 
+                        alt={club.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
                     </div>
                   )}
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-xl font-semibold text-white mb-2">{club.name}</h3>
+                        <p className="text-gray-300 mb-3">{club.description}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3 mb-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-200">Contact: <span className="text-white">{club.contactEmail}</span></p>
+                      </div>
+                    </div>
+
+                    {club.activities && club.activities.length > 0 && (
+                      <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
+                        <p className="text-sm font-medium text-blue-200 mb-2">Activities:</p>
+                        <ul className="text-sm text-blue-100 space-y-1">
+                          {club.activities.map((activity, index) => (
+                            <li key={index}>• {activity}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </BlurCard>
             ))}
           </div>
+
+          {/* Load More Button */}
+          {!showAll && clubs.length > 4 && (
+            <div className="text-center mb-8">
+              <BlurActionButton
+                contentVisible={contentVisible}
+                onClick={handleLoadMore}
+                className="px-8 py-3"
+              >
+                Load More Clubs ({clubs.length - 4} remaining)
+              </BlurActionButton>
+            </div>
+          )}
 
           {/* Club Resources */}
           <h2 className="text-2xl font-bold text-white mb-6">Club Resources</h2>
