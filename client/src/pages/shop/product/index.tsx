@@ -94,7 +94,15 @@ export default function ProductPage() {
   };
 
   const handleBackClick = () => {
-    setLocation("/shop");
+    // Check if user came from internal navigation or has shop referrer
+    const referrer = sessionStorage.getItem('shop-referrer');
+    if (referrer || document.referrer.includes('/shop')) {
+      // Use browser history to go back
+      window.history.back();
+    } else {
+      // Fallback to shop page
+      setLocation("/shop");
+    }
   };
 
   if (loading) {

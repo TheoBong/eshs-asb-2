@@ -212,7 +212,7 @@ class EmailService {
 
     await this.sendEmail({
       to,
-      subject: `📧 Submission Receipt - ${data.eventName}`,
+      subject: `Form Submission Receipt - ${data.eventName}`,
       html,
       attachments: emailAttachments
     });
@@ -344,7 +344,7 @@ class EmailService {
     <div class="content">
       <p>Dear ${data.studentName},</p>
       
-      <p>Congratulations! Your request for <strong>${data.eventName}</strong> has been approved by the ASB team.</p>
+      <p>Your request for <strong>${data.eventName}</strong> has been approved by the ASB team.</p>
       
       <div class="info-box">
         <div class="info-row">
@@ -382,7 +382,7 @@ class EmailService {
 
     await this.sendEmail({
       to,
-      subject: `✅ Activity Request Approved - ${data.eventName}`,
+      subject: `Form Submission Approved - ${data.eventName}`,
       html
     });
     console.log(`EmailService: Approval email sent successfully to ${to}`);
@@ -426,19 +426,19 @@ class EmailService {
 <body>
   <div class="container">
     <div class="header">
-      <h2>📋 Activity Request Update</h2>
+      <h2>📋 Form Submission Rejected</h2>
     </div>
     <div class="content">
       <p>Dear ${data.studentName},</p>
       
-      <p>Thank you for your interest in <strong>${data.eventName}</strong>. After careful review, we are unable to approve your request at this time.</p>
+      <p>We were unable to verify the completeness and validity of the forms/identification you submitted.</p>
       
       <div class="reason-box">
-        <strong>Reason for Decline:</strong><br>
+        <strong>Note:</strong><br>
         ${data.reason}
       </div>
       
-      <p>We encourage you to review the requirements and guidelines, then submit a new request if you'd like to try again. Our ASB team is here to help you succeed!</p>
+      <p>Please resubmit the forms by clicking the button below with the necessary adjustments.</p>
       
       <div style="text-align: center; margin: 30px 0;">
         <a href="${data.retryUrl}" class="button">📝 Submit New Request</a>
@@ -459,7 +459,7 @@ class EmailService {
 
     await this.sendEmail({
       to,
-      subject: `📋 Activity Request Update - ${data.eventName}`,
+      subject: `Form Submission Rejected - ${data.eventName}`,
       html
     });
     console.log(`EmailService: Rejection email sent successfully to ${to}`);

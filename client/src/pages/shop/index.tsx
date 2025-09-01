@@ -34,6 +34,8 @@ export default function Shop() {
   }, []);
   
   const handleProductClick = (productId: string) => {
+    // Set referrer for proper back navigation
+    sessionStorage.setItem('shop-referrer', '/shop');
     setLocation(`/shop/product/${productId}`);
   };
   
@@ -125,7 +127,7 @@ export default function Shop() {
                     key={item._id} 
                     contentVisible={contentVisible}
                     index={index}
-                    delay={`${400 + (index * 50)}ms`}
+                    delay={`${200 + (index * 75)}ms`}
                     className="cursor-pointer"
                     onClick={() => handleProductClick(item._id)}
                   >

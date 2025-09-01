@@ -56,7 +56,15 @@ export default function Clubs() {
   }, []);
 
   const handleBackClick = () => {
-    setLocation("/information");
+    // Check if user came from internal navigation
+    const referrer = sessionStorage.getItem('info-referrer');
+    if (referrer || document.referrer.includes('/information')) {
+      // Use browser history to go back
+      window.history.back();
+    } else {
+      // Fallback to information page
+      setLocation("/information");
+    }
   };
 
   // Filter clubs by category

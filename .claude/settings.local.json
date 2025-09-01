@@ -13,7 +13,9 @@
       "Read(/c:\\Users\\theob\\Downloads/**)",
       "Bash(grep:*)",
       "Bash(sed:*)",
-      "Read(c:\\Users\\theob\\OneDrive\\Documents\\ShareX\\Screenshots\\2025-08/**)"
+      "Read(c:\\Users\\theob\\OneDrive\\Documents\\ShareX\\Screenshots\\2025-08/**)",
+      "Read(c:\\Users\\theob\\OneDrive\\Documents\\ShareX\\Screenshots\\2025-09/**)",
+      "Read(c:\\Users\\theob\\OneDrive\\Documents\\ShareX\\Screenshots\\2025-09/**)"
     ],
     "deny": [],
     "ask": []

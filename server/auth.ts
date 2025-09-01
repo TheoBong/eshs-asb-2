@@ -1,26 +1,40 @@
 import bcrypt from 'bcryptjs';
 import session from 'express-session';
-import MemoryStore from 'memorystore';
+import MongoStore from 'connect-mongo';
 import type { Express, Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const MemStore = MemoryStore(session);
-
 // Session configuration
 const SESSION_SECRET = process.env.SESSION_SECRET || 'eshs-asb-2024-admin-session-secret-' + Date.now();
+
+// Create MongoDB session store
+const mongoStore = MongoStore.create({
+  mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/eshs-asb',
+  collectionName: 'sessions',
+  ttl: 30 * 24 * 60 * 60, // 30 days TTL (in seconds for MongoStore)
+  touchAfter: 24 * 3600, // Lazy session update (only update every 24 hours)
+  autoRemove: 'native', // Let MongoDB handle expired session removal
+  stringify: false // Store session data as BSON instead of JSON string
+});
+
+// Add error handling for the store
+mongoStore.on('error', (error) => {
+  console.error('MongoDB session store error:', error);
+});
+
+mongoStore.on('connected', () => {
+  console.log('✅ MongoDB session store connected');
+});
 
 export const sessionConfig = session({
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  store: new MemStore({
-    checkPeriod: 86400000, // prune expired entries every 24h
-    ttl: 30 * 24 * 60 * 60 * 1000 // 30 days TTL
-  }),
+  store: mongoStore,
   cookie: {
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days (in milliseconds)
     httpOnly: true,
     secure: false, // Allow HTTP for development/local deployment
     sameSite: 'lax'

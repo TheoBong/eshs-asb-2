@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton } from "@/components/ThemedComponents";
+import { UniversalPageLayout } from "@/components/UniversalPageLayout";
+import { BlurContainer, BlurCard, BlurActionButton } from "@/components/UniversalBlurComponents";
 import { getEvents, createFormSubmission, type Event } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
 
@@ -328,10 +330,7 @@ export default function EventDetails() {
         message: 'Your forms have been submitted successfully. You will receive an email when your request is approved.'
       });
 
-      // After success, redirect back to activities after 3 seconds
-      setTimeout(() => {
-        setLocation("/activities");
-      }, 3000);
+      // No automatic redirect - user will click "Back to Activities" button
     } catch (error) {
       console.error('Form submission failed:', error);
       setUploadStatus({
@@ -373,31 +372,22 @@ export default function EventDetails() {
 
   if (!event) {
     return (
-      <ThemedPageWrapper pageType="information">
-        <div className="fixed inset-0 w-full h-full overflow-hidden -z-10">
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline
-            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
-          >
-          </video>
-        </div>
-          
-        <div className="relative z-10 min-h-screen py-12 flex items-center justify-center">
-          <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl p-8 text-center">
-            <h1 className="text-2xl font-bold text-white mb-4">Event Not Found</h1>
-            <p className="text-gray-300 mb-6">The event you're looking for doesn't exist.</p>
-            <OutlineButton 
-              onClick={handleBackClick}
-              className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 text-white hover:bg-white/10"
-            >
-              Back to Activities
-            </OutlineButton>
-          </ThemedCard>
-        </div>
-      </ThemedPageWrapper>
+      <UniversalPageLayout pageType="information" title="Event Not Found" backButtonText="Back to Activities">
+        {({ contentVisible }) => (
+          <BlurContainer contentVisible={contentVisible} className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-white mb-4">Event Not Found</h1>
+              <p className="text-gray-300 mb-6">The event you're looking for doesn't exist.</p>
+              <BlurActionButton 
+                contentVisible={contentVisible}
+                onClick={handleBackClick}
+              >
+                Back to Activities
+              </BlurActionButton>
+            </div>
+          </BlurContainer>
+        )}
+      </UniversalPageLayout>
     );
   }
 
@@ -530,10 +520,26 @@ export default function EventDetails() {
               <div>
                 <h3 className="text-2xl font-bold text-white mb-6">Approval Request Form</h3>
                 
-                {/* Status Messages */}
+                {/* Full Screen Thank You Overlay */}
                 {uploadStatus.success && (
-                  <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4 mb-6">
-                    <p className="text-green-200">{uploadStatus.message}</p>
+                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+                    <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl p-12 text-center max-w-md mx-4">
+                      <div className="text-6xl mb-6">✅</div>
+                      <h2 className="text-3xl font-bold text-white mb-4">Thank You!</h2>
+                      <p className="text-gray-300 mb-6">
+                        Your form submission has been received. Please check your email in the next couple of days to purchase your ticket once approved.
+                      </p>
+                      <p className="text-sm text-gray-400 mb-6">
+                        You will receive an email notification when your request is reviewed.
+                      </p>
+                      <BlurActionButton 
+                        contentVisible={true}
+                        onClick={() => setLocation('/activities')}
+                        className="px-8 py-3"
+                      >
+                        Back to Activities
+                      </BlurActionButton>
+                    </div>
                   </div>
                 )}
 

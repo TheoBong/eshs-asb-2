@@ -15,7 +15,7 @@ const infoSections = [
 		description:
 			"Meet your student government representatives and learn about their roles in representing your voice at school.",
 		image: "https://images.squarespace-cdn.com/content/v1/57be4dc6f5e231e5516f7e44/1605373317776-D6XRQQFN594G6IUWBECK/StudentCouncil.png",
-		path: "/information/student-government",
+		path: "/information/elections",
 		color: "bg-amber-100/90 border-amber-300",
 		iconColor: "text-amber-700",
 	},
@@ -103,6 +103,8 @@ export default function Information() {
 	}, []);
 
 	const handleNavigate = (path: string) => {
+		// Set referrer for proper back navigation
+		sessionStorage.setItem('info-referrer', '/information');
 		setLocation(path);
 	};
 
