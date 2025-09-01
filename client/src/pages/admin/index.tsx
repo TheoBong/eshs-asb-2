@@ -2179,6 +2179,11 @@ ESHS ASB Team
                           )}
                           
                           <div className="flex items-center gap-2 mb-3">
+                            {submission.ticketType && (
+                              <Badge variant="outline" className="bg-purple-500/20 border-purple-500/30 text-purple-200">
+                                {submission.ticketType.name} - ${submission.ticketType.price.toFixed(2)}
+                              </Badge>
+                            )}
                             <Badge variant="outline" className="bg-blue-500/20 border-blue-500/30 text-blue-200">
                               Quantity: {submission.quantity}
                             </Badge>
@@ -2287,6 +2292,13 @@ ESHS ASB Team
                                     </p>
                                   )}
                                 </div>
+                                {submission.ticketType && (
+                                  <div className="mt-1">
+                                    <Badge variant="outline" className="bg-purple-500/20 border-purple-500/30 text-purple-200 text-xs">
+                                      {submission.ticketType.name} - ${submission.ticketType.price.toFixed(2)}
+                                    </Badge>
+                                  </div>
+                                )}
                               </div>
                               <Badge className={statusColor}>
                                 {submission.status}
