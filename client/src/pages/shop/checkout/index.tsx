@@ -63,10 +63,6 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.0875; // 8.75% tax
   const total = subtotal + tax;
 
-  const handleBackToCart = () => {
-    setLocation("/shop/cart");
-  };
-
   return (
     <UniversalPageLayout 
       pageType="shop" 
@@ -198,7 +194,7 @@ export default function CheckoutPage() {
                     </BlurContainer>
                   </form>
                 </div>
-              </BlurContainer>
+              </div>
             </div>
 
             {/* Order Summary */}
@@ -249,7 +245,7 @@ export default function CheckoutPage() {
               </BlurContainer>
             </div>
           </div>
-        </>
+        </div>
       )}
     </UniversalPageLayout>
   );
