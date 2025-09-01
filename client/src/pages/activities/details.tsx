@@ -47,7 +47,7 @@ export default function EventDetails() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTicketType, setSelectedTicketType] = useState<number>(0); // Index of selected ticket type
+  const [selectedTicketType, setSelectedTicketType] = useState<number | null>(null); // Index of selected ticket type
   const [formData, setFormData] = useState<FormData>({
     contractForm: null,
     guestForm: null,
@@ -142,22 +142,36 @@ export default function EventDetails() {
 
   // Helper function to get the selected ticket type's price, or 0 if no tickets
   const getEventPrice = () => {
-    if (!event?.ticketTypes || event.ticketTypes.length === 0) return 0;
+    if (!event?.ticketTypes || event.ticketTypes.length === 0 || selectedTicketType === null) return 0;
     const selectedTicket = event.ticketTypes[selectedTicketType];
-    return selectedTicket ? selectedTicket.price : event.ticketTypes[0].price;
+    return selectedTicket ? selectedTicket.price : 0;
   };
 
   // Helper function to get max tickets from the selected ticket type
   const getMaxTickets = () => {
-    if (!event?.ticketTypes || event.ticketTypes.length === 0) return undefined;
+    if (!event?.ticketTypes || event.ticketTypes.length === 0 || selectedTicketType === null) return undefined;
     const selectedTicket = event.ticketTypes[selectedTicketType];
-    return selectedTicket ? selectedTicket.maxTickets : event.ticketTypes[0].maxTickets;
+    return selectedTicket ? selectedTicket.maxTickets : undefined;
   };
 
   // Helper function to get the selected ticket type details
   const getSelectedTicketType = () => {
-    if (!event?.ticketTypes || event.ticketTypes.length === 0) return null;
-    return event.ticketTypes[selectedTicketType] || event.ticketTypes[0];
+    if (!event?.ticketTypes || event.ticketTypes.length === 0 || selectedTicketType === null) return null;
+    return event.ticketTypes[selectedTicketType];
+  };
+
+  // Helper function to check if a ticket type is available (not sold out)
+  const isTicketTypeAvailable = (maxTickets: number) => {
+    // For now, assume all tickets are available since we don't track sold tickets yet
+    // In a real system, this would check: soldTickets < maxTickets
+    const soldTickets = 0; // This would come from the database
+    return soldTickets < maxTickets;
+  };
+
+  // Get available ticket types (filter out sold out ones)
+  const getAvailableTicketTypes = () => {
+    if (!event?.ticketTypes) return [];
+    return event.ticketTypes.filter(ticket => isTicketTypeAvailable(ticket.maxTickets));
   };
   const handleQuantityChange = (quantity: number) => {
     if (event) {
@@ -329,7 +343,7 @@ export default function EventDetails() {
         email: formData.email,
         forms: uploadedForms,
         quantity: formData.quantity,
-        totalAmount: getEventPrice() * formData.quantity,
+        totalAmount: selectedTicket ? selectedTicket.price * formData.quantity : 0,
         notes: formData.notes,
         status: 'pending',
         ticketType: selectedTicket ? {
@@ -491,8 +505,7 @@ export default function EventDetails() {
               </div>
 
               {/* Description - Now prominently placed after location */}
-              <div className="mb-6 p-6 bg-white/5 rounded-lg border border-white/10">
-                <h3 className="text-xl font-semibold text-white mb-3">About This Event</h3>
+              <div className="mb-6">
                 <p className="text-gray-300 text-lg leading-relaxed">{event.description}</p>
               </div>
             </div>
@@ -501,38 +514,48 @@ export default function EventDetails() {
           {/* Ticket Selection */}
           {event.ticketTypes && event.ticketTypes.length > 0 && (
             <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl mb-8">
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-white mb-6">Select Ticket Type</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {event.ticketTypes.map((ticket, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-                        selectedTicketType === index 
-                          ? 'border-blue-400 bg-blue-500/10 shadow-lg transform scale-105' 
-                          : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
-                      }`}
-                      onClick={() => setSelectedTicketType(index)}
-                    >
-                      <div className="text-center">
-                        <div className="font-semibold text-white text-lg mb-1">{ticket.name}</div>
-                        <div className="text-3xl font-bold text-green-400 mb-2">${ticket.price.toFixed(2)}</div>
-                        <div className="text-sm text-gray-300 mb-2">{ticket.description}</div>
-                        <div className="text-xs text-gray-400">Max: {ticket.maxTickets} per person</div>
-                        {selectedTicketType === index && (
-                          <div className="mt-3">
-                            <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-500/20 text-blue-200 border border-blue-500/30">
-                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
-                              Selected
-                            </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-4">Select Ticket Type</h3>
+                {getAvailableTicketTypes().length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {getAvailableTicketTypes().map((ticket, availableIndex) => {
+                      const originalIndex = event.ticketTypes!.findIndex(t => t === ticket);
+                      return (
+                        <div 
+                          key={originalIndex} 
+                          className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                            selectedTicketType === originalIndex 
+                              ? 'border-blue-400 bg-blue-500/10 shadow-lg transform scale-105' 
+                              : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
+                          }`}
+                          onClick={() => setSelectedTicketType(originalIndex)}
+                        >
+                          <div className="text-center">
+                            <div className="font-semibold text-white text-base mb-1">{ticket.name}</div>
+                            <div className="text-2xl font-bold text-green-400 mb-2">${ticket.price.toFixed(2)}</div>
+                            <div className="text-sm text-gray-300">{ticket.description}</div>
+                            {selectedTicketType === originalIndex && (
+                              <div className="mt-2">
+                                <div className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-200 border border-blue-500/30">
+                                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                  Selected
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-6xl mb-4">🎫</div>
+                    <div className="text-2xl font-bold text-red-400 mb-2">SOLD OUT</div>
+                    <div className="text-gray-400">All ticket types for this event are currently sold out.</div>
+                  </div>
+                )}
               </div>
             </ThemedCard>
           )}          {/* Purchase/Registration Section */}
@@ -584,6 +607,52 @@ export default function EventDetails() {
                           />
                         </div>
                       </div>
+
+                      {/* Quantity Selection - Only show if there are available ticket types */}
+                      {getAvailableTicketTypes().length > 0 && selectedTicketType !== null && (
+                        <div>
+                          <Label htmlFor="quantity" className="text-white mb-2 block">Quantity</Label>
+                          <div className="flex items-center space-x-4">
+                            <div className="flex items-center">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                className="h-9 w-9 bg-white/5 border-white/20 text-white"
+                                onClick={() => handleQuantityChange(formData.quantity - 1)}
+                              >
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                                </svg>
+                              </Button>
+                              <Input
+                                type="number"
+                                value={formData.quantity}
+                                onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
+                                className="w-16 text-center mx-2 bg-white/5 border-white/20 text-white"
+                                min="1"
+                                max={getMaxTickets() || 10}
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                className="h-9 w-9 bg-white/5 border-white/20 text-white"
+                                onClick={() => handleQuantityChange(formData.quantity + 1)}
+                              >
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                </svg>
+                              </Button>
+                            </div>
+                            {selectedTicketType !== null && (
+                              <div className="text-white">
+                                Total: <span className="font-bold">${(getEventPrice() * formData.quantity).toFixed(2)}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Required Forms Section */}
                       <div className="space-y-4">
@@ -753,9 +822,11 @@ export default function EventDetails() {
                     {/* Price and Availability */}
                     <div className="flex items-center gap-4">
                       <div className="text-3xl font-bold text-white">${getEventPrice().toFixed(2)}</div>
-                      <Badge variant="outline" className={`${availability.color} ml-2 px-2 py-1`}>
-                        {availability.status}
-                      </Badge>
+                      {selectedTicketType !== null && (
+                        <Badge variant="outline" className="bg-green-500/20 text-green-200 border-green-500/30 ml-2 px-2 py-1">
+                          Available
+                        </Badge>
+                      )}
                     </div>
 
                     {/* Quantity Selection */}
@@ -806,9 +877,10 @@ export default function EventDetails() {
                   <div className="flex-1 flex items-end justify-center md:justify-end">
                     <PrimaryButton
                       onClick={handleDirectPurchase}
-                      className="w-full md:w-auto px-8 py-4 text-lg font-semibold"
+                      disabled={selectedTicketType === null}
+                      className="w-full md:w-auto px-8 py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Add to Cart
+                      {selectedTicketType === null ? 'Select Ticket Type' : 'Add to Cart'}
                     </PrimaryButton>
                   </div>
                 </div>
