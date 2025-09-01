@@ -1,7 +1,12 @@
 # Email Notification System Setup (Postfix + Nodemailer)
 
 ## Overview
-The ESHS ASB system includes email notifications for activity form submissions and approval/rejection decisions using **Postfix** for local mail delivery and **Nodemailer** for sending emails.
+The ESHS ASB system includes comprehensive email notifications for the complete activity approval workflow using **Postfix** for local mail delivery and **Nodemailer** for sending emails.
+
+### Complete Email Flow
+1. **On Submission**: Student receives receipt, Admin receives notification (both with attachments)
+2. **On Approval**: Student receives approval email with checkout link
+3. **On Rejection**: Student receives rejection email with reason and retry link
 
 ## Features
 
@@ -139,8 +144,8 @@ curl -X POST http://localhost:3000/api/test-email \
 #### Status Updates
 `PUT /api/form-submissions/:id`
 - Triggers email when status changes from 'pending'
-- **Approved**: Sends celebration email with purchase link
-- **Rejected**: Sends professional rejection with reason
+- **Approved**: Sends celebration email with checkout link (placeholder: `https://eshsasb.org/checkout/{submissionId}`)
+- **Rejected**: Sends professional rejection with reason and retry link
 
 ### Custom Rejection Reasons
 Include a custom rejection reason in the update request:

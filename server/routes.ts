@@ -553,34 +553,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Send email if status changed from pending to approved/rejected
-      if (originalSubmission?.status === 'pending' && submission.status !== 'pending') {
+      console.log(`Status change check: original="${originalSubmission?.status}" new="${submission.status}"`);
+      console.log(`Condition check: original pending? ${originalSubmission?.status === 'pending'}, new not pending? ${submission.status !== 'pending'}`);
+      
+      // Check if status changed from pending to approved or rejected
+      if (originalSubmission?.status === 'pending' && (submission.status === 'approved' || submission.status === 'rejected')) {
+        console.log(`Sending status update email to ${submission.email} for ${submission.status} status`);
         try {
           // Get event details
           const event = await storage.getEvent(submission.eventId.toString());
+          console.log(`Found event: ${event?.title}`);
           
           if (submission.status === 'approved') {
             // Send approval email
+            console.log('Sending approval email...');
             await emailService.sendApprovalNotification(submission.email, {
               eventName: event?.title || 'Unknown Event',
               studentName: submission.studentName,
-              ticketPurchaseUrl: `https://eshs-asb.edu/activities/purchase/${submission.eventId}`, // Placeholder URL
+              ticketPurchaseUrl: `https://eshsasb.org/checkout/${submission._id}`, // Placeholder checkout URL with submission ID
               quantity: submission.quantity || 1,
               totalAmount: submission.totalAmount || 0
             });
+            console.log('Approval email sent successfully');
           } else if (submission.status === 'rejected') {
             // Send rejection email
+            console.log('Sending rejection email...');
             const reason = req.body.rejectionReason || 'Your request did not meet the requirements. Please review the guidelines and try again.';
             await emailService.sendRejectionNotification(submission.email, {
               eventName: event?.title || 'Unknown Event',
               studentName: submission.studentName,
               reason: reason,
-              retryUrl: `https://eshs-asb.edu/activities/details/${submission.eventId}` // Placeholder URL
+              retryUrl: `https://eshsasb.org/activities/details/${submission.eventId}` // Link back to event details page
             });
+            console.log('Rejection email sent successfully');
           }
         } catch (emailError) {
           console.error('Failed to send status update email:', emailError);
           // Don't fail the request if email fails
         }
+      } else {
+        console.log('No email sent - status change condition not met');
       }
       
       res.json(submission);
@@ -794,6 +806,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Direct email test for status updates (debugging)
+  app.post("/api/debug-status-email", requireAdminAuth, async (req, res) => {
+    try {
+      const { to, status, eventName = 'Debug Test Event', studentName = 'Debug Student' } = req.body;
+      
+      if (!to) {
+        return res.status(400).json({ message: "Email address is required" });
+      }
+
+      console.log(`Debug: Testing ${status} email to ${to}`);
+
+      if (status === 'approved') {
+        await emailService.sendApprovalNotification(to, {
+          eventName,
+          studentName,
+          ticketPurchaseUrl: 'https://eshsasb.org/checkout/debug-test',
+          quantity: 1,
+          totalAmount: 25.00
+        });
+      } else if (status === 'rejected') {
+        await emailService.sendRejectionNotification(to, {
+          eventName,
+          studentName,
+          reason: 'This is a debug test rejection.',
+          retryUrl: 'https://eshsasb.org/activities/details/debug-test'
+        });
+      } else {
+        return res.status(400).json({ message: "Status must be 'approved' or 'rejected'" });
+      }
+
+      res.json({ message: `Debug ${status} email sent successfully to ${to}` });
+    } catch (error) {
+      console.error('Debug email test error:', error);
+      res.status(500).json({ message: "Error sending debug email", error: error.message });
+    }
+  });
+
   // Email test endpoint (admin only)
   app.post("/api/test-email", requireAdminAuth, async (req, res) => {
     try {
@@ -809,19 +858,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           break;
         case 'approval':
           await emailService.sendApprovalNotification(to, {
-            eventName: 'Test Event',
+            eventName: 'Test Event - Winter Formal',
             studentName: 'Test Student',
-            ticketPurchaseUrl: 'https://eshsasb.org/activities/purchase/test',
-            quantity: 1,
-            totalAmount: 10.00
+            ticketPurchaseUrl: 'https://eshsasb.org/checkout/test-submission-id-123',
+            quantity: 2,
+            totalAmount: 50.00
           });
           break;
         case 'rejection':
           await emailService.sendRejectionNotification(to, {
-            eventName: 'Test Event',
+            eventName: 'Test Event - Winter Formal',
             studentName: 'Test Student',
-            reason: 'This is a test rejection email.',
-            retryUrl: 'https://eshsasb.org/activities/details/test'
+            reason: 'Missing required parent signature on permission form. Please ensure all forms are completely filled out and signed before resubmitting.',
+            retryUrl: 'https://eshsasb.org/activities/details/test-event-id'
           });
           break;
         case 'submission':

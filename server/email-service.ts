@@ -291,6 +291,7 @@ class EmailService {
   }
 
   async sendApprovalNotification(to: string, data: ApprovalEmailData): Promise<void> {
+    console.log(`EmailService: Sending approval notification to ${to} for event ${data.eventName}`);
     const html = `
 <!DOCTYPE html>
 <html>
@@ -365,9 +366,11 @@ class EmailService {
       subject: `✅ Activity Request Approved - ${data.eventName}`,
       html
     });
+    console.log(`EmailService: Approval email sent successfully to ${to}`);
   }
 
   async sendRejectionNotification(to: string, data: RejectionEmailData): Promise<void> {
+    console.log(`EmailService: Sending rejection notification to ${to} for event ${data.eventName}`);
     const html = `
 <!DOCTYPE html>
 <html>
@@ -440,6 +443,7 @@ class EmailService {
       subject: `📋 Activity Request Update - ${data.eventName}`,
       html
     });
+    console.log(`EmailService: Rejection email sent successfully to ${to}`);
   }
 
   // Test method for checking email functionality
