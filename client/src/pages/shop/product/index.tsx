@@ -144,12 +144,26 @@ export default function ProductPage() {
   return (
     <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back to Shop">
       {({ contentVisible }) => (
-        <>
+        <div className="max-w-6xl mx-auto px-6">
           {/* Product Details */}
-          <BlurContainer contentVisible={contentVisible} delay="200ms" className="overflow-hidden">
+          <div 
+            className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-500 ease-out"
+            style={{
+              opacity: contentVisible ? 1 : 0,
+              transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+              transitionDelay: '200ms'
+            }}
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
               {/* Product Images */}
-              <BlurContainer contentVisible={contentVisible} delay="300ms" className="space-y-4">
+              <div 
+                className="space-y-4 transform transition-all duration-500 ease-out"
+                style={{
+                  opacity: contentVisible ? 1 : 0,
+                  transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                  transitionDelay: '300ms'
+                }}
+              >
                 {/* Main Image */}
                 <div className="aspect-square w-full rounded-lg overflow-hidden bg-gray-900">
                   <img
@@ -207,10 +221,17 @@ export default function ProductPage() {
                     ))}
                   </div>
                 )}
-              </BlurContainer>
+              </div>
 
               {/* Product Information */}
-              <BlurContainer contentVisible={contentVisible} delay="400ms" className="space-y-6">
+              <div 
+                className="space-y-6 transform transition-all duration-500 ease-out"
+                style={{
+                  opacity: contentVisible ? 1 : 0,
+                  transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                  transitionDelay: '400ms'
+                }}
+              >
                 {/* Header information */}
                 <div>
                   <div className="flex items-center justify-between">
@@ -329,8 +350,7 @@ export default function ProductPage() {
                   </div>
 
                   {/* Add to Cart Button */}
-                  <BlurActionButton
-                    contentVisible={contentVisible}
+                  <PrimaryButton
                     onClick={handleAddToCart}
                     className={`w-full py-3 px-6 font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${
                       product.category === 'Apparel' 
@@ -342,12 +362,12 @@ export default function ProductPage() {
                       ? (product.sizeStock && product.sizeStock.some((item: any) => item.stock > 0) ? "Add to Cart" : "Out of Stock")
                       : (product.stock > 0 ? "Add to Cart" : "Out of Stock")
                     }
-                  </BlurActionButton>
+                  </PrimaryButton>
                 </div>
-              </BlurContainer>
+              </div>
             </div>
-          </BlurContainer>
-        </>
+          </div>
+        </div>
       )}
     </UniversalPageLayout>
   );

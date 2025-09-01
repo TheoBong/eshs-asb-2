@@ -397,13 +397,15 @@ export default function EventDetails() {
   return (
     <UniversalPageLayout pageType="information" title="Event Details">
       {({ contentVisible }) => (
-        <>
+        <div className="max-w-4xl mx-auto px-8">
           {/* Event Details */}
-          <BlurCard
-            contentVisible={contentVisible}
-            index={0}
-            delay="200ms"
-            className="mb-8"
+          <div 
+            className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl mb-8 transform transition-all duration-500 ease-out"
+            style={{
+              opacity: contentVisible ? 1 : 0,
+              transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+              transitionDelay: '200ms'
+            }}
           >
             <div className="p-8">
               {/* Header */}
@@ -451,15 +453,17 @@ export default function EventDetails() {
                 <p className="text-gray-300 text-lg leading-relaxed">{event.description}</p>
               </div>
             </div>
-          </BlurCard>
+          </div>
 
           {/* Ticket Selection */}
           {event.ticketTypes && event.ticketTypes.length > 0 && (
-            <BlurCard
-              contentVisible={contentVisible}
-              index={1}
-              delay="300ms"
-              className="mb-8"
+            <div 
+              className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl mb-8 transform transition-all duration-500 ease-out"
+              style={{
+                opacity: contentVisible ? 1 : 0,
+                transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                transitionDelay: '300ms'
+              }}
             >
               <div className="p-4">
                 <h3 className="text-lg font-bold text-white mb-3">
@@ -496,9 +500,16 @@ export default function EventDetails() {
                   </div>
                 )}
               </div>
-            </BlurCard>
+            </div>
           )}          {/* Purchase/Registration Section */}
-          <BlurContainer contentVisible={contentVisible} delay="400ms" className="border-t border-white/10 pt-6 mt-6">
+          <div 
+            className="border-t border-white/10 pt-6 mt-6 transform transition-all duration-500 ease-out"
+            style={{
+              opacity: contentVisible ? 1 : 0,
+              transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+              transitionDelay: '400ms'
+            }}
+          >
             {event.requiresApproval ? (
               // Direct approval form display (no card wrapper)
               <div>
@@ -516,13 +527,12 @@ export default function EventDetails() {
                       <p className="text-sm text-gray-400 mb-6">
                         You will receive an email notification when your request is reviewed.
                       </p>
-                      <BlurActionButton 
-                        contentVisible={true}
+                      <PrimaryButton 
                         onClick={() => setLocation('/activities')}
                         className="px-8 py-3"
                       >
                         Back to Activities
-                      </BlurActionButton>
+                      </PrimaryButton>
                     </div>
                   </div>
                 )}
@@ -534,11 +544,13 @@ export default function EventDetails() {
                 )}
 
                 {!uploadStatus.success && (
-                  <BlurCard
-                    contentVisible={contentVisible}
-                    index={2}
-                    delay="500ms"
-                    className="p-6"
+                  <div 
+                    className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl p-6 transform transition-all duration-500 ease-out"
+                    style={{
+                      opacity: contentVisible ? 1 : 0,
+                      transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                      transitionDelay: '500ms'
+                    }}
                   >
                     <form className="space-y-6">
                       {/* Student Information */}
@@ -642,8 +654,7 @@ export default function EventDetails() {
 
                       {/* Submit Button */}
                       <div className="pt-2">
-                        <BlurActionButton
-                          contentVisible={contentVisible}
+                        <PrimaryButton
                           onClick={handleSubmitApproval}
                           disabled={isSubmitting || uploadStatus.success || (event.ticketTypes && event.ticketTypes.length > 0 && selectedTicketType === null)}
                           className="w-full py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
@@ -657,7 +668,7 @@ export default function EventDetails() {
                               Submitting...
                             </>
                           ) : (event.ticketTypes && event.ticketTypes.length > 0 && selectedTicketType === null) ? 'Select Ticket Type First' : 'Submit for Approval'}
-                        </BlurActionButton>
+                        </PrimaryButton>
 
                         <p className="text-sm text-gray-400 mt-3">
                           * Once submitted, your request will be reviewed by an administrator. 
@@ -665,16 +676,18 @@ export default function EventDetails() {
                         </p>
                       </div>
                     </form>
-                  </BlurCard>
+                  </div>
                 )}
               </div>
             ) : (
               // Price/Quantity section for non-approval events
-              <BlurCard
-                contentVisible={contentVisible}
-                index={2}
-                delay="500ms"
-                className="p-6"
+              <div 
+                className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl p-6 transform transition-all duration-500 ease-out"
+                style={{
+                  opacity: contentVisible ? 1 : 0,
+                  transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                  transitionDelay: '500ms'
+                }}
               >
                 <div className="flex flex-col md:flex-row gap-6">
                   <div className="flex-1 space-y-4">
@@ -734,19 +747,18 @@ export default function EventDetails() {
                   
                   {/* Action Button */}
                   <div className="flex-1 flex items-end justify-center md:justify-end">
-                    <BlurActionButton
-                      contentVisible={contentVisible}
+                    <PrimaryButton
                       onClick={handleDirectPurchase}
                       disabled={selectedTicketType === null}
                       className="w-full md:w-auto px-8 py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {selectedTicketType === null ? 'Select Ticket Type' : 'Add to Cart'}
-                    </BlurActionButton>
+                    </PrimaryButton>
                   </div>
                 </div>
-              </BlurCard>
-            )}          </BlurContainer>
-        </>
+              </div>
+            )}          </div>
+        </div>
       )}
     </UniversalPageLayout>
   );

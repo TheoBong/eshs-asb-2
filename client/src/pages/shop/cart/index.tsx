@@ -77,21 +77,30 @@ export default function CartPage() {
       onBackClick={handleContinueShopping}
     >
       {({ contentVisible }) => (
-        <>
+        <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2">
-              <BlurContainer contentVisible={contentVisible} delay="200ms" className="overflow-hidden">
+              <div 
+                className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-500 ease-out"
+                style={{
+                  opacity: contentVisible ? 1 : 0,
+                  transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                  transitionDelay: '200ms'
+                }}
+              >
                 <div className="p-6">
                   {cartItems.length > 0 ? (
                     <div className="space-y-6">
                       {cartItems.map((item, index) => (
-                        <BlurCard 
-                          key={item.id} 
-                          contentVisible={contentVisible}
-                          index={index}
-                          delay={`${300 + (index * 100)}ms`}
-                          className="flex gap-4 pb-6 border-b border-white/10 last:border-b-0 last:pb-0"
+                        <div 
+                          key={item.id}
+                          className="flex gap-4 pb-6 border-b border-white/10 last:border-b-0 last:pb-0 transform transition-all duration-500 ease-out"
+                          style={{
+                            opacity: contentVisible ? 1 : 0,
+                            transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                            transitionDelay: `${300 + (index * 100)}ms`
+                          }}
                         >
                           {/* Product/Event Image */}
                           <div className="w-24 h-24 bg-gray-900 rounded-md overflow-hidden">
@@ -155,8 +164,7 @@ export default function CartPage() {
                               </div>
                               
                               {/* Remove Button */}
-                              <BlurActionButton
-                                contentVisible={contentVisible}
+                              <PrimaryButton
                                 onClick={() => handleRemoveItem(item.id, item.size, item.color)}
                                 className="text-red-400 hover:text-red-300 py-2 px-3 text-sm flex items-center"
                               >
@@ -166,21 +174,20 @@ export default function CartPage() {
                                   <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
                                 </svg>
                                 Remove
-                              </BlurActionButton>
+                              </PrimaryButton>
                             </div>
                           </div>
-                        </BlurCard>
+                        </div>
                       ))}
                       
                       {/* Keep Shopping Button */}
                       <div className="text-center">
-                        <BlurActionButton 
-                          contentVisible={contentVisible}
+                        <PrimaryButton 
                           onClick={handleContinueShopping}
                           className="py-2 px-4"
                         >
                           Continue Shopping
-                        </BlurActionButton>
+                        </PrimaryButton>
                       </div>
                     </div>
                   ) : (
@@ -191,23 +198,29 @@ export default function CartPage() {
                       <h3 className="mt-2 text-lg font-medium text-white">Your cart is empty</h3>
                       <p className="mt-1 text-gray-300">Looks like you haven't added anything to your cart yet.</p>
                       <div className="mt-6">
-                        <BlurActionButton 
-                          contentVisible={contentVisible}
+                        <PrimaryButton 
                           onClick={handleContinueShopping}
                           className="py-3 px-6 font-semibold"
                         >
                           Start Shopping
-                        </BlurActionButton>
+                        </PrimaryButton>
                       </div>
                     </div>
                   )}
                 </div>
-              </BlurContainer>
+              </div>
             </div>
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <BlurContainer contentVisible={contentVisible} delay="400ms" className="overflow-hidden">
+              <div 
+                className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-500 ease-out"
+                style={{
+                  opacity: contentVisible ? 1 : 0,
+                  transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                  transitionDelay: '400ms'
+                }}
+              >
                 <div className="p-6">
                   <h2 className="text-xl font-semibold mb-4 text-white">Order Summary</h2>
                   
@@ -232,14 +245,13 @@ export default function CartPage() {
                       <span>${total.toFixed(2)}</span>
                     </div>
                     
-                    <BlurActionButton
-                      contentVisible={contentVisible}
+                    <PrimaryButton
                       onClick={handleCheckout}
                       className="w-full mt-4 py-3 px-6 font-semibold bg-gray-600 hover:bg-gray-700 cursor-not-allowed"
                       disabled={true}
                     >
                       Coming Soon
-                    </BlurActionButton>
+                    </PrimaryButton>
                     
                     <div className="mt-4 text-center">
                       <p className="text-sm text-gray-300">
@@ -248,10 +260,17 @@ export default function CartPage() {
                     </div>
                   </div>
                 </div>
-              </BlurContainer>
+              </div>
 
               {/* School Organization Support */}
-              <BlurContainer contentVisible={contentVisible} delay="500ms" className="mt-6 p-6">
+              <div 
+                className="mt-6 p-6 bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl transform transition-all duration-500 ease-out"
+                style={{
+                  opacity: contentVisible ? 1 : 0,
+                  transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                  transitionDelay: '500ms'
+                }}
+              >
                 <div className="flex items-center mb-4">
                   <Badge className="bg-emerald-500">Supporting School Organizations</Badge>
                 </div>
@@ -259,10 +278,10 @@ export default function CartPage() {
                   Your purchase directly supports our school's organizations and activities. 
                   Thank you for your contribution to our community!
                 </p>
-              </BlurContainer>
+              </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </UniversalPageLayout>
   );

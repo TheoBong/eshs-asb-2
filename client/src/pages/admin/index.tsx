@@ -1352,6 +1352,8 @@ export default function AdminMongoDB() {
     try {
       const newVideo = await createVideo(videoData);
       setVideos([...videos, newVideo]);
+      setShowVideoModal(false);
+      setEditingItem(null);
     } catch (err) {
       console.error('Failed to add video:', err);
       alert('Failed to add video. Please try again.');
@@ -1364,6 +1366,8 @@ export default function AdminMongoDB() {
     try {
       const updatedVideo = await updateVideo(editingItem._id, videoData);
       setVideos(videos.map(v => v._id === editingItem._id ? updatedVideo : v));
+      setShowVideoModal(false);
+      setEditingItem(null);
     } catch (err) {
       console.error('Failed to update video:', err);
       alert('Failed to update video. Please try again.');

@@ -63,14 +63,30 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.0875; // 8.75% tax
   const total = subtotal + tax;
 
+  const handleBackToCart = () => {
+    setLocation("/shop/cart");
+  };
+
   return (
-    <UniversalPageLayout pageType="shop" title="Order Information" backButtonText="Back to Cart">
+    <UniversalPageLayout 
+      pageType="shop" 
+      title="Order Information" 
+      backButtonText="Back to Cart"
+      onBackClick={handleBackToCart}
+    >
       {({ contentVisible }) => (
-        <>
+        <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Order Form */}
             <div className="lg:col-span-2">
-              <BlurContainer contentVisible={contentVisible} delay="200ms" className="overflow-hidden">
+              <div 
+                className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-500 ease-out"
+                style={{
+                  opacity: contentVisible ? 1 : 0,
+                  transform: contentVisible ? 'translateY(0px)' : 'translateY(20px)',
+                  transitionDelay: '200ms'
+                }}
+              >
                 <div className="p-6">
                   <h2 className="text-xl font-semibold text-white mb-6">Contact Information</h2>
                   

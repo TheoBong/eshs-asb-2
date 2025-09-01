@@ -135,44 +135,42 @@ export default function Clubs() {
                 index={index}
                 delay={`${500 + (index * 50)}ms`}
               >
-                <div className="overflow-hidden">
-                  {club.image && (
-                    <div className="h-48 overflow-hidden">
-                      <img 
-                        src={club.image} 
-                        alt={club.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-xl font-semibold text-white mb-2">{club.name}</h3>
-                        <p className="text-gray-300 mb-3">{club.description}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-3 mb-4">
-                      <div>
-                        <p className="text-sm font-medium text-gray-200">Contact: <span className="text-white">{club.contactEmail}</span></p>
-                      </div>
-                    </div>
-
-                    {club.activities && club.activities.length > 0 && (
-                      <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
-                        <p className="text-sm font-medium text-blue-200 mb-2">Activities:</p>
-                        <ul className="text-sm text-blue-100 space-y-1">
-                          {club.activities.map((activity, index) => (
-                            <li key={index}>• {activity}</li>
-                          ))}
-                        </ul>
+                <div className="p-6">
+                  <div className="flex items-start gap-4 mb-4">
+                    {club.image && (
+                      <div className="flex-shrink-0">
+                        <img 
+                          src={club.image} 
+                          alt={club.name}
+                          className="w-20 h-20 rounded-xl object-cover border-2 border-white/20"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
                       </div>
                     )}
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-white mb-2">{club.name}</h3>
+                      <p className="text-gray-300 mb-3">{club.description}</p>
+                    </div>
                   </div>
+                  
+                  <div className="space-y-3 mb-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-200">Contact: <span className="text-white">{club.contactEmail}</span></p>
+                    </div>
+                  </div>
+
+                  {club.activities && club.activities.length > 0 && (
+                    <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
+                      <p className="text-sm font-medium text-blue-200 mb-2">Activities:</p>
+                      <ul className="text-sm text-blue-100 space-y-1">
+                        {club.activities.map((activity, index) => (
+                          <li key={index}>• {activity}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </BlurCard>
             ))}
