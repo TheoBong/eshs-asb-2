@@ -491,9 +491,6 @@ export default function EventDetails() {
                 <h3 className="text-lg font-bold text-white mb-3">
                   Select Ticket Type <span className="text-red-400">*</span>
                 </h3>
-                {selectedTicketType === null && (
-                  <p className="text-yellow-400 text-sm mb-3">Please select a ticket type to continue</p>
-                )}
                 {getAvailableTicketTypes().length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {getAvailableTicketTypes().map((ticket, availableIndex) => {
