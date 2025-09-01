@@ -416,7 +416,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const club = await storage.createClub(req.body);
       res.status(201).json(club);
     } catch (error) {
-      res.status(400).json({ message: "Error creating club", error });
+      console.error("Error creating club:", error);
+      res.status(400).json({ message: "Error creating club", error: error.message || error });
     }
   });
 

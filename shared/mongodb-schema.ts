@@ -125,9 +125,6 @@ const studentGovPositionSchema = new mongoose.Schema({
 const clubSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  advisor: { type: String, required: true },
-  meetingTime: { type: String, required: true },
-  location: { type: String, required: true },
   category: { type: String, required: true },
   contactEmail: { type: String, required: true },
   image: { type: String, required: true },

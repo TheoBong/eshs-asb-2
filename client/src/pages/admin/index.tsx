@@ -1049,9 +1049,6 @@ function ClubForm({ club, onSubmit, onCancel }: {
     club || {
       name: '',
       description: '',
-      advisor: '',
-      meetingTime: '',
-      location: '',
       category: '',
       contactEmail: '',
       image: '',
@@ -1100,26 +1097,26 @@ function ClubForm({ club, onSubmit, onCancel }: {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Contact Email</label>
-          <Input
-            type="email"
-            value={formData.contactEmail || ''}
-            onChange={(e) => setFormData({...formData, contactEmail: e.target.value})}
-            placeholder="master@oogway.com"
-          />
-        </div>
-        <div>
-          <FileUpload
-            value={formData.image || ''}
-            onChange={(url) => setFormData({...formData, image: url})}
-            label="Club Image"
-            fileType="image"
-            placeholder="Upload club image or paste URL"
-            maxSizeMB={5}
-          />
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-white mb-2">Contact Email</label>
+        <Input
+          type="email"
+          value={formData.contactEmail || ''}
+          onChange={(e) => setFormData({...formData, contactEmail: e.target.value})}
+          placeholder="master@oogway.com"
+          required
+        />
+      </div>
+
+      <div>
+        <FileUpload
+          value={formData.image || ''}
+          onChange={(url) => setFormData({...formData, image: url})}
+          label="Club Image"
+          fileType="image"
+          placeholder="Upload club image or paste URL"
+          maxSizeMB={5}
+        />
       </div>
 
       <div className="flex items-center space-x-2">

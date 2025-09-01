@@ -157,9 +157,6 @@ const mockClubs = [
   {
     name: "Drama Club",
     description: "Explore the world of theater through acting, directing, and technical theater.",
-    advisor: "Ms. Rodriguez",
-    meetingTime: "Tuesdays and Thursdays, 3:30-5:00 PM",
-    location: "Theater",
     category: "Performance",
     contactEmail: "drama@eshs.edu",
     image: "/api/placeholder/400/300",
@@ -171,9 +168,6 @@ const mockClubs = [
   {
     name: "Science Olympiad",
     description: "Competitive science team that competes in various STEM events.",
-    advisor: "Mr. Chen",
-    meetingTime: "Mondays and Wednesdays, 3:30-5:00 PM",
-    location: "Science Lab",
     category: "Academic",
     contactEmail: "scioly@eshs.edu",
     image: "/api/placeholder/400/300",

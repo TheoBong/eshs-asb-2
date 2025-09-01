@@ -168,15 +168,6 @@ export default function Clubs() {
                   
                   <div className="space-y-3 mb-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-200">Advisor: <span className="text-white">{club.advisor}</span></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-200">Meeting Time: <span className="text-white">{club.meetingTime}</span></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-200">Location: <span className="text-white">{club.location}</span></p>
-                    </div>
-                    <div>
                       <p className="text-sm font-medium text-gray-200">Members: <span className="text-white">{club.memberCount}</span></p>
                     </div>
                     <div>
@@ -245,7 +236,7 @@ export default function Clubs() {
               </div>
               <div className="border-b border-white/10 pb-4">
                 <h3 className="font-semibold mb-2 text-white">Can I start a new club?</h3>
-                <p className="text-gray-300">To start a new club, you need a faculty advisor and approval from student government. Club registration forms are sent out at the start of each school year.</p>
+                <p className="text-gray-300">To start a new club, you need approval from student government. Club registration forms are sent out at the start of each school year.</p>
               </div>
               <div className="border-b border-white/10 pb-4">
                 <h3 className="font-semibold mb-2 text-white">Are there leadership opportunities in clubs?</h3>
