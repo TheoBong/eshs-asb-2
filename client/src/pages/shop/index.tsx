@@ -114,20 +114,13 @@ export default function Shop() {
           {/* Product Grid */}
           {!loading && !error && (
             products.length > 0 ? (
-              <div 
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8 transition-all duration-700 ease-out"
-                style={{
-                  opacity: contentVisible ? 1 : 0,
-                  transform: contentVisible ? 'translateY(0)' : 'translateY(30px)',
-                  transitionDelay: '300ms'
-                }}
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 {products.map((item, index) => (
                   <BlurCard 
                     key={item._id} 
                     contentVisible={contentVisible}
                     index={index}
-                    delay={`${200 + (index * 75)}ms`}
+                    delay={`${300 + (index * 75)}ms`}
                     className="cursor-pointer"
                     onClick={() => handleProductClick(item._id)}
                   >
