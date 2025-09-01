@@ -1666,7 +1666,7 @@ ESHS ASB Team
         status: 'rejected', 
         reviewedAt: new Date(), 
         reviewedBy: 'Admin',
-        notes: rejectionReason
+        rejectionReason: rejectionReason
       });
       
       // Update local state
@@ -1676,28 +1676,11 @@ ESHS ASB Team
           status: 'rejected', 
           reviewedAt: new Date(), 
           reviewedBy: 'Admin',
-          notes: rejectionReason
+          rejectionReason: rejectionReason
         } : s
       ));
       
-      // Send email notification with reason
-      if (event) {
-        const emailSubject = `Your Request for ${event.title} has been Declined`;
-        const emailMessage = `
-Dear ${submission.studentName},
-
-We regret to inform you that your request to attend ${event.title} has been declined.
-
-Reason: ${rejectionReason}
-
-If you would like more information about this decision, please contact the ASB office.
-
-Thank you,
-ESHS ASB Team
-        `;
-        
-        await sendEmailNotification(submission.email, emailSubject, emailMessage);
-      }
+      // Email notification is handled by the server
 
       // Close modal and reset states
       setShowRejectionModal(false);
@@ -2184,14 +2167,8 @@ ESHS ASB Team
                                 {submission.ticketType.name} - ${submission.ticketType.price.toFixed(2)}
                               </Badge>
                             )}
-                            <Badge variant="outline" className="bg-blue-500/20 border-blue-500/30 text-blue-200">
-                              Quantity: {submission.quantity}
-                            </Badge>
-                            <Badge variant="outline" className="bg-blue-500/20 border-blue-500/30 text-blue-200">
-                              Total: ${submission.totalAmount.toFixed(2)}
-                            </Badge>
                             <Badge variant="outline" className="bg-gray-500/20 border-gray-500/30 text-gray-200">
-                              Submitted: {new Date(submission.submissionDate).toLocaleDateString()}
+                              Submitted: {new Date(submission.submissionDate).toLocaleDateString()} at {new Date(submission.submissionDate).toLocaleTimeString()}
                             </Badge>
                           </div>
                           
