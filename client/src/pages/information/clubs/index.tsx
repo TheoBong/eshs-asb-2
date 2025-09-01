@@ -151,18 +151,16 @@ export default function Clubs() {
                     )}
                     <div className="flex-1">
                       <h3 className="text-xl font-semibold text-white mb-2">{club.name}</h3>
-                      <p className="text-gray-300 mb-3">{club.description}</p>
+                      <p className="text-sm font-medium text-gray-200 mb-2">Contact: <span className="text-white">{club.contactEmail}</span></p>
                     </div>
                   </div>
                   
-                  <div className="space-y-3 mb-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-200">Contact: <span className="text-white">{club.contactEmail}</span></p>
-                    </div>
+                  <div className="mb-3">
+                    <p className="text-gray-300">{club.description}</p>
                   </div>
 
                   {club.activities && club.activities.length > 0 && (
-                    <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
+                    <div className="p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
                       <p className="text-sm font-medium text-blue-200 mb-2">Activities:</p>
                       <ul className="text-sm text-blue-100 space-y-1">
                         {club.activities.map((activity, index) => (

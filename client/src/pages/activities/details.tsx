@@ -372,7 +372,7 @@ export default function EventDetails() {
 
   if (!event) {
     return (
-      <UniversalPageLayout pageType="information" title="Event Not Found" backButtonText="Back to Activities">
+      <UniversalPageLayout pageType="information" title="Event Not Found" backButtonText="Back to Activities" onBackClick={handleBackClick}>
         {({ contentVisible }) => (
           <BlurContainer contentVisible={contentVisible} className="min-h-screen flex items-center justify-center">
             <div className="text-center">
@@ -395,7 +395,7 @@ export default function EventDetails() {
   // const availability = getAvailabilityStatus(getMaxTickets());
 
   return (
-    <UniversalPageLayout pageType="information" title="Event Details">
+    <UniversalPageLayout pageType="information" title="Event Details" backButtonText="Back" onBackClick={handleBackClick}>
       {({ contentVisible }) => (
         <div className="max-w-4xl mx-auto px-8">
           {/* Event Details */}

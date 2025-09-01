@@ -99,7 +99,7 @@ export default function ProductPage() {
 
   if (loading) {
     return (
-      <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back to Shop">
+      <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back" onBackClick={handleBackClick}>
         {({ contentVisible }) => (
           <BlurContainer contentVisible={contentVisible} className="min-h-screen flex items-center justify-center">
             <div className="text-center">
@@ -114,7 +114,7 @@ export default function ProductPage() {
   
   if (error || !product) {
     return (
-      <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back to Shop">
+      <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back" onBackClick={handleBackClick}>
         {({ contentVisible }) => (
           <BlurContainer contentVisible={contentVisible} className="min-h-screen flex items-center justify-center">
             <div className="text-center">
@@ -134,7 +134,7 @@ export default function ProductPage() {
   }
 
   return (
-    <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back to Shop">
+    <UniversalPageLayout pageType="shop" title="Product Details" backButtonText="Back" onBackClick={handleBackClick}>
       {({ contentVisible }) => (
         <div className="max-w-6xl mx-auto px-6">
           {/* Product Details */}
