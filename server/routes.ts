@@ -502,7 +502,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           quantity: submission.quantity || 1,
           totalAmount: submission.totalAmount || 0,
           notes: submission.notes,
-          forms: submission.forms
+          forms: submission.forms,
+          ticketType: submission.ticketType
         };
         
         // Send notification to admin
@@ -572,7 +573,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               studentName: submission.studentName,
               ticketPurchaseUrl: `https://eshsasb.org/checkout/${submission._id}`, // Placeholder checkout URL with submission ID
               quantity: submission.quantity || 1,
-              totalAmount: submission.totalAmount || 0
+              totalAmount: submission.totalAmount || 0,
+              ticketType: submission.ticketType
             });
             console.log('Approval email sent successfully');
           } else if (submission.status === 'rejected') {
@@ -823,7 +825,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           studentName,
           ticketPurchaseUrl: 'https://eshsasb.org/checkout/debug-test',
           quantity: 1,
-          totalAmount: 25.00
+          totalAmount: 25.00,
+          ticketType: {
+            name: 'Debug Ticket',
+            price: 25.00,
+            description: 'Test ticket for debugging'
+          }
         });
       } else if (status === 'rejected') {
         await emailService.sendRejectionNotification(to, {
@@ -862,7 +869,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             studentName: 'Test Student',
             ticketPurchaseUrl: 'https://eshsasb.org/checkout/test-submission-id-123',
             quantity: 2,
-            totalAmount: 50.00
+            totalAmount: 50.00,
+            ticketType: {
+              name: 'VIP Ticket',
+              price: 25.00,
+              description: 'Includes dinner and VIP seating'
+            }
           });
           break;
         case 'rejection':
@@ -882,7 +894,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             quantity: 1,
             totalAmount: 10.00,
             notes: 'This is a test submission notification.',
-            forms: [{ fileName: 'test-form.pdf', fileUrl: '/test', fileType: 'application/pdf' }]
+            forms: [{ fileName: 'test-form.pdf', fileUrl: '/test', fileType: 'application/pdf' }],
+            ticketType: {
+              name: 'General Admission',
+              price: 10.00,
+              description: 'Standard event access'
+            }
           });
           break;
         case 'receipt':
@@ -894,7 +911,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             quantity: 1,
             totalAmount: 10.00,
             notes: 'This is a test receipt email.',
-            forms: [{ fileName: 'test-form.pdf', fileUrl: '/test', fileType: 'application/pdf' }]
+            forms: [{ fileName: 'test-form.pdf', fileUrl: '/test', fileType: 'application/pdf' }],
+            ticketType: {
+              name: 'General Admission',
+              price: 10.00,
+              description: 'Standard event access'
+            }
           });
           break;
         default:

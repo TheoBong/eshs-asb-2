@@ -209,6 +209,17 @@ export default function EventDetails() {
   const handleSubmitApproval = async () => {
     if (!event) return;
 
+    // Check if ticket type is selected (required for events with ticket types)
+    if (event.ticketTypes && event.ticketTypes.length > 0 && selectedTicketType === null) {
+      setUploadStatus({
+        uploading: false,
+        success: false,
+        error: true,
+        message: 'Please select a ticket type before submitting'
+      });
+      return;
+    }
+
     // Form validation
     if (!formData.studentName.trim()) {
       setUploadStatus({
@@ -335,6 +346,12 @@ export default function EventDetails() {
 
   const handleDirectPurchase = () => {
     if (!event) return;
+    
+    // Check if ticket type is selected (required for events with ticket types)
+    if (event.ticketTypes && event.ticketTypes.length > 0 && selectedTicketType === null) {
+      alert('Please select a ticket type before adding to cart');
+      return;
+    }
     
     // Add to cart using CartContext
     const selectedTicket = getSelectedTicketType();
@@ -471,7 +488,12 @@ export default function EventDetails() {
           {event.ticketTypes && event.ticketTypes.length > 0 && (
             <ThemedCard className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl mb-8">
               <div className="p-4">
-                <h3 className="text-lg font-bold text-white mb-3">Select Ticket Type</h3>
+                <h3 className="text-lg font-bold text-white mb-3">
+                  Select Ticket Type <span className="text-red-400">*</span>
+                </h3>
+                {selectedTicketType === null && (
+                  <p className="text-yellow-400 text-sm mb-3">Please select a ticket type to continue</p>
+                )}
                 {getAvailableTicketTypes().length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {getAvailableTicketTypes().map((ticket, availableIndex) => {
@@ -630,8 +652,8 @@ export default function EventDetails() {
                       <div className="pt-2">
                         <PrimaryButton
                           onClick={handleSubmitApproval}
-                          disabled={isSubmitting || uploadStatus.success}
-                          className="w-full py-3 text-lg font-semibold"
+                          disabled={isSubmitting || uploadStatus.success || (event.ticketTypes && event.ticketTypes.length > 0 && selectedTicketType === null)}
+                          className="w-full py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {isSubmitting ? (
                             <>
@@ -641,7 +663,7 @@ export default function EventDetails() {
                               </svg>
                               Submitting...
                             </>
-                          ) : 'Submit for Approval'}
+                          ) : (event.ticketTypes && event.ticketTypes.length > 0 && selectedTicketType === null) ? 'Select Ticket Type First' : 'Submit for Approval'}
                         </PrimaryButton>
 
                         <p className="text-sm text-gray-400 mt-3">

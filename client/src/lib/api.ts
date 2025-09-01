@@ -392,6 +392,11 @@ export interface FormSubmission {
   notes?: string;
   reviewedBy?: string;
   reviewedAt?: Date;
+  ticketType?: {
+    name: string;
+    price: number;
+    description: string;
+  };
 }
 
 export interface Purchase {

@@ -156,7 +156,12 @@ const formSubmissionSchema = new mongoose.Schema({
   notes: { type: String },
   reviewedBy: { type: String },
   reviewedAt: { type: Date },
-  rejectionReason: { type: String }
+  rejectionReason: { type: String },
+  ticketType: {
+    name: { type: String },
+    price: { type: Number },
+    description: { type: String }
+  }
 });
 
 // Purchase Schema

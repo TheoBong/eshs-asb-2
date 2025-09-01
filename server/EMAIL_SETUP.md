@@ -17,6 +17,7 @@ When a student submits a form for an activity requiring approval:
   - Student details (name, email)
   - Event information
   - Submission date
+  - **Ticket type information** (name, price, description)
   - Quantity and total amount
   - Notes (if any)
 - **Attachments**: All submitted forms are attached to the email
@@ -27,7 +28,8 @@ When a student submits a form, they automatically receive a receipt:
 - **Recipient**: Student's email address
 - **Content**:
   - Confirmation of submission receipt
-  - Event details with quantity and total amount
+  - Event details with **ticket type information**
+  - Quantity and total amount
   - Status indicator (Pending Review)
   - Next steps and expected timeline
   - All submission details for records
@@ -40,7 +42,8 @@ When an admin approves a form submission:
 - **Recipient**: Student's email
 - **Content**:
   - Congratulatory message with approval confirmation
-  - Event details with quantity and total amount
+  - Event details with **ticket type information**
+  - Quantity and total amount
   - Call-to-action button for ticket purchase
   - 48-hour deadline notice
 - **Subject**: ✅ Activity Request Approved - [Event Name]

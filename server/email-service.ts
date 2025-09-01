@@ -27,6 +27,11 @@ interface FormSubmissionEmailData {
     fileUrl: string;
     fileType: string;
   }>;
+  ticketType?: {
+    name: string;
+    price: number;
+    description: string;
+  };
 }
 
 interface ApprovalEmailData {
@@ -35,6 +40,11 @@ interface ApprovalEmailData {
   ticketPurchaseUrl: string;
   quantity: number;
   totalAmount: number;
+  ticketType?: {
+    name: string;
+    price: number;
+    description: string;
+  };
 }
 
 interface RejectionEmailData {
@@ -145,6 +155,9 @@ class EmailService {
           <span class="label">Submission Date:</span> ${new Date(data.submissionDate).toLocaleString()}
         </div>
         <div class="info-row">
+          <span class="label">Ticket Type:</span> ${data.ticketType?.name || 'Not specified'}
+        </div>
+        <div class="info-row">
           <span class="label">Quantity:</span> ${data.quantity}
         </div>
         <div class="info-row">
@@ -246,6 +259,9 @@ class EmailService {
         <span class="label">Submission Date:</span> ${new Date(data.submissionDate).toLocaleString()}
       </div>
       <div class="info-row">
+        <span class="label">Ticket Type:</span> ${data.ticketType?.name || 'Not specified'}
+      </div>
+      <div class="info-row">
         <span class="label">Quantity:</span> ${data.quantity}
       </div>
       <div class="info-row">
@@ -333,6 +349,9 @@ class EmailService {
       <div class="info-box">
         <div class="info-row">
           <span class="label">Event:</span> ${data.eventName}
+        </div>
+        <div class="info-row">
+          <span class="label">Ticket Type:</span> ${data.ticketType?.name || 'Not specified'}
         </div>
         <div class="info-row">
           <span class="label">Quantity:</span> ${data.quantity}
