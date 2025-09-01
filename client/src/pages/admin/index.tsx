@@ -1168,6 +1168,10 @@ export default function AdminMongoDB() {
   const [submissionSearch, setSubmissionSearch] = useState<string>('');
   const [submissionStatusFilter, setSubmissionStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   
+  // Pagination states
+  const [pendingDisplayCount, setPendingDisplayCount] = useState(5);
+  const [processedDisplayCount, setProcessedDisplayCount] = useState(5);
+  
   // Rejection modal states
   const [rejectionSubmissionId, setRejectionSubmissionId] = useState<string>('');
   const [rejectionReason, setRejectionReason] = useState<string>('');
@@ -2131,7 +2135,7 @@ ESHS ASB Team
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">                    {filteredFormSubmissions.filter(submission => submission.status === 'pending').map((submission) => {
+                  <div className="space-y-4">                    {filteredFormSubmissions.filter(submission => submission.status === 'pending').slice(0, pendingDisplayCount).map((submission) => {
                       // Handle both populated and non-populated eventId
                       const eventIdStr = typeof submission.eventId === 'object' && submission.eventId ? 
                         (submission.eventId as any)._id : submission.eventId;
@@ -2220,6 +2224,19 @@ ESHS ASB Team
                       );
                     })}
                     
+                    {/* Load More button for pending submissions */}
+                    {filteredFormSubmissions.filter(submission => submission.status === 'pending').length > pendingDisplayCount && (
+                      <div className="text-center py-4">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setPendingDisplayCount(prev => prev + 5)}
+                          className="bg-white/5 hover:bg-white/10 text-white border-white/20"
+                        >
+                          Load More ({filteredFormSubmissions.filter(submission => submission.status === 'pending').length - pendingDisplayCount} remaining)
+                        </Button>
+                      </div>
+                    )}
+                    
                     {formSubmissions.filter(submission => submission.status === 'pending').length === 0 && (
                       <div className="text-center py-8 text-gray-400">
                         <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-500 opacity-30" />
@@ -2240,7 +2257,7 @@ ESHS ASB Team
                   </CardTitle>
                 </CardHeader>
                 <CardContent>                  <div className="space-y-4">                    {filteredFormSubmissions.filter(submission => submission.status !== 'pending')
-                      .slice(0, 5) // Show only the most recent 5 processed submissions
+                      .slice(0, processedDisplayCount) // Show limited processed submissions
                       .map((submission) => {
                         // Handle both populated and non-populated eventId
                         const eventIdStr = typeof submission.eventId === 'object' && submission.eventId ? 
@@ -2269,13 +2286,23 @@ ESHS ASB Team
                                     </p>
                                   )}
                                 </div>
-                                {submission.ticketType && (
-                                  <div className="mt-1">
+                                <div className="mt-1 flex flex-wrap gap-2">
+                                  {submission.ticketType && (
                                     <Badge variant="outline" className="bg-purple-500/20 border-purple-500/30 text-purple-200 text-xs">
                                       {submission.ticketType.name} - ${submission.ticketType.price.toFixed(2)}
                                     </Badge>
-                                  </div>
-                                )}
+                                  )}
+                                  {submission.status === 'approved' && (
+                                    <Badge variant="outline" className="bg-green-500/20 border-green-500/30 text-green-200 text-xs">
+                                      💳 Unpaid
+                                    </Badge>
+                                  )}
+                                  {submission.status === 'rejected' && submission.rejectionReason && (
+                                    <Badge variant="outline" className="bg-red-500/20 border-red-500/30 text-red-200 text-xs">
+                                      ❌ {submission.rejectionReason}
+                                    </Badge>
+                                  )}
+                                </div>
                               </div>
                               <Badge className={statusColor}>
                                 {submission.status}
@@ -2346,17 +2373,15 @@ ESHS ASB Team
                       </div>
                     )}
                     
-                    {filteredFormSubmissions.filter(submission => submission.status !== 'pending').length > 5 && (
-                      <div className="flex justify-center mt-4">
+                    {/* Load More button for processed submissions */}
+                    {filteredFormSubmissions.filter(submission => submission.status !== 'pending').length > processedDisplayCount && (
+                      <div className="text-center py-4">
                         <Button 
-                          variant="ghost"
-                          className="text-blue-300 hover:text-blue-100"
-                          onClick={() => {
-                            // In a real app, this would show all processed submissions in a modal or new page
-                            alert('View all processed submissions');
-                          }}
+                          variant="outline" 
+                          onClick={() => setProcessedDisplayCount(prev => prev + 5)}
+                          className="bg-white/5 hover:bg-white/10 text-white border-white/20"
                         >
-                          View All ({filteredFormSubmissions.filter(submission => submission.status !== 'pending').length})
+                          Load More ({filteredFormSubmissions.filter(submission => submission.status !== 'pending').length - processedDisplayCount} remaining)
                         </Button>
                       </div>
                     )}
