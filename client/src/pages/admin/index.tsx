@@ -874,6 +874,7 @@ function StudentGovForm({ member, onSubmit, onCancel }: {
     member || {
       position: '',
       gradeLevel: '',
+      bio: '',
       description: '',
       currentRepresentatives: []
     }
@@ -935,12 +936,24 @@ function StudentGovForm({ member, onSubmit, onCancel }: {
       </div>
 
       <div>
+        <label className="block text-sm font-medium text-white mb-2">Bio</label>
+        <Textarea
+          value={formData.bio || ''}
+          onChange={(e) => setFormData({...formData, bio: e.target.value})}
+          placeholder="Brief bio for this position"
+          rows={2}
+          required
+        />
+      </div>
+
+      <div>
         <label className="block text-sm font-medium text-white mb-2">Description</label>
         <Textarea
           value={formData.description || ''}
           onChange={(e) => setFormData({...formData, description: e.target.value})}
-          placeholder="Position description"
+          placeholder="Position description and responsibilities"
           rows={3}
+          required
         />
       </div>
 
@@ -973,7 +986,7 @@ function StudentGovForm({ member, onSubmit, onCancel }: {
                       type="email"
                       value={rep.email || ''}
                       onChange={(e) => updateRepresentative(index, 'email', e.target.value)}
-                      placeholder="contact@eshs.edu"
+                      placeholder="dr@doofenshmirtz.com"
                     />
                   </div>
                 </div>
@@ -1094,7 +1107,7 @@ function ClubForm({ club, onSubmit, onCancel }: {
             type="email"
             value={formData.contactEmail || ''}
             onChange={(e) => setFormData({...formData, contactEmail: e.target.value})}
-            placeholder="drama@eshs.edu"
+            placeholder="master@oogway.com"
           />
         </div>
         <div>
@@ -2131,7 +2144,7 @@ ESHS ASB Team
                 <CardHeader>
                   <CardTitle className="text-white flex items-center">
                     <Calendar className="w-5 h-5 mr-2 text-yellow-400" /> 
-                    Pending Approvals
+                    Pending Approvals (Total: {filteredFormSubmissions.filter(submission => submission.status === 'pending').length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -2253,7 +2266,7 @@ ESHS ASB Team
                 <CardHeader>
                   <CardTitle className="text-white flex items-center">
                     <FileText className="w-5 h-5 mr-2 text-blue-400" /> 
-                    Processed Submissions
+                    Processed Submissions (Total: {filteredFormSubmissions.filter(submission => submission.status !== 'pending').length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>                  <div className="space-y-4">                    {filteredFormSubmissions.filter(submission => submission.status !== 'pending')
@@ -2343,25 +2356,6 @@ ESHS ASB Team
                                 View Details
                               </Button>
                               
-                              {submission.status === 'approved' && (
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost"
-                                  className="text-xs text-blue-300 hover:text-blue-100 p-1 h-auto"
-                                  onClick={() => {
-                                    // In a real app, this would send a reminder email
-                                    sendEmailNotification(
-                                      submission.email,
-                                      `Reminder: Your approved registration for ${relatedEvent?.title || 'event'}`,
-                                      `Dear ${submission.studentName}, this is a reminder that your registration for ${relatedEvent?.title || 'the event'} has been approved. Please complete your payment if you haven't already.`
-                                    );
-                                    alert('Reminder email sent!');
-                                  }}
-                                >
-                                  <Send className="w-3 h-3 mr-1" /> 
-                                  Send Reminder
-                                </Button>
-                              )}
                             </div>
                           </div>
                         );

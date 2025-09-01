@@ -360,7 +360,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const position = await storage.createStudentGovPosition(req.body);
       res.status(201).json(position);
     } catch (error) {
-      res.status(400).json({ message: "Error creating student government position", error });
+      console.error("Error creating student government position:", error);
+      res.status(400).json({ message: "Error creating student government position", error: error.message || error });
     }
   });
 
