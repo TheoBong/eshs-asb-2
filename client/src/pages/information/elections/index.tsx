@@ -132,7 +132,7 @@ export default function Elections() {
           </BlurContainer>
           
           {/* Grade Level Filter Tabs */}
-          <BlurContainer contentVisible={contentVisible} delay="300ms" className="mb-8">
+          <div className="mb-8">
             <Tabs defaultValue="All" className="" onValueChange={setActiveTab}>
               <TabsList 
                 className="bg-white/5 border border-white/10 shadow-lg grid w-full max-w-4xl mx-auto" 
@@ -151,7 +151,7 @@ export default function Elections() {
                 ))}
               </TabsList>
             </Tabs>
-          </BlurContainer>
+          </div>
 
           {/* Positions Grid */}
           <div className="mb-8">
@@ -230,21 +230,23 @@ export default function Elections() {
                   index={index}
                   delay={`${800 + (index * 50)}ms`}
                 >
-                  <div className="p-4 flex items-center">
-                    <div className="mr-4 h-10 w-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-white">{resource.title}</h3>
-                      <p className="text-sm text-gray-300">{resource.description}</p>
+                  <div className="p-4 flex items-center justify-between">
+                    <div className="flex items-center flex-1">
+                      <div className="mr-4 h-10 w-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                        <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-white">{resource.title}</h3>
+                        <p className="text-sm text-gray-300">{resource.description}</p>
+                      </div>
                     </div>
                     <a href={resource.link}>
                       <BlurActionButton
                         contentVisible={contentVisible}
                         onClick={() => {}}
-                        className="ml-auto p-3"
+                        className="p-3"
                       >
                         View
                       </BlurActionButton>

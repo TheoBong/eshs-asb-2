@@ -157,7 +157,6 @@ const mockClubs = [
   {
     name: "Drama Club",
     description: "Explore the world of theater through acting, directing, and technical theater.",
-    category: "Performance",
     contactEmail: "drama@eshs.edu",
     image: "/api/placeholder/400/300",
     memberCount: 35,
@@ -168,7 +167,6 @@ const mockClubs = [
   {
     name: "Science Olympiad",
     description: "Competitive science team that competes in various STEM events.",
-    category: "Academic",
     contactEmail: "scioly@eshs.edu",
     image: "/api/placeholder/400/300",
     memberCount: 28,

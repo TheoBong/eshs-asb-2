@@ -33,7 +33,6 @@ const clubResources = [
 
 export default function Clubs() {
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState("All");
   const [clubs, setClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,12 +66,6 @@ export default function Clubs() {
     }
   };
 
-  // Filter clubs by category
-  const filteredClubs = activeTab === "All" 
-    ? clubs 
-    : clubs.filter(club => club.category === activeTab);
-  // Get unique categories from the data
-  const categories = ["All", ...Array.from(new Set(clubs.map(club => club.category)))];
 
   if (loading) {
     return (
@@ -124,31 +117,10 @@ export default function Clubs() {
             </div>
           </BlurContainer>
           
-          {/* Category Filter Tabs */}
-          <BlurContainer contentVisible={contentVisible} delay="300ms" className="mb-8">
-            <Tabs defaultValue="All" className="" onValueChange={setActiveTab}>
-              <TabsList 
-                className="bg-white/5 border border-white/10 shadow-lg grid w-full max-w-3xl mx-auto" 
-                style={{
-                  gridTemplateColumns: `repeat(${categories.length}, 1fr)`
-                }}
-              >
-                {categories.map((category) => (
-                  <TabsTrigger 
-                    key={category}
-                    value={category} 
-                    className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
-                  >
-                    {category}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          </BlurContainer>
 
           {/* Clubs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {filteredClubs.map((club, index) => (
+            {clubs.map((club, index) => (
               <BlurCard
                 key={club._id}
                 contentVisible={contentVisible}
@@ -161,9 +133,6 @@ export default function Clubs() {
                       <h3 className="text-xl font-semibold text-white mb-2">{club.name}</h3>
                       <p className="text-gray-300 mb-3">{club.description}</p>
                     </div>
-                    <Badge variant="outline" className="ml-2">
-                      {club.category}
-                    </Badge>
                   </div>
                   
                   <div className="space-y-3 mb-4">
@@ -201,21 +170,23 @@ export default function Clubs() {
                   index={index}
                   delay={`${800 + (index * 50)}ms`}
                 >
-                  <div className="p-4 flex items-center">
-                    <div className="mr-4 h-10 w-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-white">{resource.title}</h3>
-                      <p className="text-sm text-gray-300">{resource.description}</p>
+                  <div className="p-4 flex items-center justify-between">
+                    <div className="flex items-center flex-1">
+                      <div className="mr-4 h-10 w-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                        <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-white">{resource.title}</h3>
+                        <p className="text-sm text-gray-300">{resource.description}</p>
+                      </div>
                     </div>
                     <a href={resource.link}>
                       <BlurActionButton
                         contentVisible={contentVisible}
                         onClick={() => {}}
-                        className="ml-auto p-3"
+                        className="p-3"
                       >
                         View
                       </BlurActionButton>

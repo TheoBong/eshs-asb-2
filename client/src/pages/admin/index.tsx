@@ -1049,7 +1049,6 @@ function ClubForm({ club, onSubmit, onCancel }: {
     club || {
       name: '',
       description: '',
-      category: '',
       contactEmail: '',
       image: '',
       memberCount: 0,
@@ -1073,15 +1072,6 @@ function ClubForm({ club, onSubmit, onCancel }: {
             value={formData.name || ''}
             onChange={(e) => setFormData({...formData, name: e.target.value})}
             placeholder="Drama Club"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">Category</label>
-          <Input
-            value={formData.category || ''}
-            onChange={(e) => setFormData({...formData, category: e.target.value})}
-            placeholder="Academic & Social"
             required
           />
         </div>

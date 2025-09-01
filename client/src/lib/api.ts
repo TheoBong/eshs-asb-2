@@ -361,7 +361,6 @@ export interface Club {
   _id: string;
   name: string;
   description: string;
-  category: string;
   contactEmail: string;
   image: string;
   memberCount: number;
