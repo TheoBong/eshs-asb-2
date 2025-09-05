@@ -68,10 +68,7 @@ class PaymentService {
         currency: request.currency || 'USD',
         total: Math.round(request.amount * 100), // Convert to cents
         state: 'open',
-        note: `Order for ${request.metadata?.customerName || 'Customer'}`,
-        employee: {
-          id: 'SYSTEM'
-        }
+        note: `Order for ${request.metadata?.customerName || 'Customer'}`
       };
 
       console.log('Creating order with data:', orderData);
