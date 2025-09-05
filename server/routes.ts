@@ -689,101 +689,185 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Clover Hosted Checkout webhook endpoint
   app.post("/api/webhooks/clover", express.raw({ type: 'application/json' }), async (req, res) => {
+    const startTime = Date.now();
+    const timestamp = new Date().toISOString();
+    
+    // Log incoming webhook details
+    console.log(`\n🔔 [${timestamp}] Clover Webhook Received`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
     try {
       // Get the signature from headers
       const signature = req.get('X-Clover-Signature') || req.get('Clover-Signature') || '';
       const payload = req.body.toString();
       
+      console.log(`🔐 Signature provided: ${signature ? 'Yes' : 'No'}`);
+      console.log(`📦 Payload size: ${payload.length} bytes`);
+      
       // Verify webhook signature for security
       if (!paymentService.verifyWebhookSignature(payload, signature)) {
         console.error('❌ Invalid webhook signature');
+        console.error(`   Expected signature format: sha256=<hash>`);
+        console.error(`   Received signature: ${signature}`);
         return res.status(401).json({ error: 'Invalid signature' });
       }
       
+      console.log('✅ Signature verified successfully');
+      
       const webhookData = JSON.parse(payload);
-      console.log('Received Clover webhook:', JSON.stringify(webhookData, null, 2));
+      console.log('📋 Webhook Data:');
+      console.log(JSON.stringify(webhookData, null, 2));
       
       const { type, eventType, objectId, data } = webhookData;
 
       // Handle different webhook event types
       const event = type || eventType;
       const orderId = objectId || data?.orderId || data?.id;
+      
+      console.log(`🏷️  Event Type: ${event}`);
+      console.log(`🆔 Order ID: ${orderId}`);
 
       if (event === 'ORDER_PAYMENT_CREATED' || event === 'PAYMENT_CREATED' || event === 'order.payment_created') {
-        console.log(`Processing payment for order: ${orderId}`);
+        console.log(`\n💳 Processing payment event for order: ${orderId}`);
         
         if (orderId) {
           // Get the purchase record by Clover order ID or session ID
+          console.log(`🔍 Looking up purchase record...`);
           let purchase = await storage.getPurchaseByCloverOrderId(orderId);
+          let lookupMethod = 'cloverOrderId';
           
           // If not found by order ID, try session ID (webhook might use session ID)
           if (!purchase) {
+            console.log(`   Not found by cloverOrderId, trying cloverSessionId...`);
             purchase = await storage.getPurchaseByCloverSessionId(orderId);
+            lookupMethod = 'cloverSessionId';
           }
           
           if (purchase) {
+            console.log(`✅ Purchase found via ${lookupMethod}: ${purchase._id}`);
+            console.log(`   Customer: ${purchase.studentName} (${purchase.studentEmail})`);
+            console.log(`   Amount: $${purchase.amount}`);
+            console.log(`   Current Status: ${purchase.status}`);
+            
+            // Extract payment details
+            const transactionId = data?.payment?.id || data?.id;
+            const last4 = data?.payment?.cardTransaction?.last4 || data?.source?.last4;
+            const brand = data?.payment?.cardTransaction?.cardType || data?.source?.brand || 'card';
+            
+            console.log(`💳 Payment Details:`);
+            console.log(`   Transaction ID: ${transactionId}`);
+            console.log(`   Card Last 4: ${last4}`);
+            console.log(`   Card Brand: ${brand}`);
+            
             // Update purchase status to paid
             await storage.updatePurchase(purchase._id, {
               status: 'paid',
-              transactionId: data?.payment?.id || data?.id,
+              transactionId: transactionId,
               paymentDetails: {
-                last4: data?.payment?.cardTransaction?.last4 || data?.source?.last4,
-                brand: data?.payment?.cardTransaction?.cardType || data?.source?.brand || 'card'
+                last4: last4,
+                brand: brand
               }
             });
+            
+            console.log(`✅ Updated purchase status to 'paid'`);
 
             // Parse cart items from notes
             let items = [];
             try {
               items = JSON.parse(purchase.notes || '[]');
+              console.log(`📦 Found ${items.length} items in cart`);
             } catch (e) {
               items = [{ name: purchase.productName, quantity: purchase.quantity, price: purchase.amount }];
+              console.log(`⚠️  Fallback to single item: ${purchase.productName}`);
             }
 
             // Update product stock for each item
+            console.log(`\n🏪 Updating product stock...`);
             for (const item of items) {
               if (item.productId) {
+                console.log(`   Processing item: ${item.name} (ID: ${item.productId})`);
                 const product = await storage.getProduct(item.productId);
                 if (product) {
                   if (product.category === 'Apparel' && product.sizeStock && item.size) {
                     // Update size-specific stock
+                    const oldStock = product.sizeStock.find(ss => ss.size === item.size)?.stock || 0;
                     const updatedSizeStock = product.sizeStock.map(ss => 
                       ss.size === item.size 
                         ? { ...ss, stock: Math.max(0, ss.stock - item.quantity) }
                         : ss
                     );
                     await storage.updateProduct(item.productId, { sizeStock: updatedSizeStock });
+                    const newStock = updatedSizeStock.find(ss => ss.size === item.size)?.stock || 0;
+                    console.log(`   📦 ${product.name} (Size ${item.size}): ${oldStock} → ${newStock}`);
                   } else {
                     // Update general stock
-                    await storage.updateProduct(item.productId, { 
-                      stock: Math.max(0, (product.stock || 0) - item.quantity) 
-                    });
+                    const oldStock = product.stock || 0;
+                    const newStock = Math.max(0, oldStock - item.quantity);
+                    await storage.updateProduct(item.productId, { stock: newStock });
+                    console.log(`   📦 ${product.name}: ${oldStock} → ${newStock}`);
                   }
-                  console.log(`📦 Updated stock for product ${product.name}`);
+                } else {
+                  console.warn(`   ⚠️  Product not found: ${item.productId}`);
                 }
+              } else {
+                console.warn(`   ⚠️  Item has no productId: ${item.name}`);
               }
             }
 
             // Send confirmation email
-            await emailService.sendPurchaseConfirmation(purchase.studentEmail, {
-              orderNumber: purchase._id,
-              items: items,
-              total: purchase.amount,
-              paymentMethod: 'card',
-              last4: data?.payment?.cardTransaction?.last4 || data?.source?.last4
-            });
+            console.log(`\n📧 Sending confirmation email to ${purchase.studentEmail}...`);
+            try {
+              await emailService.sendPurchaseConfirmation(purchase.studentEmail, {
+                orderNumber: purchase._id,
+                items: items,
+                total: purchase.amount,
+                paymentMethod: 'card',
+                last4: last4
+              });
+              console.log(`✅ Confirmation email sent successfully`);
+            } catch (emailError) {
+              console.error(`❌ Failed to send confirmation email:`, emailError);
+            }
 
-            console.log(`✅ Payment completed for order ${orderId}`);
+            const processingTime = Date.now() - startTime;
+            console.log(`\n🎉 Payment processing completed successfully!`);
+            console.log(`   Order: ${orderId}`);
+            console.log(`   Purchase: ${purchase._id}`);
+            console.log(`   Processing Time: ${processingTime}ms`);
           } else {
-            console.warn(`⚠️ No purchase found for order ID: ${orderId}`);
+            console.warn(`⚠️  No purchase found for order ID: ${orderId}`);
+            console.log(`   Searched by cloverOrderId and cloverSessionId`);
+            
+            // Log all pending purchases for debugging
+            const pendingPurchases = await storage.getPurchases();
+            const pending = pendingPurchases.filter(p => p.status === 'pending');
+            console.log(`\n🔍 Debug: Found ${pending.length} pending purchases:`);
+            pending.forEach(p => {
+              console.log(`   - ${p._id}: cloverOrderId=${p.cloverOrderId}, cloverSessionId=${p.cloverSessionId}`);
+            });
           }
+        } else {
+          console.warn(`⚠️  No order ID found in webhook data`);
         }
+      } else {
+        console.log(`ℹ️  Ignoring event type: ${event}`);
       }
 
-      res.status(200).json({ received: true });
+      const totalTime = Date.now() - startTime;
+      console.log(`\n⏱️  Total webhook processing time: ${totalTime}ms`);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+      
+      res.status(200).json({ received: true, processedAt: new Date().toISOString(), processingTimeMs: totalTime });
     } catch (error) {
-      console.error('❌ Webhook processing failed:', error);
-      res.status(500).json({ message: "Webhook processing failed" });
+      const errorTime = Date.now() - startTime;
+      console.error(`❌ Webhook processing failed after ${errorTime}ms:`, error);
+      console.error(`   Error Type: ${error.name}`);
+      console.error(`   Error Message: ${error.message}`);
+      if (error.stack) {
+        console.error(`   Stack Trace:`, error.stack);
+      }
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+      res.status(500).json({ message: "Webhook processing failed", error: error.message });
     }
   });
 

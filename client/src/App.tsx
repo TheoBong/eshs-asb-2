@@ -16,6 +16,7 @@ import CartPage from "@/pages/shop/cart/index";
 import CheckoutPage from "@/pages/shop/checkout/index";
 import CheckoutSuccessPage from "@/pages/shop/checkout/success";
 import CheckoutCancelPage from "@/pages/shop/checkout/cancel";
+import CheckoutFailurePage from "@/pages/shop/checkout/failure";
 
 
 // Information related pages
@@ -76,6 +77,7 @@ function Router() {
         {/* Shop pages - more specific routes first */}
         <Route path="/shop/checkout/success" component={() => <PageWrapper><CheckoutSuccessPage /></PageWrapper>} />
         <Route path="/shop/checkout/cancel" component={() => <PageWrapper><CheckoutCancelPage /></PageWrapper>} />
+        <Route path="/shop/checkout/failure" component={() => <PageWrapper><CheckoutFailurePage /></PageWrapper>} />
         <Route path="/shop/checkout" component={() => <PageWrapper><CheckoutPage /></PageWrapper>} />
         <Route path="/shop/product/:id" component={() => <PageWrapper><ProductPage /></PageWrapper>} />
         <Route path="/shop/cart" component={() => <PageWrapper><CartPage /></PageWrapper>} />
