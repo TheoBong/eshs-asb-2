@@ -427,15 +427,30 @@ export interface Purchase {
   _id: string;
   studentName: string;
   studentEmail: string;
+  phone?: string;
   productId?: string;
   productName: string;
   quantity: number;
   size?: string;
   color?: string;
   amount: number;
-  status: 'pending' | 'completed' | 'cancelled';
+  status: 'pending' | 'paid' | 'completed' | 'cancelled' | 'refunded';
   date: Date;
   paymentMethod: string;
   transactionId?: string;
+  cloverOrderId?: string;
+  cloverSessionId?: string;
+  paymentDetails?: {
+    last4?: string;
+    brand?: string;
+    receiptUrl?: string;
+  };
+  deliveryMethod?: 'pickup' | 'delivery';
+  deliveryDetails?: {
+    roomTeacher?: string;
+  };
   notes?: string;
+  fulfilledBy?: string;
+  fulfilledAt?: Date;
+  adminNotes?: string;
 }

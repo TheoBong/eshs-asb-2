@@ -188,7 +188,10 @@ const purchaseSchema = new mongoose.Schema({
     pickedUpAt: { type: Date }
   },
   phone: { type: String },
-  notes: { type: String }
+  notes: { type: String },
+  fulfilledBy: { type: String },
+  fulfilledAt: { type: Date },
+  adminNotes: { type: String }
 });
 
 // File Upload Schema
