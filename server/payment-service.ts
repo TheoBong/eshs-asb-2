@@ -60,79 +60,41 @@ class PaymentService {
   }
 
   async createPaymentIntent(request: PaymentIntentRequest): Promise<any> {
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    
     try {
-      const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-      
-      // For Hosted Checkout, create a checkout session using the checkout API
-      const checkoutData = {
-        merchant_id: this.merchantId,
-        amount: Math.round(request.amount * 100), // Convert to cents
-        currency: request.currency || 'USD',
-        success_url: `${clientUrl}/shop/checkout/success`,
-        cancel_url: `${clientUrl}/shop/checkout/cancel`,
-        customer: {
-          email: request.metadata?.customerEmail,
-          name: request.metadata?.customerName
-        },
-        line_items: JSON.parse(request.metadata?.items || '[]').map((item: any) => ({
-          name: item.name,
-          amount: Math.round(item.price * 100),
-          quantity: item.quantity || 1
-        }))
-      };
-
-      console.log('Creating checkout session with data:', checkoutData);
-
-      // Use the correct Hosted Checkout endpoint
-      const checkoutUrl = this.environment === 'production'
-        ? 'https://checkout.clover.com/checkout'
-        : 'https://checkout-sandbox.dev.clover.com/checkout';
-
-      const checkoutResponse = await axios.post(
-        checkoutUrl,
-        checkoutData,
-        { headers: this.getHeaders() }
-      );
-
-      const sessionId = checkoutResponse.data.id || checkoutResponse.data.session_id;
-      const hostedUrl = checkoutResponse.data.url || checkoutResponse.data.checkout_url;
-
-      return {
-        orderId: sessionId,
-        amount: request.amount,
-        currency: request.currency || 'USD',
-        checkoutUrl: hostedUrl,
-        status: 'pending'
-      };
-    } catch (error: any) {
-      console.error('Failed to create checkout session:', error.response?.data || error.message);
-      
-      // Fallback: Create a simple payment link if the checkout API doesn't work
+      // Simplified approach: Use Clover Hosted Checkout with direct URL parameters
+      // This is the most reliable method for Hosted Checkout
       const fallbackOrderId = `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
       
-      // Create a simple Clover payment link
+      // Create a Clover Hosted Checkout URL with parameters
       const paymentParams = new URLSearchParams({
-        merchant_id: this.merchantId,
+        'merchant-id': this.merchantId,
         amount: Math.round(request.amount * 100).toString(),
         currency: request.currency || 'USD',
-        success_url: `${clientUrl}/shop/checkout/success`,
-        cancel_url: `${clientUrl}/shop/checkout/cancel`,
-        customer_email: request.metadata?.customerEmail || '',
-        customer_name: request.metadata?.customerName || '',
-        order_id: fallbackOrderId
+        'success-url': `${clientUrl}/shop/checkout/success?order_id=${fallbackOrderId}`,
+        'cancel-url': `${clientUrl}/shop/checkout/cancel?order_id=${fallbackOrderId}`,
+        'customer-email': request.metadata?.customerEmail || '',
+        'customer-name': request.metadata?.customerName || ''
       });
 
-      const fallbackCheckoutUrl = this.environment === 'production'
-        ? `https://www.clover.com/checkout?${paymentParams.toString()}`
-        : `https://checkout-sandbox.dev.clover.com?${paymentParams.toString()}`;
+      // Use the correct Hosted Checkout URL format
+      const checkoutUrl = this.environment === 'production'
+        ? `https://checkout.clover.com/online/${this.merchantId}?${paymentParams.toString()}`
+        : `https://checkout-sandbox.dev.clover.com/online/${this.merchantId}?${paymentParams.toString()}`;
+
+      console.log('Generated Hosted Checkout URL:', checkoutUrl);
 
       return {
         orderId: fallbackOrderId,
         amount: request.amount,
         currency: request.currency || 'USD',
-        checkoutUrl: fallbackCheckoutUrl,
+        checkoutUrl: checkoutUrl,
         status: 'pending'
       };
+    } catch (error: any) {
+      console.error('Failed to create payment intent:', error.message);
+      throw new Error('Payment initialization failed');
     }
   }
 
@@ -229,7 +191,7 @@ class PaymentService {
     const timestamp = Date.now();
     const data = `${this.merchantId}:${orderId}:${timestamp}`;
     const signature = crypto
-      .createHmac('sha256', this.apiKey)
+      .createHmac('sha256', this.privateToken)
       .update(data)
       .digest('hex');
     
@@ -245,7 +207,7 @@ class PaymentService {
   // Verify webhook signature from Clover
   verifyWebhookSignature(payload: string, signature: string): boolean {
     const expectedSignature = crypto
-      .createHmac('sha256', this.apiKey)
+      .createHmac('sha256', this.privateToken)
       .update(payload)
       .digest('hex');
     
