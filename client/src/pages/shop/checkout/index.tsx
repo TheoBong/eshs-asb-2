@@ -10,7 +10,7 @@ import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton, ThemedInpu
 import { useCart } from "@/contexts/CartContext";
 import { UniversalPageLayout } from "@/components/UniversalPageLayout";
 import { BlurContainer, BlurCard, BlurActionButton } from "@/components/UniversalBlurComponents";
-import { CloverPayment } from "@/components/CloverPayment";
+import { MockPayment } from "@/components/MockPayment";
 import { createPaymentIntent, processPayment } from "@/lib/api";
 
 export default function CheckoutPage() {
@@ -53,20 +53,9 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // Create payment intent
-      const intent = await createPaymentIntent({
-        amount: total,
-        items: cartItems.map(item => ({
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price
-        })),
-        customerEmail: formState.email,
-        customerName: `${formState.firstName} ${formState.lastName}`
-      });
-
-      setPaymentIntent(intent);
+      // For demo mode, skip payment intent creation and go straight to payment
       setShowPayment(true);
+      setIsSubmitting(false);
     } catch (error) {
       toast({
         title: "Error",
@@ -78,24 +67,33 @@ export default function CheckoutPage() {
   };
 
   const handlePaymentSuccess = async (paymentResult: any) => {
+    setIsSubmitting(true);
+    
     try {
-      // Process the payment on the server
-      const result = await processPayment({
-        paymentToken: paymentResult.token,
-        orderId: paymentIntent.orderId,
-        purchaseData: {
-          studentName: `${formState.firstName} ${formState.lastName}`,
-          studentEmail: formState.email,
-          phone: formState.phone,
-          items: cartItems,
-          amount: total,
-          paymentMethod: 'card',
-          deliveryMethod,
-          deliveryDetails: deliveryMethod === 'delivery' ? {
-            roomTeacher: formState.roomTeacher
-          } : undefined
-        }
-      });
+      // Create purchase record directly (mock mode)
+      const purchaseData = {
+        studentName: `${formState.firstName} ${formState.lastName}`,
+        studentEmail: formState.email,
+        phone: formState.phone,
+        productName: cartItems.map(item => item.name).join(', '),
+        quantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+        amount: total,
+        paymentMethod: 'card',
+        status: 'paid',
+        transactionId: paymentResult.token,
+        paymentDetails: {
+          last4: paymentResult.card.last4,
+          brand: paymentResult.card.brand
+        },
+        deliveryMethod,
+        deliveryDetails: deliveryMethod === 'delivery' ? {
+          roomTeacher: formState.roomTeacher
+        } : undefined,
+        date: new Date()
+      };
+
+      // In a real implementation, this would call your API to save the purchase
+      console.log('Purchase data:', purchaseData);
 
       toast({
         title: "Payment Successful!",
@@ -106,8 +104,8 @@ export default function CheckoutPage() {
       setLocation("/shop");
     } catch (error) {
       toast({
-        title: "Payment Error",
-        description: "Payment was processed but order creation failed. Please contact support.",
+        title: "Payment Error", 
+        description: "There was an error processing your order. Please contact support.",
         variant: "destructive",
       });
     } finally {
@@ -154,7 +152,7 @@ export default function CheckoutPage() {
                   
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Personal Information */}
-                    <BlurContainer contentVisible={contentVisible} delay="300ms" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="firstName" className="text-white">First Name *</Label>
                         <ThemedInput
@@ -175,7 +173,7 @@ export default function CheckoutPage() {
                           className="mt-1"
                         />
                       </div>
-                    </BlurContainer>
+                    </div>
 
                     <div>
                       <Label htmlFor="email" className="text-white">Email *</Label>
@@ -202,7 +200,7 @@ export default function CheckoutPage() {
                     </div>
 
                     {/* Delivery Method */}
-                    <BlurContainer contentVisible={contentVisible} delay="400ms">
+                    <div>
                       <Label className="text-white text-lg font-medium mb-4 block">Delivery Method *</Label>
                       <RadioGroup 
                         value={deliveryMethod} 
@@ -246,29 +244,27 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                       </RadioGroup>
-                    </BlurContainer>
+                    </div>
 
                     {!showPayment ? (
-                      <BlurContainer contentVisible={contentVisible} delay="500ms" className="pt-4">
-                        <BlurActionButton
-                          contentVisible={contentVisible}
+                      <div className="pt-4">
+                        <button
                           onClick={handleSubmit}
-                          className="w-full py-3 px-6 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full py-3 px-6 font-semibold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                           disabled={isSubmitting || cartItems.length === 0}
                         >
                           {isSubmitting ? "Initializing Payment..." : "Proceed to Payment"}
-                        </BlurActionButton>
-                      </BlurContainer>
+                        </button>
+                      </div>
                     ) : (
-                      <BlurContainer contentVisible={contentVisible} delay="100ms" className="pt-4">
-                        <CloverPayment
+                      <div className="pt-4">
+                        <MockPayment
                           amount={total}
-                          clientToken={paymentIntent?.clientToken || ''}
                           onPaymentSuccess={handlePaymentSuccess}
                           onPaymentError={handlePaymentError}
                           disabled={isSubmitting}
                         />
-                      </BlurContainer>
+                      </div>
                     )}
                   </form>
                 </div>

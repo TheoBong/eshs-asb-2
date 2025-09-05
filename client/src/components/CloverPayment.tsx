@@ -33,35 +33,78 @@ export function CloverPayment({
   const cardNumberRef = useRef<any>(null);
 
   useEffect(() => {
+    // Check if Clover SDK is already loaded
+    if (window.clover) {
+      initializeClover();
+      return;
+    }
+
     // Load Clover SDK
     const script = document.createElement('script');
     script.src = 'https://checkout.sandbox.dev.clover.com/sdk.js';
     script.async = true;
-    script.onload = () => initializeClover();
+    script.onload = () => {
+      // Add a small delay to ensure SDK is fully loaded
+      setTimeout(() => {
+        if (window.clover) {
+          initializeClover();
+        } else {
+          console.error('Clover SDK loaded but window.clover not available');
+          setIsLoading(false);
+          onPaymentError('Failed to initialize payment system');
+        }
+      }, 100);
+    };
     script.onerror = () => {
+      console.error('Failed to load Clover SDK script');
       setIsLoading(false);
       onPaymentError('Failed to load payment processor');
     };
-    document.body.appendChild(script);
+    
+    // Check if script is already added
+    const existingScript = document.querySelector('script[src="https://checkout.sandbox.dev.clover.com/sdk.js"]');
+    if (!existingScript) {
+      document.head.appendChild(script);
+    } else {
+      // Script already exists, wait for it to load
+      if (window.clover) {
+        initializeClover();
+      } else {
+        // Wait for existing script to load
+        existingScript.addEventListener('load', () => {
+          setTimeout(() => initializeClover(), 100);
+        });
+      }
+    }
 
     return () => {
       // Cleanup
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
       if (cloverInstanceRef.current) {
-        cloverInstanceRef.current.destroy();
+        try {
+          cloverInstanceRef.current.destroy();
+        } catch (error) {
+          console.warn('Error destroying Clover instance:', error);
+        }
       }
     };
   }, []);
 
   const initializeClover = async () => {
     try {
+      console.log('Initializing Clover...');
+      console.log('window.clover:', window.clover);
+      console.log('clientToken:', clientToken);
+
       if (!window.clover) {
         throw new Error('Clover SDK not loaded');
       }
 
+      if (!clientToken) {
+        throw new Error('Client token not provided');
+      }
+
       // Initialize Clover with the client token
+      console.log('Creating Clover Ecommerce instance...');
       const clover = new window.clover.Ecommerce(clientToken);
       cloverInstanceRef.current = clover;
 
@@ -87,12 +130,19 @@ export function CloverPayment({
       };
 
       // Create card number element
+      console.log('Creating card element...');
       const cardNumber = elements.create('CARD_NUMBER', { styles });
+      
+      if (!cardElementRef.current) {
+        throw new Error('Card element ref not available');
+      }
+
       cardNumber.mount(cardElementRef.current);
       cardNumberRef.current = cardNumber;
 
       // Listen for changes to determine if card is complete
       cardNumber.addEventListener('change', (event: any) => {
+        console.log('Card change event:', event);
         setCardComplete(event.complete);
         if (event.error) {
           toast({
@@ -103,11 +153,12 @@ export function CloverPayment({
         }
       });
 
+      console.log('Clover initialized successfully');
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to initialize Clover:', error);
       setIsLoading(false);
-      onPaymentError('Failed to initialize payment system');
+      onPaymentError(`Failed to initialize payment system: ${error.message}`);
     }
   };
 
