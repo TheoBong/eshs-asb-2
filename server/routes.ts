@@ -687,6 +687,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Clover Hosted Checkout webhook endpoint
+  app.post("/api/webhooks/clover", async (req, res) => {
+    try {
+      console.log('Received Clover webhook:', req.body);
+      
+      const { eventType, objectId, data } = req.body;
+
+      // Handle successful checkout completion
+      if (eventType === 'CHECKOUT_COMPLETED' || eventType === 'checkout.completed') {
+        const checkoutId = objectId || data?.id;
+        
+        if (checkoutId) {
+          // Get the purchase record by checkout ID
+          const purchase = await storage.getPurchaseByCloverOrderId(checkoutId);
+          
+          if (purchase) {
+            // Update purchase status to paid
+            await storage.updatePurchase(purchase._id, {
+              status: 'paid',
+              transactionId: data?.payment_id || data?.transaction_id,
+              paymentDetails: {
+                last4: data?.card?.last_four,
+                brand: data?.card?.type || 'card'
+              }
+            });
+
+            // Parse cart items from notes
+            let items = [];
+            try {
+              items = JSON.parse(purchase.notes || '[]');
+            } catch (e) {
+              items = [{ name: purchase.productName, quantity: purchase.quantity, price: purchase.amount }];
+            }
+
+            // Send confirmation email
+            await emailService.sendPurchaseConfirmation(purchase.studentEmail, {
+              orderNumber: purchase._id,
+              items: items,
+              total: purchase.amount,
+              paymentMethod: 'card',
+              last4: data?.card?.last_four
+            });
+
+            console.log(`✅ Payment completed for checkout ${checkoutId}`);
+          } else {
+            console.warn(`⚠️ No purchase found for checkout ID: ${checkoutId}`);
+          }
+        }
+      }
+
+      res.status(200).json({ received: true });
+    } catch (error) {
+      console.error('❌ Webhook processing failed:', error);
+      res.status(500).json({ message: "Webhook processing failed" });
+    }
+  });
+
   // Purchase routes
   app.get("/api/purchases", async (req, res) => {
     try {

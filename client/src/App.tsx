@@ -14,6 +14,8 @@ import schoolVideo from "../../attached_assets/school2.mp4";
 import ProductPage from "@/pages/shop/product/index";
 import CartPage from "@/pages/shop/cart/index";
 import CheckoutPage from "@/pages/shop/checkout/index";
+import CheckoutSuccessPage from "@/pages/shop/checkout/success";
+import CheckoutCancelPage from "@/pages/shop/checkout/cancel";
 
 
 // Information related pages
@@ -71,11 +73,13 @@ function Router() {
         {/* Main pages */}
         <Route path="/" component={() => <PageWrapper skipFade={true}><Home /></PageWrapper>} />
         
-        {/* Shop pages */}
-        <Route path="/shop" component={() => <PageWrapper><Shop /></PageWrapper>} />
+        {/* Shop pages - more specific routes first */}
+        <Route path="/shop/checkout/success" component={() => <PageWrapper><CheckoutSuccessPage /></PageWrapper>} />
+        <Route path="/shop/checkout/cancel" component={() => <PageWrapper><CheckoutCancelPage /></PageWrapper>} />
+        <Route path="/shop/checkout" component={() => <PageWrapper><CheckoutPage /></PageWrapper>} />
         <Route path="/shop/product/:id" component={() => <PageWrapper><ProductPage /></PageWrapper>} />
         <Route path="/shop/cart" component={() => <PageWrapper><CartPage /></PageWrapper>} />
-        <Route path="/shop/checkout" component={() => <PageWrapper><CheckoutPage /></PageWrapper>} />
+        <Route path="/shop" component={() => <PageWrapper><Shop /></PageWrapper>} />
         
         {/* Information pages */}
         <Route path="/information" component={() => <PageWrapper><Information /></PageWrapper>} />

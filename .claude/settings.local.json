@@ -32,7 +32,11 @@
       "Read(/C:\\Users\\theob\\GitHub\\eshs-asb-2\\client\\src\\pages\\admin/**)",
       "Read(/C:\\Users\\theob\\GitHub\\eshs-asb-2\\client\\src\\pages\\admin/**)",
       "Read(/C:\\Users\\theob\\GitHub\\eshs-asb-2\\client\\src\\pages\\admin/**)",
-      "Read(/C:\\Users\\theob\\GitHub\\eshs-asb-2\\client\\src\\pages\\shop\\cart/**)"
+      "Read(/C:\\Users\\theob\\GitHub\\eshs-asb-2\\client\\src\\pages\\shop\\cart/**)",
+      "Read(/C:\\Users\\theob\\GitHub\\eshs-asb-2\\server/**)",
+      "Read(/C:\\Users\\theob\\GitHub\\eshs-asb-2\\server/**)",
+      "Read(/C:\\Users\\theob\\GitHub\\eshs-asb-2\\server/**)",
+      "Read(/C:\\Users\\theob\\GitHub\\eshs-asb-2/**)"
     ],
     "deny": [],
     "ask": []

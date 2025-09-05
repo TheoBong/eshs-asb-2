@@ -10,8 +10,8 @@ import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton, ThemedInpu
 import { useCart } from "@/contexts/CartContext";
 import { UniversalPageLayout } from "@/components/UniversalPageLayout";
 import { BlurContainer, BlurCard, BlurActionButton } from "@/components/UniversalBlurComponents";
-import { MockPayment } from "@/components/MockPayment";
-import { createPaymentIntent, processPayment } from "@/lib/api";
+import { CloverCheckout } from "@/components/CloverCheckout";
+import { createPaymentIntent, createPurchase } from "@/lib/api";
 
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
@@ -53,7 +53,39 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // For demo mode, skip payment intent creation and go straight to payment
+      // Create payment intent with Clover
+      const intent = await createPaymentIntent({
+        amount: total,
+        items: cartItems.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        customerEmail: formState.email,
+        customerName: `${formState.firstName} ${formState.lastName}`
+      });
+
+      // Create the purchase record first (with pending status)
+      const purchaseData = {
+        studentName: `${formState.firstName} ${formState.lastName}`,
+        studentEmail: formState.email,
+        phone: formState.phone,
+        productName: cartItems.map(item => item.name).join(', '),
+        quantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+        amount: total,
+        paymentMethod: 'card',
+        status: 'pending',
+        cloverOrderId: intent.orderId,
+        deliveryMethod,
+        deliveryDetails: deliveryMethod === 'delivery' ? {
+          roomTeacher: formState.roomTeacher
+        } : undefined,
+        notes: JSON.stringify(cartItems) // Store cart items for later use
+      };
+
+      const purchase = await createPurchase(purchaseData);
+      
+      setPaymentIntent(intent);
       setShowPayment(true);
       setIsSubmitting(false);
     } catch (error) {
@@ -66,56 +98,18 @@ export default function CheckoutPage() {
     }
   };
 
-  const handlePaymentSuccess = async (paymentResult: any) => {
-    setIsSubmitting(true);
+  const handleCloverRedirect = (checkoutUrl: string) => {
+    // Store current form data in session storage so we can clear cart on return
+    sessionStorage.setItem('checkout-form-data', JSON.stringify(formState));
+    sessionStorage.setItem('checkout-cart-items', JSON.stringify(cartItems));
     
-    try {
-      // Create purchase record directly (mock mode)
-      const purchaseData = {
-        studentName: `${formState.firstName} ${formState.lastName}`,
-        studentEmail: formState.email,
-        phone: formState.phone,
-        productName: cartItems.map(item => item.name).join(', '),
-        quantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
-        amount: total,
-        paymentMethod: 'card',
-        status: 'paid',
-        transactionId: paymentResult.token,
-        paymentDetails: {
-          last4: paymentResult.card.last4,
-          brand: paymentResult.card.brand
-        },
-        deliveryMethod,
-        deliveryDetails: deliveryMethod === 'delivery' ? {
-          roomTeacher: formState.roomTeacher
-        } : undefined,
-        date: new Date()
-      };
-
-      // In a real implementation, this would call your API to save the purchase
-      console.log('Purchase data:', purchaseData);
-
-      toast({
-        title: "Payment Successful!",
-        description: "Your order has been placed successfully. You will receive a confirmation email shortly.",
-      });
-
-      clearCart();
-      setLocation("/shop");
-    } catch (error) {
-      toast({
-        title: "Payment Error", 
-        description: "There was an error processing your order. Please contact support.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Redirect to Clover checkout
+    window.location.href = checkoutUrl;
   };
 
-  const handlePaymentError = (error: string) => {
+  const handleCloverError = (error: string) => {
     toast({
-      title: "Payment Failed",
+      title: "Checkout Error",
       description: error,
       variant: "destructive",
     });
@@ -258,10 +252,11 @@ export default function CheckoutPage() {
                       </div>
                     ) : (
                       <div className="pt-4">
-                        <MockPayment
+                        <CloverCheckout
                           amount={total}
-                          onPaymentSuccess={handlePaymentSuccess}
-                          onPaymentError={handlePaymentError}
+                          checkoutUrl={paymentIntent?.checkoutUrl}
+                          onRedirect={handleCloverRedirect}
+                          onError={handleCloverError}
                           disabled={isSubmitting}
                         />
                       </div>

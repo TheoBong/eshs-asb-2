@@ -80,6 +80,7 @@ export interface IStorage {
   // Purchase methods
   getPurchases(): Promise<PurchaseType[]>;
   getPurchase(id: string): Promise<PurchaseType | null>;
+  getPurchaseByCloverOrderId(cloverOrderId: string): Promise<PurchaseType | null>;
   createPurchase(purchase: Partial<PurchaseType>): Promise<PurchaseType>;
   updatePurchase(id: string, purchase: Partial<PurchaseType>): Promise<PurchaseType | null>;
   deletePurchase(id: string): Promise<boolean>;
@@ -274,6 +275,10 @@ export class MongoStorage implements IStorage {
 
   async getPurchase(id: string): Promise<PurchaseType | null> {
     return await Purchase.findById(id).populate('productId');
+  }
+
+  async getPurchaseByCloverOrderId(cloverOrderId: string): Promise<PurchaseType | null> {
+    return await Purchase.findOne({ cloverOrderId }).populate('productId');
   }
 
   async createPurchase(purchase: Partial<PurchaseType>): Promise<PurchaseType> {
