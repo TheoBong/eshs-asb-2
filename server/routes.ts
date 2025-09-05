@@ -702,8 +702,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Processing payment for order: ${orderId}`);
         
         if (orderId) {
-          // Get the purchase record by Clover order ID
-          const purchase = await storage.getPurchaseByCloverOrderId(orderId);
+          // Get the purchase record by Clover order ID or session ID
+          let purchase = await storage.getPurchaseByCloverOrderId(orderId);
+          
+          // If not found by order ID, try session ID (webhook might use session ID)
+          if (!purchase) {
+            purchase = await storage.getPurchaseByCloverSessionId(orderId);
+          }
           
           if (purchase) {
             // Update purchase status to paid

@@ -76,6 +76,7 @@ export default function CheckoutPage() {
         paymentMethod: 'card',
         status: 'pending',
         cloverOrderId: intent.orderId,
+        cloverSessionId: intent.sessionId, // Store the session ID for webhook lookup
         deliveryMethod,
         deliveryDetails: deliveryMethod === 'delivery' ? {
           roomTeacher: formState.roomTeacher

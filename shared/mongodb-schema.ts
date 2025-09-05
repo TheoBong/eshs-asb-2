@@ -175,6 +175,7 @@ const purchaseSchema = new mongoose.Schema({
   paymentMethod: { type: String, required: true },
   transactionId: { type: String },
   cloverOrderId: { type: String },
+  cloverSessionId: { type: String },
   paymentDetails: {
     last4: { type: String },
     brand: { type: String },

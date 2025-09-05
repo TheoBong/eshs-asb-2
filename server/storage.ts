@@ -281,6 +281,10 @@ export class MongoStorage implements IStorage {
     return await Purchase.findOne({ cloverOrderId }).populate('productId');
   }
 
+  async getPurchaseByCloverSessionId(cloverSessionId: string): Promise<PurchaseType | null> {
+    return await Purchase.findOne({ cloverSessionId }).populate('productId');
+  }
+
   async createPurchase(purchase: Partial<PurchaseType>): Promise<PurchaseType> {
     const newPurchase = new Purchase(purchase);
     return await newPurchase.save();

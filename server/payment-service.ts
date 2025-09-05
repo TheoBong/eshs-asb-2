@@ -63,38 +63,80 @@ class PaymentService {
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
     
     try {
-      // Simplified approach: Use Clover Hosted Checkout with direct URL parameters
-      // This is the most reliable method for Hosted Checkout
-      const fallbackOrderId = `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+      // Generate unique order ID for tracking
+      const orderId = `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
       
-      // Create a Clover Hosted Checkout URL with parameters
-      const paymentParams = new URLSearchParams({
-        'merchant-id': this.merchantId,
-        amount: Math.round(request.amount * 100).toString(),
-        currency: request.currency || 'USD',
-        'success-url': `${clientUrl}/shop/checkout/success?order_id=${fallbackOrderId}`,
-        'cancel-url': `${clientUrl}/shop/checkout/cancel?order_id=${fallbackOrderId}`,
-        'customer-email': request.metadata?.customerEmail || '',
-        'customer-name': request.metadata?.customerName || ''
+      // Parse customer name
+      const fullName = request.metadata?.customerName || '';
+      const nameParts = fullName.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      // Parse items from metadata
+      const items = JSON.parse(request.metadata?.items || '[]');
+      
+      // Create checkout session payload according to Clover API
+      const checkoutPayload = {
+        customer: {
+          email: request.metadata?.customerEmail || '',
+          firstName: firstName,
+          lastName: lastName
+        },
+        shoppingCart: {
+          lineItems: items.map((item: any) => ({
+            name: item.name,
+            price: Math.round(item.price * 100), // Convert to cents
+            unitQty: item.quantity || 1,
+            note: `Item: ${item.name}`
+          }))
+        }
+      };
+
+      console.log('Creating Clover checkout session with payload:', JSON.stringify(checkoutPayload, null, 2));
+
+      // Use the correct Clover Hosted Checkout API endpoint
+      const apiUrl = this.environment === 'production'
+        ? 'https://api.clover.com/invoicingcheckoutservice/v1/checkouts'
+        : 'https://apisandbox.dev.clover.com/invoicingcheckoutservice/v1/checkouts';
+
+      const response = await axios.post(apiUrl, checkoutPayload, {
+        headers: {
+          'accept': 'application/json',
+          'content-type': 'application/json',
+          'X-Clover-Merchant-Id': this.merchantId,
+          'authorization': `Bearer ${this.privateToken}`
+        }
       });
 
-      // Use the correct Hosted Checkout URL format
-      const checkoutUrl = this.environment === 'production'
-        ? `https://checkout.clover.com/online/${this.merchantId}?${paymentParams.toString()}`
-        : `https://checkout-sandbox.dev.clover.com/online/${this.merchantId}?${paymentParams.toString()}`;
+      console.log('Clover checkout session response:', response.data);
 
-      console.log('Generated Hosted Checkout URL:', checkoutUrl);
+      // Extract the checkout URL from response
+      const checkoutUrl = response.data.href;
+      const sessionId = response.data.id;
+
+      if (!checkoutUrl) {
+        throw new Error('No checkout URL returned from Clover API');
+      }
 
       return {
-        orderId: fallbackOrderId,
+        orderId: orderId,
+        sessionId: sessionId,
         amount: request.amount,
         currency: request.currency || 'USD',
         checkoutUrl: checkoutUrl,
         status: 'pending'
       };
     } catch (error: any) {
-      console.error('Failed to create payment intent:', error.message);
-      throw new Error('Payment initialization failed');
+      console.error('Failed to create Clover checkout session:', error.response?.data || error.message);
+      
+      // Log the full error for debugging
+      if (error.response) {
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', error.response.headers);
+        console.error('Response data:', error.response.data);
+      }
+      
+      throw new Error(`Failed to create checkout session: ${error.response?.data?.message || error.message}`);
     }
   }
 
