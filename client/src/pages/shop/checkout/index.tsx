@@ -10,6 +10,8 @@ import { ThemedPageWrapper, ThemedCard, PrimaryButton, OutlineButton, ThemedInpu
 import { useCart } from "@/contexts/CartContext";
 import { UniversalPageLayout } from "@/components/UniversalPageLayout";
 import { BlurContainer, BlurCard, BlurActionButton } from "@/components/UniversalBlurComponents";
+import { CloverPayment } from "@/components/CloverPayment";
+import { createPaymentIntent, processPayment } from "@/lib/api";
 
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
@@ -24,6 +26,8 @@ export default function CheckoutPage() {
     roomTeacher: "" // For fourth period delivery
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentIntent, setPaymentIntent] = useState<any>(null);
+  const [showPayment, setShowPayment] = useState(false);
 
   const handleBackToCart = () => {
     setLocation("/shop/cart");
@@ -35,28 +39,90 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate delivery details
+    if (deliveryMethod === "delivery" && !formState.roomTeacher) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide room number and teacher name for delivery.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // Simulate order processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // Create payment intent
+      const intent = await createPaymentIntent({
+        amount: total,
+        items: cartItems.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        customerEmail: formState.email,
+        customerName: `${formState.firstName} ${formState.lastName}`
+      });
+
+      setPaymentIntent(intent);
+      setShowPayment(true);
+    } catch (error) {
       toast({
-        title: "Order Received!",
-        description: "Your order has been submitted successfully. You will receive a confirmation email shortly.",
+        title: "Error",
+        description: "Failed to initialize payment. Please try again.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePaymentSuccess = async (paymentResult: any) => {
+    try {
+      // Process the payment on the server
+      const result = await processPayment({
+        paymentToken: paymentResult.token,
+        orderId: paymentIntent.orderId,
+        purchaseData: {
+          studentName: `${formState.firstName} ${formState.lastName}`,
+          studentEmail: formState.email,
+          phone: formState.phone,
+          items: cartItems,
+          amount: total,
+          paymentMethod: 'card',
+          deliveryMethod,
+          deliveryDetails: deliveryMethod === 'delivery' ? {
+            roomTeacher: formState.roomTeacher
+          } : undefined
+        }
+      });
+
+      toast({
+        title: "Payment Successful!",
+        description: "Your order has been placed successfully. You will receive a confirmation email shortly.",
       });
 
       clearCart();
       setLocation("/shop");
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to submit order. Please try again.",
+        title: "Payment Error",
+        description: "Payment was processed but order creation failed. Please contact support.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handlePaymentError = (error: string) => {
+    toast({
+      title: "Payment Failed",
+      description: error,
+      variant: "destructive",
+    });
+    setShowPayment(false);
+    setIsSubmitting(false);
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -182,16 +248,28 @@ export default function CheckoutPage() {
                       </RadioGroup>
                     </BlurContainer>
 
-                    <BlurContainer contentVisible={contentVisible} delay="500ms" className="pt-4">
-                      <BlurActionButton
-                        contentVisible={contentVisible}
-                        onClick={handleSubmit}
-                        className="w-full py-3 px-6 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={isSubmitting || cartItems.length === 0}
-                      >
-                        {isSubmitting ? "Submitting Order..." : "Submit Order"}
-                      </BlurActionButton>
-                    </BlurContainer>
+                    {!showPayment ? (
+                      <BlurContainer contentVisible={contentVisible} delay="500ms" className="pt-4">
+                        <BlurActionButton
+                          contentVisible={contentVisible}
+                          onClick={handleSubmit}
+                          className="w-full py-3 px-6 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={isSubmitting || cartItems.length === 0}
+                        >
+                          {isSubmitting ? "Initializing Payment..." : "Proceed to Payment"}
+                        </BlurActionButton>
+                      </BlurContainer>
+                    ) : (
+                      <BlurContainer contentVisible={contentVisible} delay="100ms" className="pt-4">
+                        <CloverPayment
+                          amount={total}
+                          clientToken={paymentIntent?.clientToken || ''}
+                          onPaymentSuccess={handlePaymentSuccess}
+                          onPaymentError={handlePaymentError}
+                          disabled={isSubmitting}
+                        />
+                      </BlurContainer>
+                    )}
                   </form>
                 </div>
               </div>

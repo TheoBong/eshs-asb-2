@@ -241,6 +241,34 @@ export async function deleteFormSubmission(id: string) {
   });
 }
 
+// Payment API functions
+export async function createPaymentIntent(data: {
+  amount: number;
+  items: any[];
+  customerEmail: string;
+  customerName: string;
+}) {
+  return fetchAPI<any>('/payment/create-intent', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function processPayment(data: {
+  paymentToken: string;
+  orderId: string;
+  purchaseData: any;
+}) {
+  return fetchAPI<any>('/payment/process', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function getPaymentStatus(orderId: string) {
+  return fetchAPI<any>(`/payment/status/${orderId}`);
+}
+
 // Purchase API functions
 export async function getPurchases() {
   return fetchAPI<Purchase[]>('/purchases');

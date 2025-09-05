@@ -57,15 +57,7 @@ export default function Elections() {
   }, []);
 
   const handleBackClick = () => {
-    // Check if user came from internal navigation
-    const referrer = sessionStorage.getItem('info-referrer');
-    if (referrer || document.referrer.includes('/information')) {
-      // Use browser history to go back
-      window.history.back();
-    } else {
-      // Fallback to information page
-      setLocation("/information");
-    }
+    setLocation("/information");
   };
 
   // Filter positions by grade level
@@ -79,7 +71,7 @@ export default function Elections() {
 
   if (loading) {
     return (
-      <UniversalPageLayout pageType="information" title="Student Government">
+      <UniversalPageLayout pageType="information" title="Student Government" onBackClick={handleBackClick}>
         {({ contentVisible }) => (
           <BlurContainer contentVisible={contentVisible} className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -92,7 +84,7 @@ export default function Elections() {
 
   if (error) {
     return (
-      <UniversalPageLayout pageType="information" title="Student Government">
+      <UniversalPageLayout pageType="information" title="Student Government" onBackClick={handleBackClick}>
         {({ contentVisible }) => (
           <BlurContainer contentVisible={contentVisible} className="text-center py-12">
             <div className="text-white text-xl mb-4">{error}</div>
@@ -113,6 +105,7 @@ export default function Elections() {
       pageType="information" 
       title="Student Government"
       backButtonText="Back"
+      onBackClick={handleBackClick}
     >
       {({ contentVisible }) => (
         <>

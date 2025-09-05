@@ -170,10 +170,23 @@ const purchaseSchema = new mongoose.Schema({
   size: { type: String },
   color: { type: String },
   amount: { type: Number, required: true },
-  status: { type: String, enum: ['pending', 'completed', 'cancelled'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'paid', 'completed', 'cancelled', 'refunded'], default: 'pending' },
   date: { type: Date, default: Date.now },
   paymentMethod: { type: String, required: true },
   transactionId: { type: String },
+  cloverOrderId: { type: String },
+  paymentDetails: {
+    last4: { type: String },
+    brand: { type: String },
+    receiptUrl: { type: String }
+  },
+  deliveryMethod: { type: String, enum: ['pickup', 'delivery'], default: 'pickup' },
+  deliveryDetails: {
+    roomTeacher: { type: String },
+    deliveredAt: { type: Date },
+    pickedUpAt: { type: Date }
+  },
+  phone: { type: String },
   notes: { type: String }
 });
 

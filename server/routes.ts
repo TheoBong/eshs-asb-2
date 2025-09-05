@@ -12,6 +12,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { emailService } from './email-service';
+import { paymentService } from './payment-service';
 
 // Ensure upload directory exists
 import { fileURLToPath } from 'url';
@@ -614,6 +615,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Error deleting form submission", error });
+    }
+  });
+
+  // Payment routes
+  app.post("/api/payment/create-intent", async (req, res) => {
+    try {
+      const { amount, items, customerEmail, customerName } = req.body;
+      
+      const paymentIntent = await paymentService.createPaymentIntent({
+        amount,
+        metadata: {
+          customerEmail,
+          customerName,
+          items: JSON.stringify(items)
+        }
+      });
+      
+      res.json(paymentIntent);
+    } catch (error) {
+      console.error('Failed to create payment intent:', error);
+      res.status(500).json({ message: "Failed to create payment intent", error });
+    }
+  });
+
+  app.post("/api/payment/process", async (req, res) => {
+    try {
+      const { paymentToken, orderId, purchaseData } = req.body;
+      
+      // Process the payment
+      const paymentResult = await paymentService.processPayment(paymentToken, orderId);
+      
+      if (paymentResult.success) {
+        // Create purchase record
+        const purchase = await storage.createPurchase({
+          ...purchaseData,
+          status: 'paid',
+          transactionId: paymentResult.transactionId,
+          cloverOrderId: orderId,
+          paymentDetails: {
+            last4: paymentResult.last4,
+            brand: paymentResult.paymentMethod
+          }
+        });
+        
+        // Send confirmation email
+        await emailService.sendPurchaseConfirmation(purchaseData.studentEmail, {
+          orderNumber: purchase._id,
+          items: purchaseData.items,
+          total: purchaseData.amount,
+          paymentMethod: paymentResult.paymentMethod,
+          last4: paymentResult.last4
+        });
+        
+        res.json({ success: true, purchase, payment: paymentResult });
+      } else {
+        res.status(400).json({ success: false, message: "Payment failed" });
+      }
+    } catch (error) {
+      console.error('Payment processing error:', error);
+      res.status(500).json({ message: "Payment processing failed", error });
+    }
+  });
+
+  app.get("/api/payment/status/:orderId", async (req, res) => {
+    try {
+      const status = await paymentService.getPaymentStatus(req.params.orderId);
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get payment status", error });
     }
   });
 

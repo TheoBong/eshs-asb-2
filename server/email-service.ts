@@ -54,6 +54,20 @@ interface RejectionEmailData {
   retryUrl: string;
 }
 
+interface PurchaseConfirmationData {
+  orderNumber: string;
+  items: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+    size?: string;
+    color?: string;
+  }>;
+  total: number;
+  paymentMethod: string;
+  last4?: string;
+}
+
 class EmailService {
   private fromEmail: string;
   private adminEmail: string;
@@ -361,14 +375,14 @@ class EmailService {
         </div>
       </div>
       
-      <p>You can now proceed to purchase your tickets using the link below:</p>
+      <p>You can now proceed to complete your payment using the secure link below:</p>
       
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${data.ticketPurchaseUrl}" class="button">🎟️ Purchase Tickets</a>
+        <a href="${data.ticketPurchaseUrl}" class="button">💳 Complete Payment</a>
       </div>
       
       <p style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
-        <strong>Important:</strong> Please complete your purchase within 48 hours to secure your spot. If you have any questions, contact the ASB office.
+        <strong>Important:</strong> Please complete your payment within 48 hours to secure your spot. Your payment will be processed securely through Clover. If you have any questions, contact the ASB office.
       </p>
     </div>
     <div class="footer">
@@ -463,6 +477,105 @@ class EmailService {
       html
     });
     console.log(`EmailService: Rejection email sent successfully to ${to}`);
+  }
+
+  async sendPurchaseConfirmation(to: string, data: PurchaseConfirmationData): Promise<void> {
+    console.log(`EmailService: Sending purchase confirmation to ${to} for order ${data.orderNumber}`);
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #f8f9fa; padding: 30px; margin-top: 0; border-radius: 0 0 8px 8px; }
+    .info-box { background: #fff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745; }
+    .info-row { margin: 10px 0; display: flex; justify-content: space-between; }
+    .label { font-weight: bold; color: #003366; }
+    .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; }
+    .item-list { background: #fff; padding: 15px; border-radius: 5px; margin: 15px 0; }
+    .item { display: flex; justify-content: space-between; margin: 8px 0; padding: 8px 0; border-bottom: 1px solid #eee; }
+    .payment-info { background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 15px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>✅ Payment Successful!</h2>
+      <p style="margin: 0; font-size: 14px;">Thank you for your purchase</p>
+    </div>
+    <div class="content">
+      <p>Your payment has been successfully processed!</p>
+      
+      <div class="info-box">
+        <h3 style="margin-top: 0; color: #28a745;">📋 Order Details</h3>
+        <div class="info-row">
+          <span class="label">Order Number:</span>
+          <span>#${data.orderNumber}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Order Date:</span>
+          <span>${new Date().toLocaleDateString()}</span>
+        </div>
+      </div>
+
+      <div class="item-list">
+        <h3 style="margin-top: 0; color: #003366;">🛍️ Items Ordered</h3>
+        ${data.items.map(item => `
+          <div class="item">
+            <div>
+              <strong>${item.name}</strong>
+              ${item.size ? `<br><small>Size: ${item.size}</small>` : ''}
+              ${item.color ? `<br><small>Color: ${item.color}</small>` : ''}
+              <br><small>Qty: ${item.quantity}</small>
+            </div>
+            <div>$${(item.price * item.quantity).toFixed(2)}</div>
+          </div>
+        `).join('')}
+        
+        <div class="item" style="border-top: 2px solid #28a745; font-weight: bold; font-size: 1.1em;">
+          <div>Total</div>
+          <div>$${data.total.toFixed(2)}</div>
+        </div>
+      </div>
+
+      <div class="payment-info">
+        <h3 style="margin-top: 0; color: #003366;">💳 Payment Information</h3>
+        <div class="info-row">
+          <span class="label">Payment Method:</span>
+          <span>${data.paymentMethod.toUpperCase()}${data.last4 ? ` ending in ${data.last4}` : ''}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Transaction Status:</span>
+          <span style="color: #28a745; font-weight: bold;">✅ COMPLETED</span>
+        </div>
+      </div>
+      
+      <p style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
+        <strong>Next Steps:</strong> Your order will be processed and you will be contacted when it's ready for pickup or delivery according to the method you selected during checkout.
+      </p>
+      
+      <p style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+        <strong>Questions?</strong> If you have any questions about your order, please contact the ASB office during school hours or reply to this email.
+      </p>
+    </div>
+    <div class="footer">
+      <p>Thank you for supporting ESHS activities!</p>
+      <p><strong>El Segundo High School ASB Team</strong></p>
+      <p style="font-size: 12px;">This is an automated confirmation. Please keep this email for your records.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    await this.sendEmail({
+      to,
+      subject: `Payment Confirmation - Order #${data.orderNumber}`,
+      html
+    });
+    console.log(`EmailService: Purchase confirmation email sent successfully to ${to}`);
   }
 
   // Test method for checking email functionality

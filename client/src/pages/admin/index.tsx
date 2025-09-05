@@ -1926,9 +1926,10 @@ ESHS ASB Team
             </div>
           </div>          {/* Main Tabs */}
           <Tabs defaultValue="products" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-white/[0.02] backdrop-blur-3xl border border-white/10">
+            <TabsList className="grid w-full grid-cols-6 bg-white/[0.02] backdrop-blur-3xl border border-white/10">
               <TabsTrigger value="products" className="text-white">Merch</TabsTrigger>
               <TabsTrigger value="events" className="text-white">Activities</TabsTrigger>
+              <TabsTrigger value="orders" className="text-white">Orders</TabsTrigger>
               <TabsTrigger value="submissions" className="text-white">Form Submissions</TabsTrigger>
               <TabsTrigger value="information" className="text-white">Information</TabsTrigger>
               <TabsTrigger value="birds-eye-view" className="text-white">Birds Eye View</TabsTrigger>
@@ -2070,7 +2071,174 @@ ESHS ASB Team
                   </div>
                 ))}
               </div>
-            </TabsContent>            {/* Form Submissions Tab */}
+            </TabsContent>
+
+            {/* Orders Tab */}
+            <TabsContent value="orders" className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-white">Orders & Analytics</h2>
+                <div className="flex gap-3">
+                  <Badge variant="outline" className="bg-blue-600/20 border-blue-600/30 text-blue-200 text-xs px-2 py-1">
+                    Total Orders: {purchases.length}
+                  </Badge>
+                  <Badge variant="outline" className="bg-green-600/20 border-green-600/30 text-green-200 text-xs px-2 py-1">
+                    Paid: {purchases.filter(p => p.status === 'paid').length}
+                  </Badge>
+                  <Badge variant="outline" className="bg-yellow-600/20 border-yellow-600/30 text-yellow-200 text-xs px-2 py-1">
+                    Pending: {purchases.filter(p => p.status === 'pending').length}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Analytics Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-300">Total Revenue</h3>
+                      <div className="text-2xl font-bold text-white">
+                        ${purchases.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0).toFixed(2)}
+                      </div>
+                    </div>
+                    <DollarSign className="h-8 w-8 text-green-500" />
+                  </div>
+                </div>
+
+                <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-300">Pending Revenue</h3>
+                      <div className="text-2xl font-bold text-white">
+                        ${purchases.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0).toFixed(2)}
+                      </div>
+                    </div>
+                    <TrendingUp className="h-8 w-8 text-yellow-500" />
+                  </div>
+                </div>
+
+                <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-300">Items Sold</h3>
+                      <div className="text-2xl font-bold text-white">
+                        {purchases.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.quantity, 0)}
+                      </div>
+                    </div>
+                    <Package className="h-8 w-8 text-blue-500" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Orders Table */}
+              <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl">
+                <div className="p-6 border-b border-white/10">
+                  <h3 className="text-lg font-semibold text-white">Recent Orders</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Order ID</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Customer</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Items</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Amount</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Payment</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Status</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Date</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {purchases.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((purchase) => (
+                        <tr key={purchase._id} className="border-b border-white/5 hover:bg-white/[0.01]">
+                          <td className="py-4 px-6 text-sm text-white font-mono">
+                            #{purchase._id.slice(-8)}
+                          </td>
+                          <td className="py-4 px-6">
+                            <div>
+                              <div className="text-sm font-medium text-white">{purchase.studentName}</div>
+                              <div className="text-xs text-gray-400">{purchase.studentEmail}</div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-6">
+                            <div className="text-sm text-white">{purchase.productName}</div>
+                            <div className="text-xs text-gray-400">
+                              Qty: {purchase.quantity}
+                              {purchase.size && ` • Size: ${purchase.size}`}
+                              {purchase.color && ` • Color: ${purchase.color}`}
+                            </div>
+                          </td>
+                          <td className="py-4 px-6 text-sm font-semibold text-white">
+                            ${purchase.amount.toFixed(2)}
+                          </td>
+                          <td className="py-4 px-6">
+                            <div className="text-sm text-white capitalize">{purchase.paymentMethod}</div>
+                            {purchase.paymentDetails?.last4 && (
+                              <div className="text-xs text-gray-400">•••• {purchase.paymentDetails.last4}</div>
+                            )}
+                          </td>
+                          <td className="py-4 px-6">
+                            <Badge 
+                              variant="outline" 
+                              className={`
+                                ${purchase.status === 'paid' ? 'bg-green-600/20 border-green-600/30 text-green-200' : ''}
+                                ${purchase.status === 'pending' ? 'bg-yellow-600/20 border-yellow-600/30 text-yellow-200' : ''}
+                                ${purchase.status === 'completed' ? 'bg-blue-600/20 border-blue-600/30 text-blue-200' : ''}
+                                ${purchase.status === 'cancelled' ? 'bg-red-600/20 border-red-600/30 text-red-200' : ''}
+                                ${purchase.status === 'refunded' ? 'bg-gray-600/20 border-gray-600/30 text-gray-200' : ''}
+                                text-xs px-2 py-1 capitalize
+                              `}
+                            >
+                              {purchase.status}
+                            </Badge>
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-300">
+                            {new Date(purchase.date).toLocaleDateString()}
+                          </td>
+                          <td className="py-4 px-6">
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => {
+                                  // TODO: Implement order details modal
+                                }}
+                                className="bg-white/5 hover:bg-white/10 text-white border-white/20"
+                              >
+                                <Eye className="w-3 h-3" />
+                              </Button>
+                              {purchase.status === 'paid' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => {
+                                    // TODO: Mark as completed/delivered
+                                  }}
+                                  className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 border-blue-500/30"
+                                >
+                                  <Check className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {purchases.length === 0 && (
+                    <div className="text-center py-12">
+                      <Package className="mx-auto h-12 w-12 text-gray-400" />
+                      <h3 className="mt-2 text-sm font-medium text-gray-300">No orders yet</h3>
+                      <p className="mt-1 text-sm text-gray-400">
+                        Orders will appear here once customers make purchases.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Form Submissions Tab */}
             <TabsContent value="submissions" className="space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-white">Form Submissions</h2>                <div className="flex gap-3">
