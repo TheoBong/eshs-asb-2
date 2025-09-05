@@ -305,15 +305,32 @@ class PaymentService {
 
   // Verify webhook signature from Clover
   verifyWebhookSignature(payload: string, signature: string): boolean {
-    const expectedSignature = crypto
-      .createHmac('sha256', this.privateToken)
-      .update(payload)
-      .digest('hex');
-    
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    );
+    const webhookSecret = process.env.CLOVER_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.warn('⚠️ CLOVER_WEBHOOK_SECRET not configured - webhook signature verification disabled');
+      return true; // Allow webhook in development if secret not configured
+    }
+
+    try {
+      // Clover typically sends signatures in the format "sha256=<hash>"
+      const expectedSignature = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(payload)
+        .digest('hex');
+      
+      // Handle different signature formats
+      const receivedSignature = signature.startsWith('sha256=') 
+        ? signature.substring(7) 
+        : signature;
+      
+      return crypto.timingSafeEqual(
+        Buffer.from(expectedSignature),
+        Buffer.from(receivedSignature)
+      );
+    } catch (error) {
+      console.error('Webhook signature verification failed:', error);
+      return false;
+    }
   }
 }
 

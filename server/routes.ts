@@ -688,11 +688,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Clover Hosted Checkout webhook endpoint
-  app.post("/api/webhooks/clover", async (req, res) => {
+  app.post("/api/webhooks/clover", express.raw({ type: 'application/json' }), async (req, res) => {
     try {
-      console.log('Received Clover webhook:', JSON.stringify(req.body, null, 2));
+      // Get the signature from headers
+      const signature = req.get('X-Clover-Signature') || req.get('Clover-Signature') || '';
+      const payload = req.body.toString();
       
-      const { type, eventType, objectId, data } = req.body;
+      // Verify webhook signature for security
+      if (!paymentService.verifyWebhookSignature(payload, signature)) {
+        console.error('❌ Invalid webhook signature');
+        return res.status(401).json({ error: 'Invalid signature' });
+      }
+      
+      const webhookData = JSON.parse(payload);
+      console.log('Received Clover webhook:', JSON.stringify(webhookData, null, 2));
+      
+      const { type, eventType, objectId, data } = webhookData;
 
       // Handle different webhook event types
       const event = type || eventType;
