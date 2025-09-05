@@ -247,15 +247,15 @@ export default function CartPage() {
                     
                     <PrimaryButton
                       onClick={handleCheckout}
-                      className="w-full mt-4 py-3 px-6 font-semibold bg-gray-600 hover:bg-gray-700 cursor-not-allowed"
-                      disabled={true}
+                      className="w-full mt-4 py-3 px-6 font-semibold"
+                      disabled={cartItems.length === 0}
                     >
-                      Coming Soon
+                      {cartItems.length === 0 ? 'Add Items to Cart' : 'Proceed to Checkout'}
                     </PrimaryButton>
                     
                     <div className="mt-4 text-center">
                       <p className="text-sm text-gray-300">
-                        By proceeding to checkout, you acknowledge that your order may be subject to additional processing time.
+                        Secure payment processing powered by Clover. Your order will be processed after payment confirmation.
                       </p>
                     </div>
                   </div>
