@@ -16,7 +16,8 @@ import {
   FileText,
   Filter,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,6 +59,7 @@ export default function OrdersManagement({
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'completed'>('all');
+  const [isSyncing, setIsSyncing] = useState(false);
   
   // Modal states
   const [selectedOrder, setSelectedOrder] = useState<Purchase | null>(null);
@@ -182,6 +184,37 @@ export default function OrdersManagement({
     }
   };
 
+  const handleSyncStatus = async () => {
+    setIsSyncing(true);
+    try {
+      const response = await fetch('/api/purchases/sync-status', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const result = await response.json();
+      console.log('Sync result:', result);
+      
+      // Refresh data to show updated statuses
+      await onRefreshData();
+      
+      // Show success message
+      if (result.updated > 0) {
+        alert(`Successfully synced ${result.updated} orders with Clover`);
+      } else {
+        alert('All orders are already up to date');
+      }
+    } catch (error) {
+      console.error('Failed to sync order statuses:', error);
+      alert('Failed to sync with Clover. Please try again.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const openOrderDetails = (order: Purchase) => {
     setSelectedOrder(order);
     setAdminNotes(order.adminNotes || '');
@@ -197,7 +230,7 @@ export default function OrdersManagement({
   return (
     <div className="space-y-6">
       {/* Analytics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -207,18 +240,6 @@ export default function OrdersManagement({
               </div>
             </div>
             <DollarSign className="h-8 w-8 text-green-500" />
-          </div>
-        </div>
-
-        <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-2xl rounded-xl p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-medium text-gray-300">Pending Revenue</h3>
-              <div className="text-2xl font-bold text-white">
-                ${analytics.pendingRevenue.toFixed(2)}
-              </div>
-            </div>
-            <TrendingUp className="h-8 w-8 text-yellow-500" />
           </div>
         </div>
 
@@ -254,7 +275,27 @@ export default function OrdersManagement({
         <div className="p-6 border-b border-white/10">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-white mb-4">Orders</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Orders</h3>
+                <Button
+                  onClick={handleSyncStatus}
+                  disabled={isSyncing}
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {isSyncing ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Syncing...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Sync with Clover
+                    </>
+                  )}
+                </Button>
+              </div>
               
               {/* Filters */}
               <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
@@ -318,6 +359,7 @@ export default function OrdersManagement({
                 <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Order ID</th>
                 <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Customer</th>
                 <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Items</th>
+                <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Payment</th>
                 <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Amount</th>
                 <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Status</th>
                 <th className="text-left py-3 px-6 text-sm font-medium text-gray-300">Date</th>
@@ -343,6 +385,17 @@ export default function OrdersManagement({
                       Qty: {order.quantity}
                       {order.size && ` • Size: ${order.size}`}
                     </div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="text-sm text-white capitalize">{order.paymentMethod || 'N/A'}</div>
+                    {order.paymentDetails?.last4 && (
+                      <div className="text-xs text-gray-400">•••• {order.paymentDetails.last4}</div>
+                    )}
+                    {order.transactionId && (
+                      <div className="text-xs text-gray-400" title={order.transactionId}>
+                        TXN: {order.transactionId.slice(-8)}
+                      </div>
+                    )}
                   </td>
                   <td className="py-4 px-6 text-sm font-semibold text-white">
                     ${order.amount.toFixed(2)}

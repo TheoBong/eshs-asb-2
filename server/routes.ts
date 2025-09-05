@@ -729,6 +729,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
               items = [{ name: purchase.productName, quantity: purchase.quantity, price: purchase.amount }];
             }
 
+            // Update product stock for each item
+            for (const item of items) {
+              if (item.productId) {
+                const product = await storage.getProduct(item.productId);
+                if (product) {
+                  if (product.category === 'Apparel' && product.sizeStock && item.size) {
+                    // Update size-specific stock
+                    const updatedSizeStock = product.sizeStock.map(ss => 
+                      ss.size === item.size 
+                        ? { ...ss, stock: Math.max(0, ss.stock - item.quantity) }
+                        : ss
+                    );
+                    await storage.updateProduct(item.productId, { sizeStock: updatedSizeStock });
+                  } else {
+                    // Update general stock
+                    await storage.updateProduct(item.productId, { 
+                      stock: Math.max(0, (product.stock || 0) - item.quantity) 
+                    });
+                  }
+                  console.log(`📦 Updated stock for product ${product.name}`);
+                }
+              }
+            }
+
             // Send confirmation email
             await emailService.sendPurchaseConfirmation(purchase.studentEmail, {
               orderNumber: purchase._id,
@@ -759,6 +783,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(purchases);
     } catch (error) {
       res.status(500).json({ message: "Error fetching purchases", error });
+    }
+  });
+
+  // Sync order statuses with Clover
+  app.post("/api/purchases/sync-status", requireAdminAuth, async (req, res) => {
+    try {
+      const purchases = await storage.getPurchases();
+      const pendingPurchases = purchases.filter(p => p.status === 'pending' && p.cloverOrderId);
+      
+      if (pendingPurchases.length === 0) {
+        return res.json({ message: "No pending orders to sync", updated: 0 });
+      }
+
+      let updatedCount = 0;
+      for (const purchase of pendingPurchases) {
+        if (purchase.cloverOrderId) {
+          const status = await paymentService.getPaymentStatus(purchase.cloverOrderId);
+          if (status.paymentStatus === 'paid') {
+            await storage.updatePurchase(purchase._id, { 
+              status: 'paid',
+              transactionId: status.payments?.[0]?.id
+            });
+            updatedCount++;
+            console.log(`✅ Updated order ${purchase._id} to paid status`);
+          }
+        }
+      }
+
+      res.json({ message: `Synced ${updatedCount} orders`, updated: updatedCount });
+    } catch (error) {
+      console.error('Failed to sync order statuses:', error);
+      res.status(500).json({ message: "Error syncing order statuses", error });
     }
   });
 

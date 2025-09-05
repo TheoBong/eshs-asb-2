@@ -34,12 +34,20 @@ interface PaymentIntentRequest {
 class PaymentService {
   private privateToken: string;
   private merchantId: string;
+  private v3ApiToken: string;
+  private v3MerchantId: string;
   private environment: 'sandbox' | 'production';
   private baseUrl: string;
 
   constructor() {
+    // Hosted Checkout credentials
     this.privateToken = process.env.CLOVER_PRIVATE_TOKEN || '';
     this.merchantId = process.env.CLOVER_MERCHANT_ID || '';
+    
+    // v3 API credentials (for order status checking)
+    this.v3ApiToken = process.env.CLOVER_V3_API_TOKEN || '';
+    this.v3MerchantId = process.env.CLOVER_V3_MERCHANT_ID || '';
+    
     this.environment = (process.env.CLOVER_ENVIRONMENT as 'sandbox' | 'production') || 'sandbox';
     
     this.baseUrl = this.environment === 'production' 
@@ -49,11 +57,23 @@ class PaymentService {
     if (!this.privateToken || !this.merchantId) {
       console.warn('⚠️ Clover Hosted Checkout credentials not configured. Payment processing will not work.');
     }
+    
+    if (!this.v3ApiToken || !this.v3MerchantId) {
+      console.warn('⚠️ Clover v3 API credentials not configured. Order status checking will not work.');
+    }
   }
 
   private getHeaders() {
     return {
       'Authorization': `Bearer ${this.privateToken}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
+  }
+
+  private getV3Headers() {
+    return {
+      'Authorization': `Bearer ${this.v3ApiToken}`,
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     };
@@ -168,23 +188,41 @@ class PaymentService {
 
   async getPaymentStatus(orderId: string): Promise<any> {
     try {
-      // For hosted checkout, we'll rely on webhooks for status updates
-      // This method can be used to query Clover's API if needed
+      if (!this.v3ApiToken || !this.v3MerchantId) {
+        console.warn('v3 API credentials not configured');
+        return {
+          orderId: orderId,
+          status: 'pending',
+          amount: 0,
+          paymentStatus: 'pending'
+        };
+      }
+
+      // Check using Clover's v3 Orders API with v3 credentials
       const response = await axios.get(
-        `${this.baseUrl}/v3/merchants/${this.merchantId}/orders`,
+        `${this.baseUrl}/v3/merchants/${this.v3MerchantId}/orders/${orderId}`,
         { 
-          headers: this.getHeaders(),
-          params: { filter: `note='${orderId}'` }
+          headers: this.getV3Headers()
         }
       );
 
-      if (response.data.elements && response.data.elements.length > 0) {
-        const order = response.data.elements[0];
+      if (response.data) {
+        const order = response.data;
+        // Check if order has payments
+        const paymentsResponse = await axios.get(
+          `${this.baseUrl}/v3/merchants/${this.v3MerchantId}/orders/${orderId}/payments`,
+          { headers: this.getV3Headers() }
+        );
+        
+        const payments = paymentsResponse.data?.elements || [];
+        const isPaid = payments.some((p: any) => p.result === 'SUCCESS' || p.state === 'CLOSED');
+        
         return {
           orderId: orderId,
-          status: order.state,
-          amount: order.total / 100,
-          paymentStatus: order.paymentState || 'pending'
+          status: isPaid ? 'paid' : 'pending',
+          amount: order.total ? order.total / 100 : 0,
+          paymentStatus: isPaid ? 'paid' : 'pending',
+          payments: payments
         };
       }
 
@@ -195,7 +233,8 @@ class PaymentService {
         paymentStatus: 'pending'
       };
     } catch (error: any) {
-      console.error('Failed to get payment status:', error.response?.data || error.message);
+      // If order not found in Clover, return pending
+      console.log(`Order ${orderId} status check:`, error.response?.status === 404 ? 'Not found in Clover' : 'API Error');
       return {
         orderId: orderId,
         status: 'pending',
@@ -203,6 +242,24 @@ class PaymentService {
         paymentStatus: 'pending'
       };
     }
+  }
+
+  // New method to sync all pending orders with Clover
+  async syncOrderStatuses(orderIds: string[]): Promise<Map<string, string>> {
+    const statusMap = new Map<string, string>();
+    
+    for (const orderId of orderIds) {
+      if (!orderId) continue;
+      
+      try {
+        const status = await this.getPaymentStatus(orderId);
+        statusMap.set(orderId, status.paymentStatus);
+      } catch (error) {
+        statusMap.set(orderId, 'pending');
+      }
+    }
+    
+    return statusMap;
   }
 
   async refundPayment(transactionId: string, amount?: number): Promise<any> {

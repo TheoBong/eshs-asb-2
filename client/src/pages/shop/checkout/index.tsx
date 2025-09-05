@@ -81,7 +81,10 @@ export default function CheckoutPage() {
         deliveryDetails: deliveryMethod === 'delivery' ? {
           roomTeacher: formState.roomTeacher
         } : undefined,
-        notes: JSON.stringify(cartItems) // Store cart items for later use
+        notes: JSON.stringify(cartItems.map(item => ({
+          ...item,
+          productId: item.id // Ensure productId is included for stock updates
+        }))) // Store cart items for later use
       };
 
       const purchase = await createPurchase(purchaseData);
