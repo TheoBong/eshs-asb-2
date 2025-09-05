@@ -786,32 +786,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Sync order statuses with Clover
+  // Sync order statuses with Clover (limited functionality with Hosted Checkout)
   app.post("/api/purchases/sync-status", requireAdminAuth, async (req, res) => {
     try {
       const purchases = await storage.getPurchases();
-      const pendingPurchases = purchases.filter(p => p.status === 'pending' && p.cloverOrderId);
+      const pendingPurchases = purchases.filter(p => p.status === 'pending');
       
       if (pendingPurchases.length === 0) {
         return res.json({ message: "No pending orders to sync", updated: 0 });
       }
 
-      let updatedCount = 0;
+      // With Hosted Checkout, we can't directly query individual orders
+      // Instead, we'll check if orders are older than 24 hours and likely abandoned
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      let abandonedCount = 0;
+      let recentCount = 0;
+
       for (const purchase of pendingPurchases) {
-        if (purchase.cloverOrderId) {
-          const status = await paymentService.getPaymentStatus(purchase.cloverOrderId);
-          if (status.paymentStatus === 'paid') {
-            await storage.updatePurchase(purchase._id, { 
-              status: 'paid',
-              transactionId: status.payments?.[0]?.id
-            });
-            updatedCount++;
-            console.log(`✅ Updated order ${purchase._id} to paid status`);
-          }
+        const orderDate = new Date(purchase.date);
+        if (orderDate < oneDayAgo) {
+          // Mark old pending orders as potentially abandoned
+          // Don't change status automatically, just log for admin review
+          console.log(`⚠️ Order ${purchase._id} has been pending for over 24 hours - may be abandoned`);
+          abandonedCount++;
+        } else {
+          recentCount++;
         }
       }
 
-      res.json({ message: `Synced ${updatedCount} orders`, updated: updatedCount });
+      // For Hosted Checkout, the primary way to get payment status is through webhooks
+      // This endpoint mainly serves to identify potentially abandoned orders
+      const message = recentCount > 0 
+        ? `Found ${recentCount} recent pending orders (likely awaiting payment) and ${abandonedCount} orders over 24 hours old (possibly abandoned). Hosted Checkout relies on webhooks for automatic status updates.`
+        : `Found ${abandonedCount} orders over 24 hours old that may be abandoned.`;
+
+      res.json({ 
+        message,
+        pending_recent: recentCount,
+        pending_old: abandonedCount,
+        updated: 0,
+        note: "Hosted Checkout orders are updated via webhooks. Manual status checking is limited."
+      });
     } catch (error) {
       console.error('Failed to sync order statuses:', error);
       res.status(500).json({ message: "Error syncing order statuses", error });

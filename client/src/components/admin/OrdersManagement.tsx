@@ -198,18 +198,17 @@ export default function OrdersManagement({
       const result = await response.json();
       console.log('Sync result:', result);
       
-      // Refresh data to show updated statuses
+      // Refresh data
       await onRefreshData();
       
-      // Show success message
-      if (result.updated > 0) {
-        alert(`Successfully synced ${result.updated} orders with Clover`);
-      } else {
-        alert('All orders are already up to date');
-      }
+      // Show informative message about Hosted Checkout limitations
+      const message = result.message || 'Sync completed';
+      const details = result.note ? `\n\nNote: ${result.note}` : '';
+      
+      alert(message + details);
     } catch (error) {
       console.error('Failed to sync order statuses:', error);
-      alert('Failed to sync with Clover. Please try again.');
+      alert('Failed to check order statuses. Please try again.');
     } finally {
       setIsSyncing(false);
     }
@@ -286,12 +285,12 @@ export default function OrdersManagement({
                   {isSyncing ? (
                     <>
                       <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      Syncing...
+                      Checking...
                     </>
                   ) : (
                     <>
                       <RefreshCw className="w-4 h-4 mr-2" />
-                      Sync with Clover
+                      Check Order Status
                     </>
                   )}
                 </Button>
