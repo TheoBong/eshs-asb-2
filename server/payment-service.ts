@@ -63,39 +63,60 @@ class PaymentService {
     try {
       const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
       
-      // For Hosted Checkout, we'll create a simple checkout URL with parameters
-      // This is the most straightforward approach for Hosted Checkout integration
-      
-      const baseCheckoutUrl = this.environment === 'production' 
-        ? 'https://checkout.clover.com'
-        : 'https://checkout-sandbox.clover.com';
-      
-      // Create a unique order ID for tracking
-      const orderId = `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-      
-      const checkoutParams = new URLSearchParams({
-        merchant_id: this.merchantId,
-        amount: Math.round(request.amount * 100).toString(), // Convert to cents
+      // Create an order using Clover's v3 API first
+      const orderData = {
         currency: request.currency || 'USD',
-        order_id: orderId,
-        redirect_url: `${clientUrl}/shop/checkout/success`,
-        cancel_url: `${clientUrl}/shop/checkout/cancel`,
-        customer_email: request.metadata?.customerEmail || '',
-        customer_name: request.metadata?.customerName || ''
-      });
+        total: Math.round(request.amount * 100), // Convert to cents
+        state: 'open',
+        note: `Order for ${request.metadata?.customerName || 'Customer'}`,
+        employee: {
+          id: 'SYSTEM'
+        }
+      };
 
-      const checkoutUrl = `${baseCheckoutUrl}/pay?${checkoutParams.toString()}`;
+      console.log('Creating order with data:', orderData);
+
+      const orderResponse = await axios.post(
+        `${this.baseUrl}/v3/merchants/${this.merchantId}/orders`,
+        orderData,
+        { headers: this.getHeaders() }
+      );
+
+      const orderId = orderResponse.data.id;
+      console.log('Created order with ID:', orderId);
+
+      // Add line items to the order
+      if (request.metadata?.items) {
+        const items = JSON.parse(request.metadata.items);
+        for (const item of items) {
+          await axios.post(
+            `${this.baseUrl}/v3/merchants/${this.merchantId}/orders/${orderId}/line_items`,
+            {
+              name: item.name,
+              price: Math.round(item.price * 100),
+              quantity: item.quantity || 1
+            },
+            { headers: this.getHeaders() }
+          );
+        }
+      }
+
+      // Create the hosted checkout URL for this specific order
+      const hostedCheckoutUrl = this.environment === 'production'
+        ? `https://www.clover.com/online-payments/${this.merchantId}/pay/${orderId}`
+        : `https://sandbox.dev.clover.com/online-payments/${this.merchantId}/pay/${orderId}`;
 
       return {
         orderId: orderId,
         amount: request.amount,
         currency: request.currency || 'USD',
-        checkoutUrl: checkoutUrl,
+        checkoutUrl: hostedCheckoutUrl,
         status: 'pending'
       };
     } catch (error: any) {
       console.error('Failed to create payment intent:', error.response?.data || error.message);
-      throw new Error('Failed to create payment intent');
+      console.error('Full error:', error);
+      throw new Error(`Failed to create payment intent: ${error.response?.data?.message || error.message}`);
     }
   }
 

@@ -690,26 +690,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Clover Hosted Checkout webhook endpoint
   app.post("/api/webhooks/clover", async (req, res) => {
     try {
-      console.log('Received Clover webhook:', req.body);
+      console.log('Received Clover webhook:', JSON.stringify(req.body, null, 2));
       
-      const { eventType, objectId, data } = req.body;
+      const { type, eventType, objectId, data } = req.body;
 
-      // Handle successful checkout completion
-      if (eventType === 'CHECKOUT_COMPLETED' || eventType === 'checkout.completed') {
-        const checkoutId = objectId || data?.id;
+      // Handle different webhook event types
+      const event = type || eventType;
+      const orderId = objectId || data?.orderId || data?.id;
+
+      if (event === 'ORDER_PAYMENT_CREATED' || event === 'PAYMENT_CREATED' || event === 'order.payment_created') {
+        console.log(`Processing payment for order: ${orderId}`);
         
-        if (checkoutId) {
-          // Get the purchase record by checkout ID
-          const purchase = await storage.getPurchaseByCloverOrderId(checkoutId);
+        if (orderId) {
+          // Get the purchase record by Clover order ID
+          const purchase = await storage.getPurchaseByCloverOrderId(orderId);
           
           if (purchase) {
             // Update purchase status to paid
             await storage.updatePurchase(purchase._id, {
               status: 'paid',
-              transactionId: data?.payment_id || data?.transaction_id,
+              transactionId: data?.payment?.id || data?.id,
               paymentDetails: {
-                last4: data?.card?.last_four,
-                brand: data?.card?.type || 'card'
+                last4: data?.payment?.cardTransaction?.last4 || data?.source?.last4,
+                brand: data?.payment?.cardTransaction?.cardType || data?.source?.brand || 'card'
               }
             });
 
@@ -727,12 +730,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
               items: items,
               total: purchase.amount,
               paymentMethod: 'card',
-              last4: data?.card?.last_four
+              last4: data?.payment?.cardTransaction?.last4 || data?.source?.last4
             });
 
-            console.log(`✅ Payment completed for checkout ${checkoutId}`);
+            console.log(`✅ Payment completed for order ${orderId}`);
           } else {
-            console.warn(`⚠️ No purchase found for checkout ID: ${checkoutId}`);
+            console.warn(`⚠️ No purchase found for order ID: ${orderId}`);
           }
         }
       }
